@@ -1,3 +1,8 @@
+
+body{
+    background-color: #000;
+}
+
 *{
     box-sizing: border-box;
     margin: 0;
@@ -31,10 +36,19 @@ p, h1, h2, h3, h4, h5, h6{
     padding: 1rem;
 }
 
+.gradient{
+    background: linear-gradient(180deg, #000 0%, #2F6A8D 100%);
+}
+.gradient-reverse{
+    background: linear-gradient(180deg,#2F6A8D 0%, #000 100%);
+
+}
+
 .card-vertical{
     display: flex;
     flex-direction: column;
     border-radius: 10px;
+    background-color: #fff;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     width: 42%;
     color: #000;
@@ -69,6 +83,7 @@ p, h1, h2, h3, h4, h5, h6{
     height: 500px;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    background-color: #fff  ;
     color: #000;
 }
 
