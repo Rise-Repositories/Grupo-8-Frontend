@@ -8,19 +8,29 @@ body{
     margin: 0;
 }
 
-.midIcon{
+.midIcon {
     max-width: 50px;
     height: 50px;
     display: block;
 }
 
-.littleIcon{
+.littleIcon {
     width: 30px;
     height: 30px;
     display: block;
 }
 
-p, h1, h2, h3, h4, h5, h6{
+.w-40 {
+    width: 40%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     height: min-content;
     margin: 0;
 }
@@ -31,8 +41,9 @@ p, h1, h2, h3, h4, h5, h6{
 .content{
     display: flex;
     width: 100%;
+    min-height: 500px;
     justify-content: center;
-    gap: 6%;
+    gap: 10%;
     padding: 1rem;
 }
 
@@ -50,7 +61,7 @@ p, h1, h2, h3, h4, h5, h6{
     border-radius: 10px;
     background-color: #fff;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    width: 42%;
+    width: 40%;
     color: #000;
 }
 
@@ -90,4 +101,33 @@ p, h1, h2, h3, h4, h5, h6{
 .card-side{
     display: flex;
     width: 50%;
+}
+
+.singup-button{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #2F6A8D;
+    color: #fff;
+    padding: 7px 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.text-main-section{
+    color: #fff;
+}
+
+.image-main-section{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    background-color: red;
+}
+
+.bg-black{
+    background-color: #000;
 }
