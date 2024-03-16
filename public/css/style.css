@@ -42,17 +42,16 @@ h6 {
 .content{
     display: flex;
     width: 100%;
-    min-height: 500px;
+    min-height: 680px;
     justify-content: center;
     gap: 10%;
-    padding: 1rem;
 }
 
 .gradient{
-    background: linear-gradient(180deg, #000 0%, #2F6A8D 100%);
+    background: linear-gradient(180deg, #000 0%, #2F6A8D 140%);
 }
 .gradient-reverse{
-    background: linear-gradient(180deg,#2F6A8D 0%, #000 100%);
+    background: linear-gradient(180deg,#2F6A8D -40%, #000 100%);
 
 }
 
@@ -68,16 +67,14 @@ h6 {
 
 .card-image{
     width: 100%;
-    height: 200px;
+    height: 50%;
     object-fit: cover;
     border-radius: 10px 10px 0 0;
-    background-color: blue;
 }
 
 .card-image-full{
     width: 100%;
     height: 100%;
-    background-color: blue;
     border-radius: 10px;
 }
 
@@ -92,7 +89,7 @@ h6 {
 .card-horizontal{
     display: flex;
     width: 90%;
-    height: 500px;
+    height: fit-content;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     background-color: #fff  ;
@@ -136,4 +133,8 @@ h6 {
 
 .bg-black{
     background-color: black;
+}
+
+.margin-bottom-3{
+    margin-bottom: 3rem;
 }
