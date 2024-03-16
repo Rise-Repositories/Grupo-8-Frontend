@@ -42,10 +42,9 @@ h6 {
 .content{
     display: flex;
     width: 100%;
-    min-height: 500px;
+    min-height: 650px;
     justify-content: center;
     gap: 10%;
-    padding: 1rem;
 }
 
 .gradient{
@@ -136,4 +135,8 @@ h6 {
 
 .bg-black{
     background-color: black;
+}
+
+.margin-bottom-3{
+    margin-bottom: 3rem;
 }
