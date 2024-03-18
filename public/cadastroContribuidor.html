@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise | Cadastro</title>
+    <link rel="stylesheet" href="cadastro.css">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/chevron-right-r.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="box">
+        <button class="usuarioOng"><a href="cadastroOng.html"></a>ONG</button>
+        <button class="usuarioContribuidor"><a href="#"></a> Contribuidor</button>
+        <div class="form-box">
+            <form action="#">
+                <h2>Cadastre-se</h2>
+                <p>Já tem conta? <a href="login.html">Login</a></p>
+                    <div class="part1">
+                        <div class="input-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="idade">Idade</label>
+                            <input type="number" id="idade" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="telefone">Celular</label>
+                            <input type="tel" id="telefone" required>
+                        </div>
+                        <div class="input-group">
+                            <button type="button" class="btn"onclick="proximo()">Próximo</button>
+                        </div>
+                    </div>
+                    <div class="part2" style="display: none;">
+                        <div class="input-group">
+                            <label for="localizacao">Localização</label>
+                            <input type="text" id="localizacao" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="genero">Gênero</label>
+                            <input type="text" id="genero" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="senha">Senha</label>
+                            <input type="password" id="senha" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="confirmarSenha">Confirmar Senha</label>
+                            <input type="password" id="confirmarSenha" required>    
+                        </div>
+                        <div class="input-group">
+                            <button type="button" class="btnVoltar" onclick="voltar()">Voltar</button>
+                            <button type="button" class="btn" onclick="cadastrar()">Cadastrar<i class="gg-chevron-right-r"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="img-box">
+                <img src="/public/images/imgCadastro.png" alt="">
+            </div>
+        </div>
+        <script>
+            function proximo(){
+                part1.style.display = "none";
+                part2.style.display = "block";
+            }
+            function voltar(){ 
+                part1.style.display = "block";
+                part2.style.display = "none";
+            }
+        </script>
+</body>
+</html>
