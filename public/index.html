@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/logo.ico">
     <title>Página Inicial</title>
     <link rel="stylesheet" href="css/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="css/bootstrap/bootstrap-reboot.css">
@@ -11,28 +13,92 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Meu Site</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black">
+        <a class="navbar-brand escritaLogo" href="#">
+            <img src="images/logo.ico" width="70" height="70" class="d-inline-block align-middle" alt="">
+            Rise
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="#">Sobre</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Recursos</a>
+                    <a class="nav-link" href="#">Solução</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contato</a>
+                    <a class="nav-link" href="#">Entrar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Cadastrar</a>
                 </li>
             </ul>
         </div>
     </nav>
-    <footer class="d-flex w-full justify-content-between align-items-center p-2">
+
+
+    <div class="content d-flex flex-column flex-sm-row p-3 p-md-5">
+        <div class="w-100 w-sm-40 d-flex flex-column min-h-100 justify-content-center text-main-section mb-5">
+            <h1 class="margin-bottom-3">A compaixão em movimento</h1>
+            <p>Aqui, nosso objetivo é fortalecer a colaboração entre as organizações sociais para otimizar esforços e
+                alcançar um impacto maior.</p>
+        </div>
+        <div class="w-100 w-sm-40 min-h-100 d-flex justify-content-end align-items-end position-relative">
+            <button class="singup-button">Cadastrar</button>
+            <img class="image-main-section" src="images/maosDadas.jpg">
+        </div>
+    </div>
+
+
+
+
+    <div class="content gradient d-flex flex-column flex-sm-row p-3 p-md-5">
+        <div class="card-vertical w-100 w-sm-40 mb-5">
+            <img src="images/cestaBasica" class="card-image" alt="">
+            <div class="card-text">
+                <h2 class="mb-3">Fortalecendo a Rede de Solidariedade</h2>
+                <p>ONGs desempenham um papel crucial na sociedade, preenchendo lacunas onde os serviços governamentais podem não alcançar. No entanto, muitas vezes enfrentam desafios na identificação e localização de indivíduos e comunidades que mais precisam de sua ajuda. Além disso, a coordenação entre diferentes ONGs pode ser complexa, levando a esforços duplicados ou a áreas carentes sendo negligenciadas.</p>
+            </div>
+        </div>
+        <div class="card-vertical w-100 w-sm-40 mb-5">
+            <img src="images/dignidade.jpg" class="card-image" alt="">
+            <div class="card-text">
+                <h2 class="mb-3">Transformando Vidas com Dignidade</h2>
+                <p>Existem inúmeras pessoas que necessitam de assistência, seja ela material, financeira ou emocional. No entanto, muitas vezes é difícil para esses indivíduos acessar a ajuda de que precisam. Eles podem não saber quais ONGs operam em sua área, ou podem ter dificuldade em se conectar com elas. Além disso, o estigma associado à necessidade de ajuda pode impedir que algumas pessoas busquem apoio.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content gradient-reverse p-3 p-md-5">
+        <div class="card-horizontal d-flex flex-column-reverse flex-sm-row w-100 w-sm-50 ">
+            <div class="card-side w-100 w-sm-60">
+                <div class="card-text">
+                    <h2>Solução</h2>
+                    <p>A Rise surge como uma solução inovadora para os desafios enfrentados pelas ONGs e pelos indivíduos necessitados. Nosso compromisso é garantir a          rastreabilidade para um melhor entendimento e benefício social.
+                        <br>
+                        <br>
+                        Nossa plataforma conecta ONGs para benefício dos indivíduos necessitados, permitindo uma distribuição de recursos mais eficiente e eficaz. Com o uso da tecnologia, nossa missão é mapear as áreas que mais precisam de ajuda e compartilha essas informações com as ONGs registradas. Isso permite que as ONGs direcionem seus recursos de maneira mais eficaz, garantindo que a ajuda chegue a quem mais precisa.
+                        <br>
+                        <br>
+                        Ao facilitar a conexão entre ONGs e indivíduos necessitados, o Rise está comprometido em criar um impacto social positivo, promovendo a equidade e a inclusão. Juntos, podemos fazer a diferença. Junte-se a nós na jornada para um mundo melhor com o Rise.</p>
+                        <br>
+                        <br>
+                    <a href="">Ver Mais</a>
+                </div>
+            </div>
+            <div class="card-side w-100 w-sm-40">
+                <img src="images/geoLocation.jpg" alt="" class="card-image-full">
+            </div>
+        </div>
+    </div>
+
+    <footer class="d-flex w-full justify-content-between align-items-center p-2 mt-3">
         <img src="images/logo.png" alt="" class="midIcon">
-        <p>©Rise</p>
+        <p class="text-white">©Rise</p>
         <div class="d-flex gap-1">
             <img src="images/facebook.png" alt="" class="littleIcon">
             <img src="images/instagram.png" alt="" class="littleIcon">
@@ -40,6 +106,7 @@
         </div>
 
     </footer>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
