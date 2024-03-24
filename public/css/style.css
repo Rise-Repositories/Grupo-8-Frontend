@@ -39,10 +39,16 @@ h6 {
 .gap-1{
     gap: 1rem;
 }
+
+.banner{
+    display: flex;
+    min-height: 680px;
+    justify-content: center;
+    gap: 10%;
+}
+
 .content{
     display: flex;
-    width: 100%;
-    min-height: 680px;
     justify-content: center;
     gap: 10%;
 }
@@ -68,12 +74,12 @@ h6 {
 .card-image{
     width: 100%;
     height: 50%;
-    object-fit: cover;
     border-radius: 10px 10px 0 0;
+    object-fit: cover;
 }
 
 .card-image-full{
-    width: 100%;
+    object-fit: cover;
     height: 100%;
     border-radius: 10px;
 }
@@ -92,13 +98,8 @@ h6 {
     height: fit-content;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    background-color: #fff  ;
+    background-color: #fff;
     color: #000;
-}
-
-.card-side{
-    display: flex;
-    width: 50%;
 }
 
 .singup-button{
