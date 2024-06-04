@@ -7,12 +7,13 @@ import backgroundImage from "../../utils/imgs/maos-dadas.png";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
-import VLibras from "@djpfs/react-vlibras";
+
+import VLibrasComponent from "../../components/vlibras/VlibrasComponent";
+
 
 const Login = () => {
     return (
         <>
-            <VLibras forceOnload={true} />
             <NavBar />
             <div className={`${styles["header"]}`}>
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
@@ -42,17 +43,12 @@ const Login = () => {
                         </div>
 
                         <BlueButton txt={"Entrar"} />
-
-                        <div vw class="enabled">
-                            <div vw-access-button class="active"></div>
-                            <div vw-plugin-wrapper>
-                                <div class="vw-plugin-top-wrapper"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
+            <VLibrasComponent />
         </>
     );
 };
+
 export default Login;

@@ -2,14 +2,14 @@ import React from "react";
 import styles from "./NavbarHorizontal.module.css";
 import BlueButton from "../../buttons/blueButton/BlueButton";
 import WhiteButton from "../../buttons/whiteButton/WhiteButton";
-import Logo from "../../../utils/imgs/logo.png"
+import Logo from "../../../utils/imgs/logo.png";
 import { Link } from "react-router-dom";
 
-const NavbarHorizontal = ({ }) => {
+const NavbarHorizontal = () => {
     return (
         <nav className={`navbar navbar-expand-lg navbar-light bg-white ${styles["navbar-style"]}`}>
             <div className="container">
-                <a className="navbar-brand">
+                <a className="navbar-brand" href="#">
                     <img src={Logo} width="70" height="70" className="d-inline-block align-middle" alt="Logo da empresa" />
                 </a>
 
@@ -31,7 +31,7 @@ const NavbarHorizontal = ({ }) => {
                             </Link>
                         </li>
                         <li className="nav-item mx-2">
-                            <Link to="/login" style={{ textDecoration: 'none' }}> { }
+                            <Link to="/login" style={{ textDecoration: 'none' }}> 
                                 <BlueButton txt={"Entrar"} />
                             </Link>
                         </li>
