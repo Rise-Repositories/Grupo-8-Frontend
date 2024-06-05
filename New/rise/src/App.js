@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import Rotas from "./routes";
-
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
