@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+.page {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    font-family: "Montserrat";
+}
+
+.page-name a {
+    color: #00006B;
+    font-size: 24px;
+}
+
+.content {
+    height: 100vh;
+    background-color: #EFF2F4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 95%;
+    height: 95%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.top-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.align-input {
+    width: 25%;
+}
+
+.notifications {
+    height: 100%;
+    width: 24px;
+}
+
+.default-box {
+    background-color: #fff;
+    height: fit-content;
+
+    padding-top: 35px;
+    padding-bottom: 35px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.table {
+    width: 100%;
+}
+.table td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.default-list-line {
+    border-bottom: 1px solid #2968C8;
+}
+
+.td-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
