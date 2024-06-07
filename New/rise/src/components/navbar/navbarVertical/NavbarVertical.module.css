@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+body {
+    height: 100vh;
+    font-family: "Montserrat";
+}
+
+.sidebar {
+    height: 100vh;
+    width: 40vh;
+    background-color: #2968C8;
+}
+
+.upPart {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.container {
+    padding-top: 20%;
+    padding-bottom: 20%;
+    padding-left: 10%;
+    padding-right: 10%;
+
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: space-between;
+    height: 100%;
+}
+
+.instituteName {
+    font-size: 24px;
+    color: #fff;
+}
+
+.menuElements {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    padding: 0 !important;
+
+    gap: 20px;
+}
+
+.menuElements a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+
+}
+
+.scrollLink {
+    /* styles */
+}
+
+.logos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    color: #FFFD32;
+}
+.logos img {
+    height: 30px;
+    width: 30px;
+}
+
+.links svg{
+    color: #fff;
+    width: 30px;
+    height: 30px;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10%;
+    list-style: none;
+}
