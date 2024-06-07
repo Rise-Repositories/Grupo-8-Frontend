@@ -69,7 +69,7 @@ const Heatmap = ({semAtendimentoDesde}) => {
             }
         };
 
-        api.get('/mapping/heatmap', requestConfig).then((res) => {
+        api.get('/data/heatmap', requestConfig).then((res) => {
             setPontosMapaCalor(res.data);
 
         }).catch((err) => {
