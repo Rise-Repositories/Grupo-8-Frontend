@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 const InstituteList = () => {
-    // Exemplo de dados das instituições
     const institutes = [
         {
             name: "Instituto ABC",

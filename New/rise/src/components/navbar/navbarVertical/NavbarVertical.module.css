@@ -53,10 +53,6 @@ body {
 
 }
 
-.scrollLink {
-    /* styles */
-}
-
 .logos {
     display: flex;
     flex-direction: row;
