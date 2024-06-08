@@ -38,7 +38,6 @@ function HeatmapData(props) {
             map.removeLayer(curLayer);
         }
         setCurLayer(L.heatLayer(props.pontos, heatmapOptions).addTo(map));
-        console.log(map);
     }, [props]);
 }
 
