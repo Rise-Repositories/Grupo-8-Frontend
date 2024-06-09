@@ -5,6 +5,8 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 import api from '../../api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { checkAuth } from '../../utils/globals';
 
 /*
 Utilização
@@ -22,7 +24,7 @@ Utilização
 
 
 function HeatmapData(props) {
-    
+
     const [curLayer, setCurLayer] = useState(null);
     const map = useMap();
 
@@ -43,6 +45,7 @@ function HeatmapData(props) {
 
 const Heatmap = ({semAtendimentoDesde}) => {
 
+    const navigate = useNavigate();
     const [position, setPosition] = useState(null);
     const [pontosMapaCalor, setPontosMapaCalor] = useState([]);
 
@@ -62,6 +65,7 @@ const Heatmap = ({semAtendimentoDesde}) => {
         defaultDate.setMonth(defaultDate.getMonth() - 1);
 
         const requestConfig = {
+            headers: {Authorization: checkAuth()},
             params: {
                 radiusToGroup: 100.0,
                 olderThan: semAtendimentoDesde ? semAtendimentoDesde : defaultDate.toISOString().split('.')[0]
@@ -72,7 +76,11 @@ const Heatmap = ({semAtendimentoDesde}) => {
             setPontosMapaCalor(res.data);
 
         }).catch((err) => {
-            toast.error('Erro ao carregar dados do mapa de calor');
+            if (err.response.status === 401) {
+                navigate('/login');
+            } else {
+                toast.error('Erro ao carregar dados do mapa de calor');
+            }
         });
     }, [semAtendimentoDesde]);
 

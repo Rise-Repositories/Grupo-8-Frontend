@@ -3,19 +3,26 @@ import styles from "./DashboardMapping.module.css";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import api from "../../api";
 import Heatmap from "../../components/heatmap/Heatmap";
-import formatDate from "../../utils/globals";
-
+import { formatDate, checkAuth } from "../../utils/globals";
+import { useNavigate } from "react-router-dom";
 
 const DashboardMapping = () => {
 
+    const navigate = useNavigate();
     const [dataFiltro, setDataFiltro] = useState('2024-05-05');
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
 
     useEffect(() => {
-        api.get('data/mapping/alerts').then((res) => {
+        api.get('data/mapping/alerts', {
+            headers: {Authorization: checkAuth()}
+        }).then((res) => {
             console.log(res);
             setDadosMapeamento(res.data);
-        })
+        }).catch((err) => {
+            if (err.response.status === 401) {
+                navigate('/login');
+            }
+        });
     }, [dataFiltro]);
 
     return (

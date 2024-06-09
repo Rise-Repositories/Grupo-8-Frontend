@@ -6,6 +6,7 @@ import VolunteerRegistration from "./pages/cadastros/volunteerRegistration/volun
 import InstituteRegistration from "./pages/cadastros/instituteRegistration/InstituteRegistration";
 import Dashboard from "./pages/dashboard/Dashboard";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
+import RequireAuth from "./utils/RequireAuth";
 
 function Rotas() {
     return (
@@ -15,8 +16,16 @@ function Rotas() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                     <Route path="/institute-registration" element={<InstituteRegistration />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/dashboard-mapping" element={<DashboardMapping />} />
+                    <Route path="/dashboard" element={
+                        <RequireAuth>
+                            <Dashboard />
+                        </RequireAuth>
+                    } />
+                    <Route path="/dashboard-mapping" element={
+                        <RequireAuth>
+                            <DashboardMapping />
+                        </RequireAuth>
+                    } />
                 </Routes>
             </BrowserRouter>
         </>
