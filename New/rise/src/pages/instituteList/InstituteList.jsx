@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./InstituteList.module.css";
+import api from "../../api";
+import Modal from 'react-modal';
 
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -10,25 +12,76 @@ import RedButton from "../../components/buttons/redButton/RedButton";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
+import Stack from "../../utils/stack"
+
+Modal.setAppElement('#root');
+
 const InstituteList = () => {
-    const institutes = [
-        {
-            name: "Instituto ABC",
-            cnpj: "12.345.678/0001-90",
-            phone: "(11) 1234-5678",
-            email: "contato@institutoabc.org",
-            representative: "João Silva",
-            status: "Ativo",
-        },
-        {
-            name: "Instituto XYZ",
-            cnpj: "98.765.432/0001-09",
-            phone: "(21) 9876-5432",
-            email: "contato@institutoxyz.org",
-            representative: "Maria Oliveira",
-            status: "Inativo",
-        },
-    ];
+    const [institutes, setInstitutes] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedInstitute, setSelectedInstitute] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [actionStack] = useState(new Stack(100));
+
+    useEffect(() => {
+        api.get('ong')
+            .then((res) => {
+                const formattedData = res.data.map((institute) => {
+                    const owner = institute.voluntaries.find(voluntary => voluntary.role === "OWNER");
+                    return {
+                        ...institute,
+                        representative: owner ? owner.user.name : "N/A",
+                        representativeEmail: owner ? owner.user.email : "N/A",
+                        statusText: institute.status === "PENDING" ? "Pendente" :
+                            institute.status === "ACCEPTED" ? "Permitido" :
+                                institute.status === "REJECTED" ? "Negado" : institute.status
+                    };
+                });
+                setInstitutes(formattedData);
+            })
+            .catch((error) => {
+                console.error('Erro ao buscar dados:', error);
+            });
+    }, []);
+
+    const updateInstituteStatus = (id, status, addToStack = true) => {
+        api.patch(`ong/${id}/status`, { status })
+            .then((response) => {
+                if (addToStack) {
+                    actionStack.push({ id, previousStatus: institutes.find(inst => inst.id === id).status, newStatus: status });
+                }
+                setInstitutes(prevInstitutes => prevInstitutes.map(institute =>
+                    institute.id === id ? { ...institute, status, statusText: status === "ACCEPTED" ? "Permitido" : "Negado" } : institute
+                ));
+                closeModal();
+            })
+            .catch((error) => {
+                console.error('Erro ao atualizar status:', error);
+            });
+    };
+
+    const openModal = (institute, status) => {
+        setSelectedInstitute(institute);
+        setSelectedStatus(status);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedInstitute(null);
+        setSelectedStatus('');
+    };
+
+    const confirmUpdateStatus = () => {
+        updateInstituteStatus(selectedInstitute.id, selectedStatus);
+    };
+
+    const undoLastAction = () => {
+        if (!actionStack.isEmpty()) {
+            const lastAction = actionStack.pop();
+            updateInstituteStatus(lastAction.id, lastAction.previousStatus, false);
+        }
+    };
 
     return (
         <>
@@ -54,7 +107,7 @@ const InstituteList = () => {
                                 <div className={styles["page-name"]}>
                                     <a>Lista de cadastros institucionais</a>
                                 </div>
-                                <BlueButton txt={"Desfazer"}></BlueButton>
+                                <BlueButton txt={"Desfazer"} onclick={undoLastAction} />
                             </div>
 
                             <table className={styles.table}>
@@ -62,9 +115,8 @@ const InstituteList = () => {
                                     <tr className={styles["default-list-line"]}>
                                         <th>Nome do instituto</th>
                                         <th>CNPJ</th>
-                                        <th>Telefone</th>
-                                        <th>E-mail</th>
                                         <th>Nome do representante</th>
+                                        <th>E-mail do representante</th>
                                         <th>Status</th>
                                         <th>Ações</th>
                                     </tr>
@@ -74,23 +126,48 @@ const InstituteList = () => {
                                         <tr key={index} className={styles["default-list-line"]}>
                                             <td>{institute.name}</td>
                                             <td>{institute.cnpj}</td>
-                                            <td>{institute.phone}</td>
-                                            <td>{institute.email}</td>
                                             <td>{institute.representative}</td>
-                                            <td>{institute.status}</td>
+                                            <td>{institute.representativeEmail}</td>
+                                            <td>{institute.statusText}</td>
                                             <td className={styles["td-buttons"]}>
-                                                <RedButton txt={"Recusar"} />
-                                                <GreenButton txt={"Aprovar"} />
+                                                {institute.status === "PENDING" && (
+                                                    <>
+                                                        <RedButton onclick={() => openModal(institute, "REJECTED")} txt={"Recusar"} />
+                                                        <GreenButton onclick={() => openModal(institute, "ACCEPTED")} txt={"Aprovar"} />
+                                                    </>
+                                                )}
+                                                {institute.status === "ACCEPTED" && (
+                                                    <RedButton onclick={() => openModal(institute, "REJECTED")} txt={"Recusar"} />
+                                                )}
+                                                {institute.status === "REJECTED" && (
+                                                    <GreenButton onclick={() => openModal(institute, "ACCEPTED")} txt={"Aprovar"} />
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
                 </div>
             </div>
+
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Confirmação de Atualização"
+                className={styles.modal}
+                overlayClassName={styles.overlay}
+            >
+                <div className={styles["page-name"]}>
+                    <a>Confirmação de Atualização</a>
+                </div>
+                <p>Tem certeza que deseja {selectedStatus === "ACCEPTED" ? "permitir" : "recusar"} o acesso da ONG "{selectedInstitute?.name}"?</p>
+                <div className={styles["modal-buttons"]}>
+                    <BlueButton txt={"Cancelar"} onclick={closeModal} />
+                    <GreenButton txt={"Confirmar"} onclick={confirmUpdateStatus} />
+                </div>
+            </Modal>
         </>
     );
 };
