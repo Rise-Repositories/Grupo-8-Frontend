@@ -5,7 +5,9 @@ import Login from "./pages/login/Login";
 import VolunteerRegistration from "./pages/cadastros/volunteerRegistration/volunteerRegistration";
 import InstituteRegistration from "./pages/cadastros/instituteRegistration/InstituteRegistration";
 import Dashboard from "./pages/dashboard/Dashboard";
+import InstituteList from "./pages/instituteList/InstituteList";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
+
 
 function Rotas() {
     return (
@@ -16,6 +18,7 @@ function Rotas() {
                     <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                     <Route path="/institute-registration" element={<InstituteRegistration />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/institute-list" element={<InstituteList />} />
                     <Route path="/dashboard-mapping" element={<DashboardMapping />} />
                 </Routes>
             </BrowserRouter>
