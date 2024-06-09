@@ -38,7 +38,6 @@ function HeatmapData(props) {
             map.removeLayer(curLayer);
         }
         setCurLayer(L.heatLayer(props.pontos, heatmapOptions).addTo(map));
-        console.log(map);
     }, [props]);
 }
 
@@ -69,7 +68,7 @@ const Heatmap = ({semAtendimentoDesde}) => {
             }
         };
 
-        api.get('/mapping/heatmap', requestConfig).then((res) => {
+        api.get('/data/heatmap', requestConfig).then((res) => {
             setPontosMapaCalor(res.data);
 
         }).catch((err) => {
