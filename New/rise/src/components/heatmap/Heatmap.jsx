@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 import api from '../../api';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../pages/login/AuthContext';
 
 /*
 Utilização
@@ -43,6 +44,9 @@ function HeatmapData(props) {
 
 const Heatmap = ({semAtendimentoDesde}) => {
 
+    const { authToken } = useContext(AuthContext);
+    const Authorization = 'Bearer ' + authToken;
+    
     const [position, setPosition] = useState(null);
     const [pontosMapaCalor, setPontosMapaCalor] = useState([]);
 
@@ -62,6 +66,7 @@ const Heatmap = ({semAtendimentoDesde}) => {
         defaultDate.setMonth(defaultDate.getMonth() - 1);
 
         const requestConfig = {
+            headers: { Authorization },
             params: {
                 radiusToGroup: 100.0,
                 olderThan: semAtendimentoDesde ? semAtendimentoDesde : defaultDate.toISOString().split('.')[0]

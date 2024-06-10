@@ -81,4 +81,5 @@ body {
 
     gap: 10%;
     list-style: none;
+    cursor: pointer;
 }

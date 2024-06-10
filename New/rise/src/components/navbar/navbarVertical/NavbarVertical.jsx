@@ -1,11 +1,17 @@
 import React from 'react';
 import styles from './NavbarVertical.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import riseLogo from '../../../utils/imgs/rise-logo.png';
 import logo from '../../../utils/imgs/logo.png';
 
 const NavbarVertical = () => {
+    const navigate = useNavigate();
+
+    const handleNavigate = (route) => {
+        navigate(route);
+    }
+
     return (
         <>
             <nav className={`col-md-2 ${styles["sidebar"]}`}>
@@ -23,19 +29,19 @@ const NavbarVertical = () => {
                     </div>
 
                     <ul className={styles.menuElements}>
-                        <li className={styles.links}>
-                            <a className={styles.scrollLink} href="#">
+                        <li className={styles.links} onClick={() => handleNavigate('/dashboard')}>
+                            <a className={styles.scrollLink}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#ffffff" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V400c0 44.2 35.8 80 80 80H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16V64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z" /></svg>
                             </a>
-                            <a className={styles.scrollLink} href="#">
+                            <a className={styles.scrollLink}>
                                 Dashboard
                             </a>
                         </li>
-                        <li className={styles.links}>
-                            <a className={styles.scrollLink} href="#">
+                        <li className={styles.links} onClick={() => handleNavigate('/dashboard-mapping')}>
+                            <a className={styles.scrollLink}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="#ffffff" d="M565.6 36.2C572.1 40.7 576 48.1 576 56V392c0 10-6.2 18.9-15.5 22.4l-168 64c-5.2 2-10.9 2.1-16.1 .3L192.5 417.5l-160 61c-7.4 2.8-15.7 1.8-22.2-2.7S0 463.9 0 456V120c0-10 6.1-18.9 15.5-22.4l168-64c5.2-2 10.9-2.1 16.1-.3L383.5 94.5l160-61c7.4-2.8 15.7-1.8 22.2 2.7zM48 136.5V421.2l120-45.7V90.8L48 136.5zM360 422.7V137.3l-144-48V374.7l144 48zm48-1.5l120-45.7V90.8L408 136.5V421.2z" /></svg>
                             </a>
-                            <a className={styles.scrollLink} href="#">
+                            <a className={styles.scrollLink}>
                                 Mapeamento
                             </a>
                         </li>

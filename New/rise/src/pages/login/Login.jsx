@@ -42,7 +42,6 @@ const Login = () => {
                 const token = respostaObtida.data.token;
                 login(token);
                 toast.success("Login efetuado com sucesso")
-                sessionStorage.setItem("USER_TOKEN", respostaObtida.data.token)
                 navigate('../dashboard');
             })
             .catch((erroOcorrido) => {

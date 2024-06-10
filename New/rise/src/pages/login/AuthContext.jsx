@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (token) => {
+        console.log('login ' + token);
         setAuthToken(token);
         sessionStorage.setItem('USER_TOKEN', token);
     };
