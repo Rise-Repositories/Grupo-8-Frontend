@@ -124,7 +124,6 @@ const InstituteRegistration = () => {
         setSecondFormVisible(true);
     };
 
-
     return (
         <>
             <VLibras forceOnload={true} />
@@ -145,38 +144,21 @@ const InstituteRegistration = () => {
 
                         <div className={`${styles["container-inputs-form"]} col-md-12`} style={{ display: secondFormVisible ? 'none' : 'block' }}>
                             <LabelInput placeholder={"Digite a razão social"} label={"Razão social"} onInput={(e) => handleInputChange(e, setRazaoSocial)} />
-                            <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e, setCnpj)}/>
-                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e, setCep)}/>
-                            <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e, setNumeroEstabelecimento)}/>
+                            <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e, setCnpj)} mask="99.999.999/9999-99"/>
+                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e, setCep)} mask="99999-999"/>
+                            <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e, setNumeroEstabelecimento)} type="number"/>
                             <br />
-
-                            <div className={`${styles['low-form']}`}>
-                                <div className="form-group form-check">
-                                    <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
-                                    <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
-                                </div>
-                                <a href="#" className="forgot-password-link">esqueci minha senha</a>
-                            </div>
                         </div>
 
 
                         <div className={`${styles['container-inputs-form']}`} style={{ display: secondFormVisible ? 'block' : 'none' }}>
                             <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e, setNome)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)}/>
+                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)} mask="999.999.999-99"/>
                             <LabelInput placeholder={"Digite seu endereço"} label={"Endereço"} onInput={(e) => handleInputChange(e, setEndereco)}/>
                             <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} type="email" onInput={(e) => handleInputChange(e, setEmail)}/>
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e, setSenha)} />
-                            <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e, setConfirmarSenha)} />
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e, setSenha)}/>
+                            <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e, setConfirmarSenha)}/>
                             <br></br>
-
-                            <div className={`${styles['low-form']}`}>
-                                <div className="form-group form-check">
-                                    <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
-                                    <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
-                                </div>
-                                <a href="#" className="forgot-password-link">esqueci minha senha</a>
-                            </div>
-
                         </div>
 
                         <BlueButton 

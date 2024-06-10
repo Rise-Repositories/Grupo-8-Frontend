@@ -31,7 +31,7 @@ const NavbarHorizontal = () => {
                             </Link>
                         </li>
                         <li className="nav-item mx-2">
-                            <Link to="/login" style={{ textDecoration: 'none' }}> 
+                            <Link to="/" style={{ textDecoration: 'none' }}> 
                                 <BlueButton txt={"Entrar"} />
                             </Link>
                         </li>

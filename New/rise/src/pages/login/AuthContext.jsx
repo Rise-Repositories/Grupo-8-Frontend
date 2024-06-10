@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
@@ -13,7 +14,6 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (token) => {
-        console.log('login ' + token);
         setAuthToken(token);
         sessionStorage.setItem('USER_TOKEN', token);
     };

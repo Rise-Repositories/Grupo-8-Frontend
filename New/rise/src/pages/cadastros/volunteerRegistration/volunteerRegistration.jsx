@@ -101,18 +101,10 @@ const VolunteerRegistration = () => {
 
                         <div className={`${styles["container-inputs-form"]}`}>
                             <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e, setNome)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)} />
+                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)} mask="999.999.999-99"/>
                             <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)} />
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} />
-                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e, setConfirmarSenha)}/>
-
-                            <div className={`${styles['low-form']}`}>
-                                <div className="form-group form-check">
-                                    <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
-                                    <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
-                                </div>
-                                <a href="#" className="forgot-password-link">esqueci minha senha</a>
-                            </div>
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password"/>
+                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e, setConfirmarSenha)} type="password"/>
                         </div>
 
                         <BlueButton txt={"Cadastrar"} onclick={handleSave}/>
