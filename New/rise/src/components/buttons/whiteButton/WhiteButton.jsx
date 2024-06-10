@@ -2,10 +2,10 @@ import React from "react";
 import styles from "./WhiteButton.module.css";
 
 const WhiteButton = ({
-    txt
+    txt, onclick
 }) => {
     return (
-        <div className={styles["btn-white-bg"]}>{txt}</div>
+        <div className={styles["btn-white-bg"]} onClick={onclick}>{txt}</div>
     );
 };
 
