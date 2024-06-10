@@ -34,7 +34,10 @@ const Dashboard = () => {
         qtyTotal: 0,
         qtyServed: 0,
         qtyNotServed: 0,
-        qtyNoPeople: 0
+        qtyNoPeople: 0,
+        qtyServedPercent: 0,
+        qtyNotServedPercent: 0,
+        qtyNoPeoplePercent: 0
     });
 
     const [afterDate, setAfterDate] = useState("");
@@ -51,17 +54,20 @@ const Dashboard = () => {
             ]);
 
             setAccountData({
-                zero: responseAccountData.data.zero,
-                oneOrTwo: responseAccountData.data.oneOrTwo,
-                threeOrFour: responseAccountData.data.threeOrFour,
-                fiveOrMore: responseAccountData.data.fiveOrMore
+                zero: responseAccountData.data.zero * 100,
+                oneOrTwo: responseAccountData.data.oneOrTwo * 100,
+                threeOrFour: responseAccountData.data.threeOrFour * 100,
+                fiveOrMore: responseAccountData.data.fiveOrMore * 100
             });
 
             setKpis({
                 qtyTotal: responseKpis.data.qtyTotal,
                 qtyServed: responseKpis.data.qtyServed,
                 qtyNotServed: responseKpis.data.qtyNotServed,
-                qtyNoPeople: responseKpis.data.qtyNoPeople
+                qtyNoPeople: responseKpis.data.qtyNoPeople,
+                qtyServedPercent: responseKpis.data.qtyServedPercent / qtyTotal,
+                qtyNotServedPercent: responseKpis.data.qtyNotServedPercent  / qtyTotal,
+                qtyNoPeoplePercent: responseKpis.data.qtyNoPeoplePercent / qtyTotal
             });
         } catch (error) {
             console.error('Erro ao buscar dados', error);
@@ -125,19 +131,19 @@ const Dashboard = () => {
                                     <tbody>
                                         <tr className={styles["default-list-line"]}>
                                             <td>0</td>
-                                            <td>{accountData.zero}</td>
+                                            <td>{accountData.zero}%</td>
                                         </tr>
                                         <tr className={styles["default-list-line"]}>
                                             <td>1 ou 2</td>
-                                            <td>{accountData.oneOrTwo}</td>
+                                            <td>{accountData.oneOrTwo}%</td>
                                         </tr>
                                         <tr className={styles["default-list-line"]}>
                                             <td>3 ou 4</td>
-                                            <td>{accountData.threeOrFour}</td>
+                                            <td>{accountData.threeOrFour}%</td>
                                         </tr>
                                         <tr className={styles["default-list-line"]}>
                                             <td>5 ou +</td>
-                                            <td>{accountData.fiveOrMore}</td>
+                                            <td>{accountData.fiveOrMore}%</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -171,14 +177,14 @@ const Dashboard = () => {
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyServed}</div>
+                                    <div className="valueKPI">{kpis.qtyServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyServedPercent}%)</span></div>
                                     <div className="titleKPI">Total de locais atendidos</div>
                                 </div>
                                 <div className={`col-md-2 ${styles["standardKPI"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#2968c8" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyNotServed}</div>
+                                    <div className="valueKPI">{kpis.qtyNotServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyNotServed}%)</span></div>
                                     <div className="titleKPI">Total de locais não atendidos</div>
                                 </div>
                                 <div className={`col-md-2 ${styles["standardKPIDark"]}`}>
@@ -186,7 +192,7 @@ const Dashboard = () => {
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
 
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyNoPeople}</div>
+                                    <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
                                     <div className="titleKPI">Não havia pessoas no local</div>
                                 </div>  
                             </div>
