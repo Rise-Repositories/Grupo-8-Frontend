@@ -69,7 +69,7 @@ const Login = () => {
 
                         <div className={`${styles["container-inputs-form"]}`}>
                             <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)}/>
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)}/>
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password"/>
 
                             <div className={`${styles['low-form']}`}>
                                 <div className="form-group form-check">
