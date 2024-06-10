@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./DashboardMapping.module.css";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import api from "../../api";
 import Heatmap from "../../components/heatmap/Heatmap";
 import formatDate from "../../utils/globals";
+import { AuthContext } from "../login/AuthContext";
 
 
 const DashboardMapping = () => {
 
+    const { authToken } = useContext(AuthContext);
+    const Authorization = 'Bearer ' + authToken;
+    
     const [dataFiltro, setDataFiltro] = useState('2024-05-05');
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
 
     useEffect(() => {
-        api.get('data/mapping/alerts').then((res) => {
+        api.get('data/mapping/alerts', {
+            headers: { Authorization }
+        }).then((res) => {
             console.log(res);
             setDadosMapeamento(res.data);
         })

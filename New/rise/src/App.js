@@ -5,12 +5,15 @@ import ReactDOM from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import Rotas from "./routes";
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './pages/login/AuthContext';
 
 function App() {
   return (
     <React.StrictMode>
-      <Rotas />
-      <ToastContainer />
+      <AuthProvider>
+        <Rotas />
+        <ToastContainer />
+      </AuthProvider>
     </React.StrictMode>
   );
 }

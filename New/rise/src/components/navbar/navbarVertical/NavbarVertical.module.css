@@ -74,7 +74,9 @@ body {
 .links {
     display: flex;
     flex-direction: row;
+    color: #fff;
 
     gap: 10%;
     list-style: none;
+    cursor: pointer;
 }

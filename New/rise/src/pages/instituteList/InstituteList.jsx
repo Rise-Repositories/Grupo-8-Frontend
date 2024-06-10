@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./InstituteList.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
@@ -13,10 +13,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 import Stack from "../../utils/stack"
+import { AuthContext } from "../login/AuthContext";
 
 Modal.setAppElement('#root');
 
 const InstituteList = () => {
+
+    const { authToken } = useContext(AuthContext);
+    const Authorization = 'Bearer ' + authToken;
+
     const [institutes, setInstitutes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedInstitute, setSelectedInstitute] = useState(null);
@@ -24,7 +29,9 @@ const InstituteList = () => {
     const [actionStack] = useState(new Stack(100));
 
     useEffect(() => {
-        api.get('ong')
+        api.get('ong', {
+            headers: { Authorization }
+        })
             .then((res) => {
                 const formattedData = res.data.map((institute) => {
                     const owner = institute.voluntaries.find(voluntary => voluntary.role === "OWNER");
@@ -45,7 +52,9 @@ const InstituteList = () => {
     }, []);
 
     const updateInstituteStatus = (id, status, addToStack = true) => {
-        api.patch(`ong/${id}/status`, { status })
+        api.patch(`ong/${id}/status`, { status }, {
+            headers: { Authorization }
+        })
             .then((response) => {
                 if (addToStack) {
                     actionStack.push({ id, previousStatus: institutes.find(inst => inst.id === id).status, newStatus: status });
