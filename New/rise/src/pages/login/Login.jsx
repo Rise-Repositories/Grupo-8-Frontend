@@ -12,7 +12,6 @@ import { AuthContext } from "./AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-import VLibrasComponent from "../../components/vlibras/VlibrasComponent";
 
 const Login = () => {
 
@@ -84,7 +83,6 @@ const Login = () => {
                     </div>
                 </div>
             </div>
-            <VLibrasComponent />
         </>
     );
 };

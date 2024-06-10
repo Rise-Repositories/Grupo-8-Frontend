@@ -7,7 +7,6 @@ import backgroundImage from "../../../utils/imgs/maos-dadas.png";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
-import VLibras from "@djpfs/react-vlibras";
 import api from "../../../api";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validatePassword } from "../../../utils/globals";
@@ -120,7 +119,6 @@ const VolunteerRegistration = () => {
 
     return (
         <>
-            <VLibras forceOnload={true} />
             <NavBar />
             <div className={`${styles["header"]}`}>
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
