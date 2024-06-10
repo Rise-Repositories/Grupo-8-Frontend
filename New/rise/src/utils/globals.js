@@ -24,7 +24,7 @@ export function validatePassword(password) {
     return /[0-9]/.test(password) &&
         /[a-z]/.test(password) &&
         /[A-Z]/.test(password) &&
-        /[@#$%&*-+!?~^`_<>()[\]{}\/\\]/.test(password) &&
+        /[@#$%&*-+!?~^`_<>()[\]{}/\\]/.test(password) &&
         password.length >= 6
 }
 

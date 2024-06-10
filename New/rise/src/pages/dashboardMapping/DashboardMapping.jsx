@@ -16,8 +16,14 @@ const DashboardMapping = () => {
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
 
     useEffect(() => {
+        let defaultDate = new Date();
+        defaultDate.setMonth(defaultDate.getMonth() - 1);
+
         api.get('data/mapping/alerts', {
-            headers: { Authorization }
+            headers: { Authorization },
+            params: {
+                beforeDate: dataFiltro ? dataFiltro : defaultDate.toISOString().split('T')[0]
+            }
         }).then((res) => {
             console.log(res);
             setDadosMapeamento(res.data);
