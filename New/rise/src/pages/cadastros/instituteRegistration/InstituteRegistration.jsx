@@ -9,26 +9,56 @@ import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-toastify";
 import VLibras from "@djpfs/react-vlibras";
 import api from "../../../api";
+import { validateText, validateCPF, validateEmail, validatePassword, validateCNPJ, validateCEP } from "../../../utils/globals";
 
-const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-};
+const handleTextBlur = (event, message) => {
+    if(!validateText(event.target.value)) {
+        toast.error(message);
+    }
+}
 
-const validateCNPJ = (cnpj) => {
-    const regex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
-    return regex.test(cnpj);
-};
+const handleCPFBlur = (event) => {
+    if(!validateCPF(event.target.value)) {
+        toast.error('CPF inválido');
+    }
+}
 
-const validateCPF = (cpf) => {
-    const regex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-    return regex.test(cpf);
-};
+const handleEmailBlur = (event) => {
+    if(!validateEmail(event.target.value)) {
+        toast.error('E-mail inválido');
+    }
+}
 
-const validateCEP = (cep) => {
-    const regex = /^\d{5}-\d{3}$/;
-    return regex.test(cep);
-};
+const handlePasswordBlur = (event) => {
+    if(!validatePassword(event.target.value)) {
+        toast.error(<div>
+            Senha deve conter:<br/>
+            - 1 caractere minúsculo<br/>
+            - 1 caractere maiúsculo<br/>
+            - 1 número<br/>
+            - 1 caractere especial<br/>
+            - pelo menos 6 caracteres
+            </div>);
+    }
+}
+
+const handleConfirmPasswordBlur = (event, firstPassword) => {
+    if(firstPassword !== event.target.value) {
+        toast.error('As senhas são diferentes');
+    }
+}
+
+const handleCNPJBlur = (event) => {
+    if(!validateCNPJ(event.target.value)) {
+        toast.error('CNPJ inválido');
+    }
+}
+
+const handleCEPBlur = (event) => {
+    if(!validateCEP(event.target.value)) {
+        toast.error('CEP inválido');
+    }
+}
 
 const InstituteRegistration = () => {
     const [secondFormVisible, setSecondFormVisible] = useState(false);
@@ -45,46 +75,47 @@ const InstituteRegistration = () => {
     const [confirmarSenha, setConfirmarSenha] = useState("")
 
 
-    const handleInputChange = (event, setStateFunction) => {
-        setStateFunction(event.target.value);
+    const handleInputChange = (value, setStateFunction) => {
+        setStateFunction(value);
     }
 
     const handleSave = () => {
         const enderecoCompleto =  `${endereco}, ${numeroEstabelecimento}`;
-        
-        if (senha != confirmarSenha) {
-            toast.error("As senhas digitadas não estão compatíveis.");
-            return
-        }
 
-        const invalidEmail = !validateEmail(email);
-        const invalidCNPJ = !validateCNPJ(cnpj);
-        const invalidCPF = !validateCPF(cpf);
-        const invalidCEP = !validateCEP(cep);
-
-        if (invalidEmail && invalidCNPJ && invalidCPF && invalidCEP) {
-            toast.error("Dados inválidos.");
-            return;
-        }
-
-
-        if (!validateEmail(email)) {
-            toast.error("Email inválido.");
-            return;
-        }
-
-        if (!validateCNPJ(cnpj)) {
-            toast.error("CNPJ inválido.");
+        if(!validateText(nome)) {
+            toast.error('Nome inválido');
             return;
         }
 
         if (!validateCPF(cpf)) {
-            toast.error("CPF inválido.");
+            toast.error("CPF inválido");
             return;
         }
 
-        if (!validateCEP(cep)) {
-            toast.error("CEP inválido.");
+        if(!validateText(endereco)) {
+            toast.error('Endereço inválido');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            toast.error("E-mail inválido");
+            return;
+        }
+
+        if(!validatePassword(senha)) {
+            toast.error(<div>
+                Senha deve conter:<br/>
+                - 1 caractere minúsculo<br/>
+                - 1 caractere maiúsculo<br/>
+                - 1 número<br/>
+                - 1 caractere especial<br/>
+                - pelo menos 6 caracteres
+                </div>);
+                return;
+        }
+
+        if (senha !== confirmarSenha) {
+            toast.error("As senhas são diferentes");
             return;
         }
 
@@ -102,7 +133,7 @@ const InstituteRegistration = () => {
         };
 
         console.log(objetoAdicionado)
-        api.post('/ong', objetoAdicionado)
+        api.post('/ong/auth', objetoAdicionado)
         .then(() => {
             toast.success("Novo Card criado com sucesso!");
             sessionStorage.setItem("institute", JSON.stringify(objetoAdicionado));
@@ -121,6 +152,22 @@ const InstituteRegistration = () => {
 }
 
     const showSecondForm = () => {
+
+        if(!validateText(razaoSocial)) {
+            toast.error('Razão Social inválida');
+            return;
+        }
+
+        if(!validateCNPJ(cnpj)) {
+            toast.error('CNPJ inválido');
+            return;
+        }
+
+        if (!validateCEP(cep)) {
+            toast.error("CEP inválido");
+            return;
+        }
+
         setSecondFormVisible(true);
     };
 
@@ -143,21 +190,21 @@ const InstituteRegistration = () => {
                         </div>
 
                         <div className={`${styles["container-inputs-form"]} col-md-12`} style={{ display: secondFormVisible ? 'none' : 'block' }}>
-                            <LabelInput placeholder={"Digite a razão social"} label={"Razão social"} onInput={(e) => handleInputChange(e, setRazaoSocial)} />
-                            <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e, setCnpj)} mask="99.999.999/9999-99"/>
-                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e, setCep)} mask="99999-999"/>
-                            <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e, setNumeroEstabelecimento)} type="number"/>
+                            <LabelInput placeholder={"Digite a razão social"} label={"Razão social"} onInput={(e) => handleInputChange(e.target.value, setRazaoSocial)} onBlur={(e) => handleTextBlur(e, 'Razão Social inválida')}/>
+                            <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e.target.value.substring(0, 18), setCnpj)} mask="99.999.999/9999-99" onBlur={(e) => handleCNPJBlur(e)}/>
+                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => handleCEPBlur(e)}/>
+                            <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/>
                             <br />
                         </div>
 
 
                         <div className={`${styles['container-inputs-form']}`} style={{ display: secondFormVisible ? 'block' : 'none' }}>
-                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e, setNome)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)} mask="999.999.999-99"/>
-                            <LabelInput placeholder={"Digite seu endereço"} label={"Endereço"} onInput={(e) => handleInputChange(e, setEndereco)}/>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} type="email" onInput={(e) => handleInputChange(e, setEmail)}/>
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e, setSenha)}/>
-                            <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e, setConfirmarSenha)}/>
+                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleTextBlur(e, 'Nome inválido')}/>
+                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)}/>
+                            <LabelInput placeholder={"Digite seu endereço"} label={"Endereço"} onInput={(e) => handleInputChange(e.target.value, setEndereco)} onBlur={(e) => handleTextBlur(e, 'Endereço inválido')}/>
+                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} type="email" onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)}/>
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setSenha)} onBlur={(e) => handlePasswordBlur(e)}/>
+                            <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} onBlur={(e) => handleConfirmPasswordBlur(e, senha)}/>
                             <br></br>
                         </div>
 

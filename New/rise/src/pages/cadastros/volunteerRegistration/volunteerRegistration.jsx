@@ -1,4 +1,4 @@
-import React , { useState }  from "react";
+import React, { useState } from "react";
 import styles from "./volunteerRegistration.module.css";
 import NavBar from "../../../components/navbar/navbarHorizontal/NavbarHorizontal";
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
@@ -10,52 +10,88 @@ import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import VLibras from "@djpfs/react-vlibras";
 import api from "../../../api";
 import { toast } from "react-toastify";
+import { validateText, validateCPF, validateEmail, validatePassword } from "../../../utils/globals";
 
-const validateCPF = (cpf) => {
-    const regex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-    return regex.test(cpf);
-};
+const handleNameBlur = (event) => {
+    if (!validateText(event.target.value)) {
+        toast.error('Nome inválido');
+    }
+}
 
-const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-};
+const handleCPFBlur = (event) => {
+    if (!validateCPF(event.target.value)) {
+        toast.error('CPF inválido');
+    }
+}
+
+const handleEmailBlur = (event) => {
+    if (!validateEmail(event.target.value)) {
+        toast.error('E-mail inválido');
+    }
+}
+
+const handlePasswordBlur = (event) => {
+    if (!validatePassword(event.target.value)) {
+        toast.error(<div>
+            Senha deve conter:<br />
+            - 1 caractere minúsculo<br />
+            - 1 caractere maiúsculo<br />
+            - 1 número<br />
+            - 1 caractere especial<br />
+            - pelo menos 6 caracteres
+        </div>);
+    }
+}
+
+const handleConfirmPasswordBlur = (event, firstPassword) => {
+    if (firstPassword !== event.target.value) {
+        toast.error('As senhas são diferentes');
+    }
+}
 
 const VolunteerRegistration = () => {
 
     const [nome, setNome] = useState("")
     const [cpf, setCpf] = useState("")
-    const [email, setEmail] = useState ("")
-    const [senha, setSenha] = useState ("")
-    const [confirmarSenha, setConfirmarSenha] = useState ("")
+    const [email, setEmail] = useState("")
+    const [senha, setSenha] = useState("")
+    const [confirmarSenha, setConfirmarSenha] = useState("")
 
-    const handleInputChange = (event, setStateFunction) => {
-        setStateFunction(event.target.value);
+    const handleInputChange = (value, setStateFunction) => {
+        setStateFunction(value);
     }
 
     const handleSave = () => {
-        
-        if (senha != confirmarSenha) {
-            toast.error("As senhas digitadas não estão compatíveis.");
-            return
-        }
 
-        const invalidEmail = !validateEmail(email);
-        const invalidCPF = !validateCPF(cpf);
-
-        if (invalidEmail && invalidCPF) {
-            toast.error("Dados inválidos.");
-            return;
-        }
-
-
-        if (!validateEmail(email)) {
-            toast.error("Email inválido.");
+        if (!validateText(nome)) {
+            toast.error('Nome inválido');
             return;
         }
 
         if (!validateCPF(cpf)) {
-            toast.error("CPF inválido.");
+            toast.error('CPF inválido');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            toast.error('E-mail inválido');
+            return;
+        }
+
+        if (!validatePassword(senha)) {
+            toast.error(<div>
+                Senha deve conter:<br />
+                - 1 caractere minúsculo<br />
+                - 1 caractere maiúsculo<br />
+                - 1 número<br />
+                - 1 caractere especial<br />
+                - pelo menos 6 caracteres
+            </div>);
+            return;
+        }
+
+        if (senha !== confirmarSenha) {
+            toast.error('As senhas são diferentes');
             return;
         }
 
@@ -64,18 +100,19 @@ const VolunteerRegistration = () => {
             email,
             password: senha,
             cpf
-         
+
         };
         console.log(objetoAdicionado)
 
         api.post('/user/auth/register', objetoAdicionado
-            
+
         ).then(() => {
-            toast.success("Novo Card criado com sucesso!");
+            toast.success("Novo usuário criado com sucesso!");
             sessionStorage.setItem("voluntier",
                 JSON.stringify(objetoAdicionado));
             //navigate("/")
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err);
             toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");
         })
     }
@@ -100,14 +137,14 @@ const VolunteerRegistration = () => {
                         </div>
 
                         <div className={`${styles["container-inputs-form"]}`}>
-                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e, setNome)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e, setCpf)} mask="999.999.999-99"/>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)} />
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password"/>
-                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e, setConfirmarSenha)} type="password"/>
+                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleNameBlur(e)} />
+                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0,14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)} />
+                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)} />
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e.target.value, setSenha)} type="password" onBlur={(e) => handlePasswordBlur(e)} />
+                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} type="password" onBlur={(e) => handleConfirmPasswordBlur(e, senha)} />
                         </div>
 
-                        <BlueButton txt={"Cadastrar"} onclick={handleSave}/>
+                        <BlueButton txt={"Cadastrar"} onclick={handleSave} />
 
                     </div>
                 </div>

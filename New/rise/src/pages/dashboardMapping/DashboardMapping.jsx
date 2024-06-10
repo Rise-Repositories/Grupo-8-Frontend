@@ -3,7 +3,7 @@ import styles from "./DashboardMapping.module.css";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import api from "../../api";
 import Heatmap from "../../components/heatmap/Heatmap";
-import formatDate from "../../utils/globals";
+import { formatDate } from "../../utils/globals";
 import { AuthContext } from "../login/AuthContext";
 
 
