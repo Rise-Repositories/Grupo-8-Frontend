@@ -65,9 +65,9 @@ const Dashboard = () => {
                 qtyServed: responseKpis.data.qtyServed,
                 qtyNotServed: responseKpis.data.qtyNotServed,
                 qtyNoPeople: responseKpis.data.qtyNoPeople,
-                qtyServedPercent: (responseKpis.data.qtyServed / responseKpis.data.qtyTotal),
-                qtyNotServedPercent: (responseKpis.data.qtyNotServed  / responseKpis.data.qtyTotal),
-                qtyNoPeoplePercent: (responseKpis.data.qtyNoPeople / responseKpis.data.qtyTotal)
+                qtyServedPercent: (responseKpis.data.qtyServed / responseKpis.data.qtyTotal) * 100,
+                qtyNotServedPercent: (responseKpis.data.qtyNotServed  / responseKpis.data.qtyTotal) * 100,
+                qtyNoPeoplePercent: (responseKpis.data.qtyNoPeople / responseKpis.data.qtyTotal) * 100
             });
         } catch (error) {
             console.error('Erro ao buscar dados', error);
