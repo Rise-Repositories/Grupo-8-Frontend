@@ -8,6 +8,10 @@ body {
 .sidebar {
     height: 100vh;
     background-color: #2968C8;
+    z-index: 99;
+    -webkit-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    -moz-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.43);
 }
 
 .upPart {
@@ -27,7 +31,7 @@ body {
 
     display: flex;
     flex-direction: column;
-    
+
     justify-content: space-between;
     height: 100%;
 }
@@ -60,12 +64,13 @@ body {
     color: #FFFD32;
     gap: 15px;
 }
+
 .logos img {
     height: 30px;
     width: 30px;
 }
 
-.links svg{
+.links svg {
     color: #fff;
     width: 25px;
     height: 25px;
