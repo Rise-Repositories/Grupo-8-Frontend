@@ -10,6 +10,7 @@ import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-toastify";
 import api from "../../../api";
 import { validateText, validateCPF, validateEmail, validatePassword, validateCNPJ, validateCEP } from "../../../utils/globals";
+import { useNavigate } from "react-router-dom";
 
 const handleTextBlur = (event, message) => {
     if(!validateText(event.target.value)) {
@@ -61,6 +62,7 @@ const handleCEPBlur = (event) => {
 }
 
 const InstituteRegistration = () => {
+    const navigate = useNavigate();
     const [secondFormVisible, setSecondFormVisible] = useState(false);
 
     const [razaoSocial, setRazaoSocial] = useState("");
@@ -134,9 +136,9 @@ const InstituteRegistration = () => {
         console.log(objetoAdicionado)
         api.post('/ong/auth', objetoAdicionado)
         .then(() => {
-            toast.success("Novo Card criado com sucesso!");
+            toast.success("Nova ONG cadastrada com sucesso!");
             sessionStorage.setItem("institute", JSON.stringify(objetoAdicionado));
-            // navigate("/")
+            navigate("/");
         })
         .catch((error) => {
             if (error.response) {

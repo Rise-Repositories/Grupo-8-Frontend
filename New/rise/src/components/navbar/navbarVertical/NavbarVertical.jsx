@@ -26,7 +26,7 @@ const NavbarVertical = () => {
                         </h3>
 
                         <div className={styles.instituteName}>
-                            A Corrente do Bem
+                            {sessionStorage.getItem("CUR_ONG")}
                         </div>
                     </div>
 

@@ -10,6 +10,7 @@ import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import api from "../../../api";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validatePassword } from "../../../utils/globals";
+import { useNavigate } from "react-router-dom";
 
 const handleNameBlur = (event) => {
     if (!validateText(event.target.value)) {
@@ -49,6 +50,7 @@ const handleConfirmPasswordBlur = (event, firstPassword) => {
 }
 
 const VolunteerRegistration = () => {
+    const navigate = useNavigate();
 
     const [nome, setNome] = useState("")
     const [cpf, setCpf] = useState("")
@@ -106,10 +108,10 @@ const VolunteerRegistration = () => {
         api.post('/user/auth/register', objetoAdicionado
 
         ).then(() => {
-            toast.success("Novo usuário criado com sucesso!");
+            toast.success("Novo usuário cadastrado com sucesso!");
             sessionStorage.setItem("voluntier",
                 JSON.stringify(objetoAdicionado));
-            //navigate("/")
+            navigate("/");
         }).catch((err) => {
             console.log(err);
             toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");

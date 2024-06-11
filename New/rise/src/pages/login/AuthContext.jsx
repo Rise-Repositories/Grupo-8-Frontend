@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import api from '../../api';
 
 export const AuthContext = createContext();
 
@@ -13,9 +13,14 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (token) => {
+    const login = async (token) => {
         setAuthToken(token);
         sessionStorage.setItem('USER_TOKEN', token);
+        const Authorization = 'Bearer ' + token;
+        await api.get('/user/account', {headers: { Authorization }})
+            .then(res => {
+                sessionStorage.setItem("CUR_ONG", res.data.voluntary[0].ong.name);
+            });
     };
 
     const logout = () => {
