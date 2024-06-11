@@ -37,8 +37,9 @@ body {
 }
 
 .instituteName {
-    font-size: 24px;
+    font-size: 20px;
     color: #fff;
+    font-weight: 600;
 }
 
 .menuElements {
