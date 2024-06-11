@@ -3,6 +3,7 @@ import styles from "./InstituteRegistration.module.css";
 import NavBar from "../../../components/navbar/navbarHorizontal/NavbarHorizontal";
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from "../../../components/buttons/blueButton/BlueButton";
+import WhiteButton from "../../../components/buttons/whiteButton/WhiteButton";
 import backgroundImage from "../../../utils/imgs/maos-dadas.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
@@ -62,17 +63,16 @@ const handleCEPBlur = (event) => {
 const InstituteRegistration = () => {
     const [secondFormVisible, setSecondFormVisible] = useState(false);
 
-    const [razaoSocial, setRazaoSocial] = useState("")
-    const [cnpj, setCnpj] = useState("")
-    const [cep, setCep] = useState("")
-    const [numeroEstabelecimento, setNumeroEstabelecimento] = useState("")
-    const [nome, setNome] = useState("")
-    const [cpf, setCpf] = useState("")
-    const [endereco, setEndereco] = useState("")
-    const [email, setEmail] = useState("")
-    const [senha, setSenha] = useState("")
-    const [confirmarSenha, setConfirmarSenha] = useState("")
-
+    const [razaoSocial, setRazaoSocial] = useState("");
+    const [cnpj, setCnpj] = useState("");
+    const [cep, setCep] = useState("");
+    const [numeroEstabelecimento, setNumeroEstabelecimento] = useState("");
+    const [nome, setNome] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [endereco, setEndereco] = useState("");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [confirmarSenha, setConfirmarSenha] = useState("");
 
     const handleInputChange = (value, setStateFunction) => {
         setStateFunction(value);
@@ -148,7 +148,7 @@ const InstituteRegistration = () => {
                 toast.error("Erro ao se conectar com o servidor, por favor, tente novamente.");
             }
         });
-}
+    }
 
     const showSecondForm = () => {
 
@@ -168,6 +168,11 @@ const InstituteRegistration = () => {
         }
 
         setSecondFormVisible(true);
+    };
+
+    const voltarForm = () => {
+        console.log('aaaaaaaaaaa');
+        setSecondFormVisible(false);
     };
 
     return (
@@ -195,7 +200,6 @@ const InstituteRegistration = () => {
                             <br />
                         </div>
 
-
                         <div className={`${styles['container-inputs-form']}`} style={{ display: secondFormVisible ? 'block' : 'none' }}>
                             <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleTextBlur(e, 'Nome inválido')}/>
                             <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)}/>
@@ -203,8 +207,12 @@ const InstituteRegistration = () => {
                             <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} type="email" onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)}/>
                             <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setSenha)} onBlur={(e) => handlePasswordBlur(e)}/>
                             <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} onBlur={(e) => handleConfirmPasswordBlur(e, senha)}/>
-                            <br></br>
+                            <br />
                         </div>
+
+                        {secondFormVisible && (
+                            <WhiteButton txt="Voltar" onclick={voltarForm} />
+                        )}
 
                         <BlueButton 
                             txt={secondFormVisible ? "Cadastrar" : "Continuar"}
