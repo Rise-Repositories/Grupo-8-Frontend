@@ -54,7 +54,7 @@ const Dashboard = () => {
             const [responseAccountData, responseKpis, responseGraphData] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
                 api.get('/data/kpi', { params, headers }),
-                api.get('/data/mapping/graph?date=2021-01-01', { headers })
+                api.get('/data/mapping/graph?date=2024-07-01', { headers })
             ]);
 
             setAccountData({
