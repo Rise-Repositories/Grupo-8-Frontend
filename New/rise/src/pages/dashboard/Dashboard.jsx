@@ -58,10 +58,10 @@ const Dashboard = () => {
             ]);
 
             setAccountData({
-                zero: responseAccountData.data.zero * 100,
-                oneOrTwo: responseAccountData.data.oneOrTwo * 100,
-                threeOrFour: responseAccountData.data.threeOrFour * 100,
-                fiveOrMore: responseAccountData.data.fiveOrMore * 100
+                zero: (responseAccountData.data.zero * 100).toFixed(2),
+                oneOrTwo: (responseAccountData.data.oneOrTwo * 100).toFixed(2),
+                threeOrFour: (responseAccountData.data.threeOrFour * 100).toFixed(2),
+                fiveOrMore: (responseAccountData.data.fiveOrMore * 100).toFixed(2)
             });
 
             setKpis({
@@ -69,9 +69,9 @@ const Dashboard = () => {
                 qtyServed: responseKpis.data.qtyServed,
                 qtyNotServed: responseKpis.data.qtyNotServed,
                 qtyNoPeople: responseKpis.data.qtyNoPeople,
-                qtyServedPercent: (responseKpis.data.qtyServed / responseKpis.data.qtyTotal) * 100,
-                qtyNotServedPercent: (responseKpis.data.qtyNotServed  / responseKpis.data.qtyTotal) * 100,
-                qtyNoPeoplePercent: (responseKpis.data.qtyNoPeople / responseKpis.data.qtyTotal) * 100
+                qtyServedPercent: ((responseKpis.data.qtyServed / responseKpis.data.qtyTotal) * 100).toFixed(2),
+                qtyNotServedPercent: ((responseKpis.data.qtyNotServed  / responseKpis.data.qtyTotal) * 100).toFixed(2),
+                qtyNoPeoplePercent: ((responseKpis.data.qtyNoPeople / responseKpis.data.qtyTotal) * 100).toFixed(2)
             });
 
 
@@ -205,7 +205,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className={`col-md-12 ${styles["default-box"]}`}>
-                            <div className={styles["date-filter"]}>
+                            {/* <div className={styles["date-filter"]}>
                                 <label htmlFor="afterDate">After Date:</label>
                                 <input
                                     type="date"
@@ -214,10 +214,11 @@ const Dashboard = () => {
                                     value={afterDate}
                                     onChange={handleDateChange}
                                 />
-                            </div>
+                            </div> */}
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
-                                    <a>Análise das métricas do mês de {afterDate}</a>
+                                    {/* <a>Análise das métricas do mês de {afterDate}</a> */}
+                                    <a>Análise das métricas totais</a>
                                 </div>
                             </div>
                             <div className={styles["flexRow"]}>
