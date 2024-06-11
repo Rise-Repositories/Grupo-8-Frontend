@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
@@ -15,7 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 
-import Stack from "../../utils/stack"
+import Chart from "chart.js/auto";
+import { Line } from "react-chartjs-2";
 
 
 const Dashboard = () => {
@@ -37,6 +38,8 @@ const Dashboard = () => {
         qtyNoPeople: 0
     });
 
+    const [graphData, setGraphData] = useState([]);
+
     const [afterDate, setAfterDate] = useState("");
 
     const fetchData = async (date = "") => {
@@ -45,9 +48,10 @@ const Dashboard = () => {
 
             const params = date ? { afterDate: date } : {};
 
-            const [responseAccountData, responseKpis] = await Promise.all([
+            const [responseAccountData, responseKpis, responseGraphData] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
-                api.get('/data/kpi', { params, headers })
+                api.get('/data/kpi', { params, headers }),
+                api.get('/data/mapping/graph?date=2021-01-01', { headers })
             ]);
 
             setAccountData({
@@ -63,6 +67,12 @@ const Dashboard = () => {
                 qtyNotServed: responseKpis.data.qtyNotServed,
                 qtyNoPeople: responseKpis.data.qtyNoPeople
             });
+
+
+            setGraphData(responseGraphData.data)
+            console.log(responseGraphData.data);
+
+
         } catch (error) {
             console.error('Erro ao buscar dados', error);
         }
@@ -85,6 +95,30 @@ const Dashboard = () => {
             'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
         ];
         return monthNames[parseInt(monthNumber, 10) - 1];
+    };
+
+    const data = {
+        labels: graphData.map((data) => getMonthName(data.month)),
+        datasets: [
+            {
+                label: "Sem Pessoas",
+                backgroundColor: "#A700FF",
+                borderColor: "#A700FF",
+                data: graphData.map((data) => data.no_People),
+            },
+            {
+                label: "Não Atendidos",
+                backgroundColor: "#EF4444",
+                borderColor: "#EF4444",
+                data: graphData.map((data) => data.no_Served),
+            },
+            {
+                label: "Atendidos",
+                backgroundColor: "#3CD856",
+                borderColor: "#3CD856",
+                data: graphData.map((data) => data.served),
+            }
+        ],
     };
 
     return (
@@ -113,6 +147,27 @@ const Dashboard = () => {
                                         <a>Gráfico mês a mês</a>
                                     </div>
                                 </div>
+                                <Line
+                                    className={styles}
+                                    data={data}
+                                    options={{
+                                        responsive: true,
+                                        elements: {
+                                            line: {
+                                                tension : 0.5
+                                            },
+                                            point: {
+                                                radius: 2
+                                            },
+                                        },
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: "bottom",
+                                            }
+                                        }
+                                    }}
+                                />
                             </div>
                             <div className={`col-md-4 ${styles["default-box"]}`}>
                                 <table className={styles.table}>
