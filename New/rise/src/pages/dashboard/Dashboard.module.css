@@ -21,6 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: scroll;
 }
 
 .container {
@@ -124,6 +125,10 @@
     background-color: #497BC6;
     padding: 20px;
     color: #FFFF;
+}
+
+.valueKpiPercent{
+    font-size: 13px;
 }
 
 .iconKPI{

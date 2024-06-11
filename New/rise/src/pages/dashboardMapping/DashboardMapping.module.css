@@ -27,6 +27,11 @@
         }
     }
 
+    .tableHeightScroll{
+        height: 60vh;
+        overflow: scroll;
+    }
+
     .dash-data {
         display: flex;
         flex-direction: column;
@@ -48,7 +53,7 @@
 
             .map {
                 border-radius: 16px;
-                height: 50vh;
+                height: 60vh;
             }
         }
 
