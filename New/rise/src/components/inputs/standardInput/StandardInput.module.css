@@ -4,6 +4,8 @@
     border: solid 1px #2968C8;
     background: transparent;
     padding-left: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 input::-webkit-outer-spin-button,
