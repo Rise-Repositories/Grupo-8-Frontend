@@ -7,6 +7,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import InstituteList from "./pages/instituteList/InstituteList";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
+import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
 
 
 function Rotas() {
@@ -16,6 +17,7 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
+                <Route path="/action-history" element={<History />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <Dashboard />
