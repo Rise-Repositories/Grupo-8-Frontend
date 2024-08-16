@@ -228,14 +228,22 @@ const InstituteRegistration = () => {
                             <LabelInput placeholder={"Digite a razão social"} label={"Razão social"} onInput={(e) => handleInputChange(e.target.value, setRazaoSocial)} onBlur={(e) => handleTextBlur(e, 'Razão Social inválida')}/>
                             <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e.target.value.substring(0, 18), setCnpj)} mask="99.999.999/9999-99" onBlur={(e) => handleCNPJBlur(e)}/>
                             <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e)}}/>
-                            <div className={'row'}>
-                                <LabelInput placeholder={cidade} label={"Cidade"} className={'col-md-8'} disabled={true}/>
-                                <LabelInput placeholder={estado} label={"Estado"} className={'col-md-4'} disabled={true}/>
+                            <div className='row'>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={cidade} label={"Cidade"} disabled={true}/>
+                                </div>
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={estado} label={"Estado"} disabled={true}/>
+                                </div>
                             </div>
-                            <LabelInput placeholder={logradouro} label={"Logradouro"} className={'col-md-12'} disabled={true}/>
+                            <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true}/>
                             <div className={'row'}>
-                                <LabelInput placeholder={"000"} label={"Número"} className={'col-md-4'} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/>
-                                <LabelInput placeholder={"Apto 00"} label={"Complemento"} className={'col-md-8'} />
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/>
+                                </div>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={"Apto 00"} label={"Complemento"} />
+                                </div>
                             </div>
                             {/* <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/> */}
                             <br />
