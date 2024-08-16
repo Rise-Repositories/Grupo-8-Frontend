@@ -85,6 +85,11 @@ const Home = () => {
 
                 const {address} = data[0]
 
+                if(address.country !== "Brasil"){
+                    toast.error("Localização fora do Brasil")
+                    return
+                }
+
                 if(status !== 200){
                     toast.error("Erro ao buscar endereco")
                     return
@@ -153,15 +158,13 @@ const Home = () => {
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
                         {
-                            markers.map((m, index) => {
-                                console.log(m)
-                                return (
+                            markers.map((m, index) => (
                                 <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
                                     <Popup className={styles["popup"]}>
                                         <PinInfosModal pin={m}/>
                                     </Popup>
                                 </Marker>
-                            )})
+                            ))
                         }
                     </MapContainer>
                 : null
