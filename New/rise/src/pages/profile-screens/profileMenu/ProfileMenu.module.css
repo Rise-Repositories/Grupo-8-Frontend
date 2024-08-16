@@ -1,0 +1,56 @@
+.container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    color: #0d1b76; /* Cor azul escuro */
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    color: #0d1b76; /* Cor azul escuro */
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .header h2 {
+    margin: 0;
+    margin-left: 8px;
+    color: #0d1b76; /* Cor azul escuro */
+  }
+  
+  .profile-info {
+    margin-bottom: 20px;
+  }
+  
+  .profile-info p {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .profile-link {
+    display: block;
+    color: #0d1b76; /* Cor azul escuro */
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  
+  .profile-link:hover {
+    text-decoration: underline;
+  }
+  
+  .subheader {
+    color: #0d1b76; /* Cor azul escuro */
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
