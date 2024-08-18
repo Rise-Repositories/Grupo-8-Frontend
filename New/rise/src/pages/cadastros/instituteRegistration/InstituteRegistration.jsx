@@ -230,12 +230,12 @@ const InstituteRegistration = () => {
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                 </div>
 
-                <div className={`${styles["right-form"]}`}>
+                <div className={`${styles["right-form"]} col-12 col-md-6`}>
                     <div className={`${styles["form"]}`}>
                         <div>
                             <div className={`${styles["form-presentation"]}`}>
                                 <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>{secondFormVisible ? "Informe os dados do representante do instituto" : "Cadastro de Instituto"}</label>
+                                <label>{secondFormVisible ? "Cadastro do Representante" : "Cadastro de Instituto"}</label>
                             </div>
                             <label className={`${styles["standard-text"]}`}>{secondFormVisible ? "Informe os dados do representante do instituto" : "Informe os dados da sua intituição"}</label>
                         </div>
