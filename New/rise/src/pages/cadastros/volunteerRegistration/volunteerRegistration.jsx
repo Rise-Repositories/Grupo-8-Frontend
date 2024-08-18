@@ -131,7 +131,7 @@ const VolunteerRegistration = () => {
                         <div>
                             <div className={`${styles["form-presentation"]}`}>
                                 <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>Cadastro de voluntário</label>
+                                <label>Cadastro de Usuário</label>
                             </div>
                             <label className={`${styles["standard-text"]}`}>Informe seus dados</label>
                         </div>
