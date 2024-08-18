@@ -27,7 +27,7 @@ const NavbarHorizontal = () => {
                         </li>
                         <li className="nav-item mx-2">
                             <Link to={"/volunteer-registration"} style={{ textDecoration: 'none' }}>
-                                <WhiteButton txt={"Cadastro de Voluntário"} />
+                                <WhiteButton txt={"Cadastro de Usuário"} />
                             </Link>
                         </li>
                         <li className="nav-item mx-2">
