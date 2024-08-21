@@ -1,15 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Offcanvas } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import SidebarButton from '../sidebarButton/sidebarButton';
 import styles from './Sidebar.module.css';
-
+import api from '../../../api';
 import { AuthContext } from '../../../pages/login/AuthContext';
 import riseLogo from '../../../utils/imgs/rise-logo.png';
 import logo from '../../../utils/imgs/logo.png';
+import { Select } from "antd";
+
 
 const Sidebar = () => {
     const [show, setShow] = useState(false);
+    const [ongs, setOngs] = useState([]);
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
 
@@ -19,6 +22,46 @@ const Sidebar = () => {
         navigate(path);
         setShow(false);
     };
+
+    useEffect(() => {
+        const fetchOngs = async () => {
+            try {
+                const token = sessionStorage.getItem('USER_TOKEN');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+                const response = await api.get('/user/account', { headers });
+                console.log("AAAAAA")
+                console.log(response)
+                const ongsList = response.data.voluntary.map(vol => vol.ong);
+                setOngs(ongsList);
+    
+                if (ongsList.length === 1) {
+                    sessionStorage.setItem('SELECTED_ONG_ID', ongsList[0].id);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar ONGs:", error);
+            }
+        };
+    
+        fetchOngs();
+    }, []);
+    
+    const handleSelectChange = (value) => {
+        sessionStorage.setItem('SELECTED_ONG_ID', value);
+    };
+    
+    const selectProps = ongs.length > 1 ? {
+        onChange: handleSelectChange,
+        options: ongs.map((ong) => ({
+            value: ong.id,
+            label: ong.name
+        }))
+    } : {
+        value: ongs.length === 1 ? ongs[0].name : undefined,
+        disabled: true
+    };
+
 
     return (
         <>
@@ -34,6 +77,15 @@ const Sidebar = () => {
                             </h3>
                             <div className={styles.instituteName}>
                                 {sessionStorage.getItem("CUR_ONG")}
+                            </div>
+                            <div>
+                                <Select
+                                    defaultValue={ongs.length === 1 ? ongs[0].name : "Selecione a ONG"}
+                                    style={{ width: 120 }}
+                                    {...selectProps}
+                                />
+
+
                             </div>
                         </div>
 
@@ -56,11 +108,11 @@ const Sidebar = () => {
                                 </a>
                                 <a className={styles.scrollLink}>Registro de Ação</a>
                             </li>
-                            <li className={styles.links}>
+                            <li className={styles.links} onClick={() => handleNavigate('/manage-volunteers')}>
                                 <a className={styles.scrollLink} href="#">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
                                 </a>
-                                <a className={styles.scrollLink}>Cadastrar voluntários</a>
+                                <a className={styles.scrollLink}>Gerenciar Voluintários</a>
                             </li>
                             <li className={styles.links} onClick={() => handleNavigate('/institute-list')}>
                                 <a className={styles.scrollLink}>
@@ -83,7 +135,7 @@ const Sidebar = () => {
                         </div>
                     </div>
                 </Offcanvas.Body>
-            </Offcanvas>
+            </Offcanvas >
         </>
     );
 };

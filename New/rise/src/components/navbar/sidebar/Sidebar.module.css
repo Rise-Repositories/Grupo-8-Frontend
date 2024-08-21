@@ -1,16 +1,16 @@
 .container {
-    
+
     position: relative;
     z-index: 1050;
-  }
-  
-  .offcanvas-backdrop {
+}
+
+.offcanvas-backdrop {
     z-index: 1040;
-  }
-  
+}
 
 
-  body {
+
+body {
     height: 100vh;
     font-family: "Montserrat";
 }
@@ -25,9 +25,9 @@
 
 .fixed-button {
     position: fixed;
-    top: 10px; 
-    right: 10px;  
-    z-index: 1000; 
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
 }
 
 .upPart {
