@@ -31,8 +31,6 @@ const Sidebar = () => {
                     'Authorization': `Bearer ${token}`
                 };
                 const response = await api.get('/user/account', { headers });
-                console.log("AAAAAA")
-                console.log(response)
                 const ongsList = response.data.voluntary.map(vol => vol.ong);
                 setOngs(ongsList);
     
