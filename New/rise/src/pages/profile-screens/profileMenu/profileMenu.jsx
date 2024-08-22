@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ProfileMenu.module.css';
+import CardLocate from '../../../components/cards/cardLocate/CardLocate';
 
 
 
@@ -19,14 +20,16 @@ const UserProfile = () => {
 
       <h2>Localizações Cadastradas:</h2>
 
-      <div className={styles["location-card"]}>
+      <CardLocate></CardLocate>
+
+      {/* <div className={styles["location-card"]}>
         <div className={styles["map-preview"]}></div>
         <div className={styles["info"]}>
           <p>R. Eduardo Prado, 28</p>
           <p className={styles["date"]}>18/20/2024</p>
-          {/* <button className={styles["actions-button"]}>Ver ações</button> */}
+          <button className={styles["actions-button"]}>Ver ações</button>
         </div>
-      </div>
+      </div> */}
 
     </div>
   );
