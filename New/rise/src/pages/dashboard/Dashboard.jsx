@@ -149,7 +149,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className={styles["flexRow"]}>
-                            <div className={`col-md-7 ${styles["default-box"]}`}>
+                            <div className={`col-12 col-md-7 ${styles["default-box"]}`}>
                                 <div className={styles["top-info"]}>
                                     <div className={styles["page-name"]}>
                                         <a>Gráfico mês a mês</a>
@@ -177,7 +177,7 @@ const Dashboard = () => {
                                     }}
                                 />
                             </div>
-                            <div className={`col-md-4 ${styles["default-box"]}`}>
+                            <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
                                 <table className={styles.table}>
                                     <thead>
                                         <tr className={styles["default-list-line"]}>
@@ -206,7 +206,7 @@ const Dashboard = () => {
                                 </table>
                             </div>
                         </div>
-                        <div className={`col-md-12 ${styles["default-box"]}`}>
+                        <div className={`col-12 ${styles["default-box"]}`}>
                             {/* <div className={styles["date-filter"]}>
                                 <label htmlFor="afterDate">After Date:</label>
                                 <input
@@ -224,35 +224,42 @@ const Dashboard = () => {
                                 </div>
                             </div>
                             <div className={styles["flexRow"]}>
-                                <div className={`col-md-2 ${styles["standardKPI"]}`}>
+                                <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#2968c8" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyTotal}</div>
-                                    <div className="titleKPI">Total de locais cadastrados</div>
+                                    <div>
+                                        <div className="valueKPI">{kpis.qtyTotal}</div>
+                                        <div className="titleKPI">Total de locais cadastrados</div>
+                                    </div>
                                 </div>
-                                <div className={`col-md-2 ${styles["standardKPIDark"]}`}>
+                                <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyServedPercent}%)</span></div>
-                                    <div className="titleKPI">Total de locais atendidos</div>
+                                    <div>
+                                        <div className="valueKPI">{kpis.qtyServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyServedPercent}%)</span></div>
+                                        <div className="titleKPI">Total de locais atendidos</div>
+                                    </div>
                                 </div>
-                                <div className={`col-md-2 ${styles["standardKPI"]}`}>
+                                <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#2968c8" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyNotServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyNotServedPercent}%)</span></div>
-                                    <div className="titleKPI">Total de locais não atendidos</div>
+                                    <div>
+                                        <div className="valueKPI">{kpis.qtyNotServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyNotServedPercent}%)</span></div>
+                                        <div className="titleKPI">Total de locais não atendidos</div>
+                                    </div>
                                 </div>
-                                <div className={`col-md-2 ${styles["standardKPIDark"]}`}>
+                                <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
-
                                     </div>
-                                    <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
-                                    <div className="titleKPI">Não havia pessoas no local</div>
-                                </div>
+                                    <div>
+                                        <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
+                                        <div className="titleKPI">Não havia pessoas no local</div>
+                                    </div>
+                                </div>  
                             </div>
 
                             {/* <div className={styles["flexRow"]}>

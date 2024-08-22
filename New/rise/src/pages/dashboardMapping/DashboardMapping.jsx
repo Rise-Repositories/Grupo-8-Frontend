@@ -65,7 +65,7 @@ const DashboardMapping = () => {
                                     <Heatmap />
                                 </div>
 
-                                <div className={`col12 col-md-7 ps-md-4 ${styles['tableHeightScroll']}`}>
+                                <div className={`col-12 col-md-7 mt-3 mt-md-0 ps-md-4 ${styles['tableHeightScroll']}`}>
                                     <table className="table">
                                         <thead>
                                             <tr>
