@@ -16,8 +16,10 @@ const ManageVolunteers = () => {
 
     const [volunteers, setVolunteers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAssociateModalOpen, setIsAssociateModalOpen] = useState(false);
     const [selectedVolunteer, setSelectedVolunteer] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState('');
+    const [newVolunteerEmail, setNewVolunteerEmail] = useState('');
     const [actionStack] = useState(new Stack(100));
 
     useEffect(() => {
@@ -59,6 +61,21 @@ const ManageVolunteers = () => {
         setIsModalOpen(false);
         setSelectedVolunteer(null);
         setSelectedStatus('');
+    };
+
+    const openAssociateModal = () => {
+        setIsAssociateModalOpen(true);
+    };
+
+    const closeAssociateModal = () => {
+        setIsAssociateModalOpen(false);
+        setNewVolunteerEmail('');
+    };
+
+    const handleContinue = () => {
+        console.log("Email do novo voluntário:", newVolunteerEmail);
+        // Lógica para associar o novo voluntário pode ser adicionada aqui
+        closeAssociateModal();
     };
 
     const columns = [
@@ -103,7 +120,7 @@ const ManageVolunteers = () => {
     }));
 
     return (
-        <>
+        <><Col className={styles["custom-font"]}>
             <Col>
                 <Sidebar />
                 <Col className={styles.content}>
@@ -125,7 +142,7 @@ const ManageVolunteers = () => {
                                 <div className={styles["page-name"]}>
                                     <a>Voluntários associados</a>
                                 </div>
-                                <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} />
+                                <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} onclick={openAssociateModal} />
                             </div>
 
                             <div className={styles["table-container"]}>
@@ -158,6 +175,26 @@ const ManageVolunteers = () => {
 
                 </Descriptions>
             </Modal>
+
+            <Modal
+                title="Associar Novo Voluntário"
+                open={isAssociateModalOpen}
+                onCancel={closeAssociateModal}
+                okText={"Continuar"}
+                cancelText={"Voltar"}
+                centered
+
+            >
+                <div className={styles["modal-email"]}>
+                    <a>Informe o e-mail do funcionário a ser associado.</a>
+                    <StandardInput
+                        placeholder="Digite o e-mail do novo voluntário"
+                        value={newVolunteerEmail}
+                        onChange={(e) => setNewVolunteerEmail(e.target.value)}
+                    />
+                </div>
+            </Modal>
+        </Col>
         </>
     );
 };
