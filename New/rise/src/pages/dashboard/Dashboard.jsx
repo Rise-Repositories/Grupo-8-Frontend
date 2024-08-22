@@ -131,7 +131,6 @@ const Dashboard = () => {
     return (
         <>
             <div className={styles.page}>
-                <Sidebar />
                 <div className={`col-md-12 ${styles["content"]}`}>
 
                     <div className={styles.container}>

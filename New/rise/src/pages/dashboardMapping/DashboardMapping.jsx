@@ -9,6 +9,7 @@ import { AuthContext } from "../login/AuthContext";
 
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useOutletContext } from "react-router-dom";
 
 
 const DashboardMapping = () => {
@@ -18,6 +19,8 @@ const DashboardMapping = () => {
 
     const [dataFiltro, setDataFiltro] = useState('2024-05-05');
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
+
+    const [ongId] = useOutletContext();
 
     useEffect(() => {
         let defaultDate = new Date();
@@ -37,7 +40,6 @@ const DashboardMapping = () => {
     return (
         <>
             <div className={styles.page}>
-                <NavbarVertical />
                 <div className={`col-md-10 ${styles["content"]}`}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
