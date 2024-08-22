@@ -8,7 +8,7 @@ import InstituteList from "./pages/instituteList/InstituteList";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
 import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
-import UserProfile from "./pages/profile-screens/profileMenu/profileMenu";
+import UserProfile from "./pages/profile-screens/profileMenu/ProfileMenu";
 
 
 function Rotas() {
