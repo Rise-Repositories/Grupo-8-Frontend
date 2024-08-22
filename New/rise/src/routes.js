@@ -9,6 +9,7 @@ import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
 import ManageVolunteers from "./pages/manageVolunteers/ManageVolunteers";
 
+import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
 
 function Rotas() {
     return (
@@ -19,16 +20,14 @@ function Rotas() {
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
-                        <Dashboard />
+                        <DashboardWrapper />
                     </PrivateRoute>
-                } />
-                <Route path="/dashboard-mapping" element={
-                    <PrivateRoute>
-                        <DashboardMapping />
-                    </PrivateRoute>
-                } />
-                <Route path="/institute-list" element={<InstituteList />} />
-                <Route path="/manage-volunteers" element={<ManageVolunteers />} />
+                } >
+                    <Route path="main" element={<Dashboard />} />
+                    <Route path="mapping" element={<DashboardMapping />} />
+                    <Route path="institute-list" element={<InstituteList />} />
+                    <Route path="manage-volunteers" element={<ManageVolunteers />} />
+                </Route>
             </Routes>
         </BrowserRouter>
     );
