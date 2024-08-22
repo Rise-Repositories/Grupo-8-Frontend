@@ -1,10 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './ProfileMenu.module.css';
 import CardLocate from '../../../components/cards/cardLocate/CardLocate';
+import api from '../../../api';
 
 
 
 const UserProfile = () => {
+    const [userMappings, setUserMappings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+    // Obtenção do token do usuário do sessionStorage
+    const userToken = sessionStorage.getItem('USER_TOKEN');
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          const headers = {
+              'Authorization': `Bearer ${userToken}`
+          }
+          const response = await api.get('/user/account', {headers});
+  
+          const {data}  =  response;
+          console.log(data);
+          // Processamento dos dados de mapeamento e ações
+  
+          setUserMappings(data.mapping);
+          setLoading(false);
+        } catch (error) {
+          console.error(error);
+          setError('Erro ao carregar os dados.');
+          setLoading(false);
+        }
+      };
+  
+      if (userToken) {
+        fetchUserData();
+      }
+    }, [userToken]);
+  
+    if (loading) {
+      return <div>Carregando...</div>;
+    }
+  
+    if (error) {
+      return <div>{error}</div>;
+    }
+  
+
   return (
     <div className={styles["container"]}>
       <header>
@@ -18,9 +61,13 @@ const UserProfile = () => {
         <a href="#">Alterar Senha</a>
       </div> <br /><br /><br />
 
-      <h2>Localizações Cadastradas:</h2>
+      <h2>Localizações Cadastradas:</h2> <br /><br />
 
-      <CardLocate></CardLocate>
+
+      {userMappings.map((i) => 
+        <CardLocate address={i.address.street} date={i.date}></CardLocate>
+      )}
+
 
       {/* <div className={styles["location-card"]}>
         <div className={styles["map-preview"]}></div>
