@@ -1,45 +1,85 @@
-import React from "react";
-import styles from "../profileActionHistory/ProfileActionHistory.module.css"
 
-const rows = [
-    { date: '30/07/2023', institute: 'Instituto ACB', attendees: 3 },
-    { date: '15/08/2023', institute: 'Hamburgada do Bem', attendees: 2 },
-    { date: '01/09/2023', institute: 'Instituto ACB', attendees: 0 },
-    { date: '30/09/2023', institute: 'Instituto Heleninha', attendees: 3 },
-  ];
-  
-  function History() {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.header}>Histórico da Marcação</h1>
+import styles from "../profileActionHistory/ProfileActionHistory.module.css"
+import React, { useEffect, useState } from 'react';
+import api from "../../../api"
+
+const History = () => {
+  const [userMappings, setUserMappings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Obtenção do token do usuário do sessionStorage
+  const userToken = sessionStorage.getItem('USER_TOKEN');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const headers = {
+            'Authorization': `Bearer ${userToken}`
+        }
+        const response = await api.get('/user/account', {headers});
         
-        <div className={styles.mapContainer}>
-          <h2 className={styles.address}>R. Eduardo Prado, 28</h2>
-          {/* Mapa ou imagem do local */}
-        </div>
-  
-        <h2 className={styles.actionsHeader}>Ações realizadas:</h2>
-  
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Instituto</th>
-              <th>Qtde Atendidos</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.date}>
-                <td>{row.date}</td>
-                <td>{row.institute}</td>
-                <td>{row.attendees}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+        if (!response.ok) {
+          console.log(response)
+          throw new Error('Erro ao buscar dados do usuário.');
+        }
+
+        const data = await response.json();
+
+        // Processamento dos dados de mapeamento e ações
+        const mappings = data.mapping.flatMap(mapping => 
+          mapping.mappingActions.map(action => ({
+            date: action.action.datetimeEnd,
+            institute: action.action.ong.name,
+            qtyServed: action.qtyServedAdults + action.qtyServedChildren,
+          }))
+        );
+
+        setUserMappings(mappings);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setError('Erro ao carregar os dados.');
+        setLoading(false);
+      }
+    };
+
+    if (userToken) {
+      fetchUserData();
+    }
+  }, [userToken]);
+
+  if (loading) {
+    return <div>Carregando...</div>;
   }
-  
-  export default History;
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return (
+    <div>
+      <h2>Histórico da Marcação</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Instituto</th>
+            <th>Qtde Atendidos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userMappings.map((mapping, index) => (
+            <tr key={index}>
+              <td>{new Date(mapping.date).toLocaleDateString()}</td>
+              <td>{mapping.institute}</td>
+              <td>{mapping.qtyServed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default History;
