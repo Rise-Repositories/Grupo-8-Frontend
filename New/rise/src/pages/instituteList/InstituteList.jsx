@@ -95,7 +95,7 @@ const InstituteList = () => {
     return (
         <>
             <div className={styles.page}>
-                <div className={`col-md-10 ${styles["content"]}`}>
+                <div className={`${styles["content"]}`}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
