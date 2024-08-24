@@ -87,7 +87,7 @@ const Home = () => {
             mapRef.current.setView([e.lat, e.lon], 20);
         }
     }
-    const SetNewMarker = () => {
+    const EventHandler = () => {
         const map = useMapEvent({
             click: async () => {
                 const {lat, lng} = map.getCenter();
@@ -165,6 +165,7 @@ const Home = () => {
                         <FaSearch size={20} color={"#000"} />
                     </button>
                     <StandartInput customStyle={styles["search-input"]} placeholder={"Pesquisar"} onInput={(e) => setSearch(e.target.value)}/>
+                    <div clasname></div>
                 </div>
             </div>
             {
@@ -177,7 +178,7 @@ const Home = () => {
                         scrollWheelZoom={true}
                         className={styles.map}
                     >
-                        <SetNewMarker />
+                        <EventHandler />
                         <TileLayer
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
