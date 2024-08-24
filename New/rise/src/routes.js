@@ -18,7 +18,7 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
-                <Route path="/action-history" element={<History />} />
+                <Route path="/action-history/:mappingId" element={<History />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <Dashboard />

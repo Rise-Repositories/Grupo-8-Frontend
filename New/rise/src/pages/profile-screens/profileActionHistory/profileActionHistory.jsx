@@ -1,83 +1,90 @@
 
 import styles from "../profileActionHistory/ProfileActionHistory.module.css"
-import React, { useEffect, useState } from 'react';
 import api from "../../../api"
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 const History = () => {
-  const [userMappings, setUserMappings] = useState([]);
+  const { mappingId } = useParams();
+  const [mapping, setMapping] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Obtenção do token do usuário do sessionStorage
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchMapping = async () => {
       try {
-        const headers = {
-            'Authorization': `Bearer ${userToken}`
-        }
-        const response = await api.get('/user/account', {headers});
-        
-        if (!response.ok) {
-          console.log(response)
-          throw new Error('Erro ao buscar dados do usuário.');
+        const headers = { 'Authorization': `Bearer ${userToken}` };
+        const response = await api.get(`/user/account`, { headers });
+
+        if (response.status !== 200) {
+          throw new Error('Erro ao buscar os detalhes do mapeamento.');
         }
 
-        const data = await response.json();
-
-        // Processamento dos dados de mapeamento e ações
-        const mappings = data.mapping.flatMap(mapping => 
-          mapping.mappingActions.map(action => ({
-            date: action.action.datetimeEnd,
-            institute: action.action.ong.name,
-            qtyServed: action.qtyServedAdults + action.qtyServedChildren,
-          }))
-        );
-
-        setUserMappings(mappings);
-        setLoading(false);
+        const selectedMapping = response.data.mapping.find(m => m.id === parseInt(mappingId));
+        setMapping(selectedMapping);
       } catch (error) {
-        console.error(error);
-        setError('Erro ao carregar os dados.');
+        setError(error.message);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (userToken) {
-      fetchUserData();
-    }
-  }, [userToken]);
+    fetchMapping();
+  }, [mappingId, userToken]);
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>{error}</p>;
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const totalAttended = (adults, children) => adults + children;
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    // Adiciona horas para compensar o fuso horário se necessário
+    date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
+    return date.toLocaleDateString("pt-BR");
+  };
 
   return (
-    <div>
-      <h2>Histórico da Marcação</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Instituto</th>
-            <th>Qtde Atendidos</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userMappings.map((mapping, index) => (
-            <tr key={index}>
-              <td>{new Date(mapping.date).toLocaleDateString()}</td>
-              <td>{mapping.institute}</td>
-              <td>{mapping.qtyServed}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <button className={styles.backButton} onClick={() => window.history.back()}>{'<-'}</button>
+        <h2>Histórico da Marcação</h2>
+      </header>
+      
+      {mapping && (
+        <div className={styles.mappingDetails}>
+          <div className={styles.cardLocate}>
+            <img className={styles.mapImage} src="/path-to-map-image.png" alt="Mapa" />
+            <div className={styles.cardContent}>
+              <p className={styles.address}>{mapping.address.street}, {mapping.address.number}</p>
+              <p className={styles.date}>{formatDate(mapping.date)}</p>
+            </div>
+          </div>
+
+          <h2>Ações realizadas:</h2>
+
+          <table className={styles.actionsTable}>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Instituto</th>
+                <th>Qtde Atendidos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mapping.mappingActions.map(action => (
+                <tr key={action.id}>
+                  <td>{new Date(action.action.datetimeEnd).toLocaleDateString()}</td>
+                  <td>{action.action.ong.name}</td>
+                  <td>{totalAttended(action.qtyServedAdults, action.qtyServedChildren)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

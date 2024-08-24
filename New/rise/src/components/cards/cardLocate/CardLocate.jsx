@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './CardLocate.module.css';
 
-const CardLocate = ({ address, date, }) => {
+const CardLocate = ({ address, date, onClick }) => {
   return (
-      <div className={styles["location-card"]}>
+      <div className={styles["location-card"]} onClick={onClick}>
         <div 
           className={styles["map-preview"]}
         ></div>

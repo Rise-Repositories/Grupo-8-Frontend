@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './ProfileMenu.module.css';
 import CardLocate from '../../../components/cards/cardLocate/CardLocate';
 import api from '../../../api';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -9,7 +10,7 @@ const UserProfile = () => {
     const [userMappings, setUserMappings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-  
+    const navigate = useNavigate();
     // Obtenção do token do usuário do sessionStorage
     const userToken = sessionStorage.getItem('USER_TOKEN');
   
@@ -47,6 +48,10 @@ const UserProfile = () => {
       return <div>{error}</div>;
     }
   
+    const handleViewAction = (mappingId) => {
+      console.log("entrou")
+      navigate(`/action-history/${mappingId}`);
+    };
 
   return (
     <div className={styles["container"]}>
@@ -65,7 +70,8 @@ const UserProfile = () => {
 
 
       {userMappings.map((i) => 
-        <CardLocate address={i.address.street} date={i.date}></CardLocate>
+        <CardLocate address={i.address.street} date={i.date}  onClick={() => handleViewAction(i.id)}></CardLocate>
+        
       )}
 
 
