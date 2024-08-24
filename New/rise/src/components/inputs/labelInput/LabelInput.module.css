@@ -3,3 +3,7 @@
     flex-direction: column;
     font-size: 16px;
 }
+
+.label-input label {
+    margin-bottom: 2px;
+}
