@@ -1,0 +1,99 @@
+.container {
+    
+    position: relative;
+    z-index: 1050;
+  }
+  
+  .offcanvas-backdrop {
+    z-index: 1040;
+  }
+  
+
+
+  body {
+    height: 100vh;
+    font-family: "Montserrat";
+}
+
+.sidebar {
+    background-color: #2968C8;
+    z-index: 99;
+    -webkit-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    -moz-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.43);
+}
+
+.fixed-button {
+    position: fixed;
+    top: 10px; 
+    right: 10px;  
+    z-index: 1000; 
+}
+
+.upPart {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.instituteName {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.menuElements {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    padding: 0 !important;
+
+    gap: 20px;
+}
+
+.menuElements a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+
+}
+
+.logos {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    color: #FFFD32;
+    gap: 15px;
+}
+
+.logos img {
+    height: 30px;
+    width: 30px;
+}
+
+.links svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    color: #fff;
+
+    gap: 10%;
+    list-style: none;
+    cursor: pointer;
+}
+
+.content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-around;
+}

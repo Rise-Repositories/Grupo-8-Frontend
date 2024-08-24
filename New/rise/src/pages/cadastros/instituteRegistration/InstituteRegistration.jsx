@@ -67,8 +67,14 @@ const InstituteRegistration = () => {
 
     const [razaoSocial, setRazaoSocial] = useState("");
     const [cnpj, setCnpj] = useState("");
-    const [cep, setCep] = useState("");
-    const [numeroEstabelecimento, setNumeroEstabelecimento] = useState("");
+
+    const [cepOng, setCepOng] = useState("");
+    const [cidadeOng, setCidadeOng] = useState("");
+    const [estadoOng, setEstadoOng] = useState("");
+    const [logradouroOng, setLogradouroOng] = useState("");
+    const [numeroEstabelecimentoOng, setNumeroEstabelecimentoOng] = useState("");
+    const [complementoOng, setComplementoOng] = useState("");
+
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
     const [endereco, setEndereco] = useState("");
@@ -76,13 +82,18 @@ const InstituteRegistration = () => {
     const [senha, setSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
 
+    const [cepUser, setCepUser] = useState("");
+    const [cidadeUser, setCidadeUser] = useState("");
+    const [estadoUser, setEstadoUser] = useState("");
+    const [logradouroUser, setLogradouroUser] = useState("");
+    const [numeroEstabelecimentoUser, setNumeroEstabelecimentoUser] = useState("");
+    const [complementoUser, setComplementoUser] = useState("");
+
     const handleInputChange = (value, setStateFunction) => {
         setStateFunction(value);
     }
 
     const handleSave = () => {
-        const enderecoCompleto =  `${endereco}, ${numeroEstabelecimento}`;
-
         if(!validateText(nome)) {
             toast.error('Nome inválido');
             return;
@@ -93,8 +104,8 @@ const InstituteRegistration = () => {
             return;
         }
 
-        if(!validateText(endereco)) {
-            toast.error('Endereço inválido');
+        if (!validateCEP(cepUser)) {
+            toast.error("CEP inválido");
             return;
         }
 
@@ -123,13 +134,21 @@ const InstituteRegistration = () => {
         const objetoAdicionado = {
             name: razaoSocial,
             cnpj,
-            cep,
-            address: enderecoCompleto,
+            address: {
+                cep: cepOng,
+                number: numeroEstabelecimentoOng,
+                complement: complementoOng
+            },
             user: {
                 name: nome,
                 email,
                 password: senha,
-                cpf
+                cpf,
+                address: {
+                    cep: cepUser,
+                    number: numeroEstabelecimentoUser,
+                    complement: complementoUser
+                }
             }
         };
 
@@ -152,6 +171,34 @@ const InstituteRegistration = () => {
         });
     }
 
+    const fillAddress = (event, type) => {
+        if (validateCEP(event.target.value)) {
+            fetch(`https://viacep.com.br/ws/${event.target.value}/json`, {
+                method: 'GET'
+            })
+            .then(fetchRes => {
+                let corpoRes = fetchRes.json().then((corpoRes) => {
+                    console.log(corpoRes);
+                    if (corpoRes.erro) {
+                        toast.error('CEP inválido');
+                    } else {
+                        if (type === 'ong') {
+                            setEstadoOng(corpoRes.uf)
+                            setCidadeOng(corpoRes.localidade);
+                            setLogradouroOng(corpoRes.logradouro)
+                        } else {
+                            setEstadoUser(corpoRes.uf)
+                            setCidadeUser(corpoRes.localidade);
+                            setLogradouroUser(corpoRes.logradouro)
+                        }
+                    }
+                }).catch(err => {
+                    toast.error('CEP inválido');
+                });
+            });
+        }
+    }
+
     const showSecondForm = () => {
 
         if(!validateText(razaoSocial)) {
@@ -164,7 +211,7 @@ const InstituteRegistration = () => {
             return;
         }
 
-        if (!validateCEP(cep)) {
+        if (!validateCEP(cepOng)) {
             toast.error("CEP inválido");
             return;
         }
@@ -173,7 +220,6 @@ const InstituteRegistration = () => {
     };
 
     const voltarForm = () => {
-        console.log('aaaaaaaaaaa');
         setSecondFormVisible(false);
     };
 
@@ -184,28 +230,62 @@ const InstituteRegistration = () => {
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                 </div>
 
-                <div className={`${styles["right-form"]}`}>
+                <div className={`${styles["right-form"]} col-12 col-md-6`}>
                     <div className={`${styles["form"]}`}>
                         <div>
                             <div className={`${styles["form-presentation"]}`}>
                                 <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>{secondFormVisible ? "Informe os dados do representante do instituto" : "Cadastro de instituto"}</label>
+                                <label>{secondFormVisible ? "Cadastro do Representante" : "Cadastro de Instituto"}</label>
                             </div>
                             <label className={`${styles["standard-text"]}`}>{secondFormVisible ? "Informe os dados do representante do instituto" : "Informe os dados da sua intituição"}</label>
                         </div>
 
-                        <div className={`${styles["container-inputs-form"]} col-md-12`} style={{ display: secondFormVisible ? 'none' : 'block' }}>
+                        <div className={`${styles["container-inputs-form"]} col-md-12`} style={{ display: secondFormVisible ? 'none' : 'flex' }}>
                             <LabelInput placeholder={"Digite a razão social"} label={"Razão social"} onInput={(e) => handleInputChange(e.target.value, setRazaoSocial)} onBlur={(e) => handleTextBlur(e, 'Razão Social inválida')}/>
                             <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e.target.value.substring(0, 18), setCnpj)} mask="99.999.999/9999-99" onBlur={(e) => handleCNPJBlur(e)}/>
-                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => handleCEPBlur(e)}/>
-                            <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/>
+                            <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCepOng)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e, "ong")}}/>
+                            <div className='row'>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={cidadeOng} label={"Cidade"} disabled={true}/>
+                                </div>
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={estadoOng} label={"Estado"} disabled={true}/>
+                                </div>
+                            </div>
+                            <LabelInput placeholder={logradouroOng} label={"Logradouro"} disabled={true}/>
+                            <div className={'row'}>
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimentoOng)} type="number"/>
+                                </div>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplementoOng)}/>
+                                </div>
+                            </div>
+                            {/* <LabelInput placeholder={"Digite o número do estabelecimento"} label={"Número do estabelecimento"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimentoOng)} type="number"/> */}
                             <br />
                         </div>
 
-                        <div className={`${styles['container-inputs-form']}`} style={{ display: secondFormVisible ? 'block' : 'none' }}>
+                        <div className={`${styles['container-inputs-form']}`} style={{ display: secondFormVisible ? 'flex' : 'none' }}>
                             <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleTextBlur(e, 'Nome inválido')}/>
                             <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)}/>
-                            <LabelInput placeholder={"Digite seu endereço"} label={"Endereço"} onInput={(e) => handleInputChange(e.target.value, setEndereco)} onBlur={(e) => handleTextBlur(e, 'Endereço inválido')}/>
+                            <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCepUser)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e, "user")}}/>
+                            <div className='row'>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={cidadeUser} label={"Cidade"} disabled={true}/>
+                                </div>
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={estadoUser} label={"Estado"} disabled={true}/>
+                                </div>
+                            </div>
+                            <LabelInput placeholder={logradouroUser} label={"Logradouro"} disabled={true}/>
+                            <div className={'row'}>
+                                <div className='col-md-4'>
+                                    <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimentoUser)} type="number"/>
+                                </div>
+                                <div className='col-md-8'>
+                                    <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplementoUser)}/>
+                                </div>
+                            </div>
                             <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} type="email" onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)}/>
                             <LabelInput placeholder={"Digite sua senha"} label={"Senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setSenha)} onBlur={(e) => handlePasswordBlur(e)}/>
                             <LabelInput placeholder={"Confirme sua senha"} label={"Confirmação de senha"} type="password" onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} onBlur={(e) => handleConfirmPasswordBlur(e, senha)}/>

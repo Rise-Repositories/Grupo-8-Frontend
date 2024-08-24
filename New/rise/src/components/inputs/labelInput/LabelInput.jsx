@@ -8,9 +8,9 @@ const LabelInput = ({
     return (
         <div className={`${styles["label-input"]} form-group`}>
             <label className="form-label">{label}</label>
-            <StandardInput value={value} customStyle={customStyle}  placeholder={placeholder} onInput={onInput} mask={mask} type={type} onBlur={onBlur} {...rest}/>
+             <StandardInput value={value} customStyle={customStyle}  placeholder={placeholder} onInput={onInput} mask={mask} type={type
         </div>
-    );    
+    );
 };
 
 export default LabelInput;
