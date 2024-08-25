@@ -7,20 +7,9 @@
   .offcanvas-backdrop {
     z-index: 1040;
   }
-  
 
-
-  body {
-    height: 100vh;
+body {
     font-family: "Montserrat";
-}
-
-.sidebar {
-    background-color: #2968C8;
-    z-index: 99;
-    -webkit-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
-    -moz-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
-    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.43);
 }
 
 .fixed-button {
@@ -50,7 +39,6 @@
     flex-direction: column;
     height: fit-content;
     padding: 0 !important;
-
     gap: 20px;
 }
 
@@ -81,19 +69,32 @@
 }
 
 .links {
-    display: flex;
-    flex-direction: row;
     color: #fff;
-
-    gap: 10%;
     list-style: none;
     cursor: pointer;
 }
 
+.linkContent {
+    display: flex;
+    flex-direction: row;
+
+    svg {
+        margin-right: 8px;
+    }
+}
+
 .content {
     height: 100%;
+    width: 100%;
+    padding-left: auto;
+    padding-right: auto;
     display: flex;
     flex-direction: column;
-
     justify-content: space-around;
+    align-items: center;
+    background-color: #2968C8;
+    z-index: 99;
+    -webkit-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    -moz-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.43);
 }
