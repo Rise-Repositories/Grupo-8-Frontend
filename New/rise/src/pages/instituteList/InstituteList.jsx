@@ -1,21 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./InstituteList.module.css";
 import api from "../../api";
-import Modal from 'react-modal';
 
-import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
+import { Modal, Table, Space, Col, Row } from "antd";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
 import BlueButton from "../../components/buttons/blueButton/BlueButton";
 import GreenButton from "../../components/buttons/greenButton/GreenButton";
 import RedButton from "../../components/buttons/redButton/RedButton";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 import Stack from "../../utils/stack"
 import { AuthContext } from "../login/AuthContext";
 
-Modal.setAppElement('#root');
 
 const InstituteList = () => {
 
@@ -92,10 +89,69 @@ const InstituteList = () => {
         }
     };
 
+    const columns = [
+        {
+            title: 'Nome do Instituto',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'CNPJ',
+            dataIndex: 'cnpj',
+            key: 'cnpj',
+        },
+        {
+            title: 'Nome do representante',
+            dataIndex: 'representative',
+            key: 'representative',
+        },
+        {
+            title: 'E-mail do representante',
+            dataIndex: 'representativeEmail',
+            key: 'representativeEmail',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'statusText',
+            key: 'statusText',
+        },
+        {
+            title: 'Ações',
+            key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
+                    {record.status === "PENDING" && (
+                        <>
+                            <RedButton onclick={() => openModal(record, "REJECTED")} txt={"Recusar"} />
+                            <GreenButton onclick={() => openModal(record, "ACCEPTED")} txt={"Aprovar"} />
+                        </>
+                    )}
+                    {record.status === "ACCEPTED" && (
+                        <RedButton onclick={() => openModal(record, "REJECTED")} txt={"Recusar"} />
+                    )}
+                    {record.status === "REJECTED" && (
+                        <GreenButton onclick={() => openModal(record, "ACCEPTED")} txt={"Aprovar"} />
+                    )}
+                </Space>
+            ),
+        },
+    ];
+
+    const data = institutes.map((institute, index) => ({
+        key: index,
+        id: institute.id,
+        name: institute.name,
+        cnpj: institute.cnpj,
+        representative: institute.representative,
+        representativeEmail: institute.representativeEmail,
+        statusText: institute.statusText,
+        status: institute.status
+    }));
+
     return (
-        <>
-            <div className={styles.page}>
-                <div className={`${styles["content"]}`}>
+        <><Col>
+            <Col>
+                <Col className={styles.content}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
@@ -118,64 +174,34 @@ const InstituteList = () => {
                                 <BlueButton txt={"Desfazer"} onclick={undoLastAction} />
                             </div>
 
-                            <table className={styles.table}>
-                                <thead>
-                                    <tr className={styles["default-list-line"]}>
-                                        <th>Nome do instituto</th>
-                                        <th>CNPJ</th>
-                                        <th>Nome do representante</th>
-                                        <th>E-mail do representante</th>
-                                        <th>Status</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {institutes.map((institute, index) => (
-                                        <tr key={index} className={styles["default-list-line"]}>
-                                            <td>{institute.name}</td>
-                                            <td>{institute.cnpj}</td>
-                                            <td>{institute.representative}</td>
-                                            <td>{institute.representativeEmail}</td>
-                                            <td>{institute.statusText}</td>
-                                            <td className={styles["td-buttons"]}>
-                                                {institute.status === "PENDING" && (
-                                                    <>
-                                                        <RedButton onclick={() => openModal(institute, "REJECTED")} txt={"Recusar"} />
-                                                        <GreenButton onclick={() => openModal(institute, "ACCEPTED")} txt={"Aprovar"} />
-                                                    </>
-                                                )}
-                                                {institute.status === "ACCEPTED" && (
-                                                    <RedButton onclick={() => openModal(institute, "REJECTED")} txt={"Recusar"} />
-                                                )}
-                                                {institute.status === "REJECTED" && (
-                                                    <GreenButton onclick={() => openModal(institute, "ACCEPTED")} txt={"Aprovar"} />
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div className={styles["table-container"]}>
+                                <Table
+                                    columns={columns}
+                                    dataSource={data}
+                                    scroll={{ x: 'max-content' }}
+                                    pagination={{ pageSize: 10 }}
+                                />
+                            </div>
+
                         </div>
                     </div>
-                </div>
-            </div>
+                </Col>
+            </Col>
 
             <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                contentLabel="Confirmação de Atualização"
-                className={styles.modal}
-                overlayClassName={styles.overlay}
-            >
-                <div className={styles["page-name"]}>
-                    <a>Confirmação de Atualização</a>
-                </div>
-                <p>Tem certeza que deseja {selectedStatus === "ACCEPTED" ? "permitir" : "recusar"} o acesso da ONG "{selectedInstitute?.name}"?</p>
+                title="Confirmação de Atualização"
+                open={isModalOpen}
+                centered
+                footer={[
                 <div className={styles["modal-buttons"]}>
                     <BlueButton txt={"Cancelar"} onclick={closeModal} />
                     <GreenButton txt={"Confirmar"} onclick={confirmUpdateStatus} />
                 </div>
+                ]}
+            >
+                    <p>Tem certeza que deseja {selectedStatus === "ACCEPTED" ? "permitir" : "recusar"} o acesso da ONG "{selectedInstitute?.name}"?</p>
             </Modal>
+            </Col>
         </>
     );
 };

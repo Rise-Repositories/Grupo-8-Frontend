@@ -3,19 +3,24 @@
 
 .page {
     display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 
 .navbar {
-    position: static;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.navbar-offcanvas {
+    padding: 0;
 }
 
 .content {
     height: 100vh;
     background-color: #EFF2F4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-left: auto;
 }
