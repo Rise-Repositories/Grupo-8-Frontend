@@ -119,8 +119,39 @@
 }
 
 .modal-email {
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     gap: 5px;
     display: flex;
     flex-direction: column;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-presentation {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.container-inputs-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.steps-action {
+    text-align: right;
+    margin-top: 16px;
+}
+
+.label-spacing {
+    margin-bottom: .5rem;
+    font-size: 16px;
 }

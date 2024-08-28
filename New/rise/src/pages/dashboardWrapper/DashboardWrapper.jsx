@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import styles from "./DashboardWrapper.module.css";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
+import { Col } from "antd";
 
 const DashboardWrapper = () => {
 
@@ -15,12 +16,12 @@ const DashboardWrapper = () => {
 
     return (
         <>
-            <div className={styles.page}>
+            <Col span={24} className={styles.page}>
                 <Sidebar handleOngId={useOngId}/>
-                <div className={`col-md-12`}>
+                <Col span={24}>
                     <Outlet context={[ongId]}/>
-                </div>
-            </div>
+                </Col>
+            </Col>
         </>
     );
 }
