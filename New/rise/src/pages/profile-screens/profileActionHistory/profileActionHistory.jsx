@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import styles from "../profileActionHistory/ProfileActionHistory.module.css";
+import styles from "./ProfileActionHistory.module.css";
 import api from "../../../api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';

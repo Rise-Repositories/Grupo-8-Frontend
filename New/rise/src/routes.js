@@ -9,6 +9,7 @@ import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
 import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
 import UserProfile from "./pages/profile-screens/profileMenu/ProfileMenu";
+import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/ProfileUpdateData";
 
 
 function Rotas() {
@@ -36,6 +37,7 @@ function Rotas() {
                 }>
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
+                <Route path="/updateData" element={<ProfileUpdateData/>}></Route>
             </Routes>
         </BrowserRouter>
     );
