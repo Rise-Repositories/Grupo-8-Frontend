@@ -12,6 +12,7 @@ import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox } from 'antd
 import { SearchOutlined } from '@ant-design/icons'; // Importação do ícone de pesquisa
 import Highlighter from 'react-highlight-words'; // Importação do Highlighter para destacar texto
 import 'antd/dist/reset.css';
+import { color } from 'chart.js/helpers';
 
 
 const ActionRegistration = () => {
@@ -24,21 +25,22 @@ const ActionRegistration = () => {
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [isRegistered, setIsRegistered] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
     const searchInput = useRef(null);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
         confirm();
         setSearchedColumn(dataIndex);
-        
+
     };
-    
-    
+
+
     const handleReset = (clearFilters) => {
         clearFilters();
         setSearchText('');
     };
-    
+
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div
@@ -111,7 +113,7 @@ const ActionRegistration = () => {
                 textToHighlight
             );
         },
-    });    
+    });
 
     const columns = [
         {
@@ -172,6 +174,7 @@ const ActionRegistration = () => {
         setIsModalVisible(false);
         setShowMapping(true);
         setIsRegistered(false);
+        setIsFinished(false);
     }
 
     const handleOk = () => {
@@ -193,6 +196,24 @@ const ActionRegistration = () => {
         }
 
     };
+
+    const finishAction = () => {
+        setIsFinished(true);
+    }
+
+    const concludeFinishAction = () => {
+        setShowMapping(false);
+        setShowAddresses(false);
+        setIsModalVisible(false);
+        setIsFormVisible(false);
+        setIsRegistered(false);
+        setIsFinished(false);
+        setRadius(3);
+        // Se você estiver usando refs nos inputs para resetar o valor
+        if (searchInput.current) {
+            searchInput.current.value = '';
+        }
+    }
 
     const data = [
         {
@@ -276,23 +297,9 @@ const ActionRegistration = () => {
             >
                 <Input.TextArea rows={4} />
             </Form.Item>
-
-            <div className="form-row">
-                <Form.Item
-                    label="Quantidade de adultos"
-                    name="adultQuantity"
-                    className="form-item"
-                >
-                    <Input placeholder="Digite a quantidade" />
-                </Form.Item>
-
-                <Form.Item
-                    label="Quantidade de crianças/adolescentes"
-                    name="childrenQuantity"
-                    className="form-item"
-                >
-                    <Input placeholder="Digite a quantidade" />
-                </Form.Item>
+            <div className={styles["form-row"]}>
+            <LabelInput label={"Quantidade de adultos:"} placeholder={"Digite a quantidade"} />
+            <LabelInput label={"Quantidade de Crianças/adolescentes:"} placeholder={"Digite a quantidade"} />
             </div>
         </Form>
     );
@@ -421,7 +428,7 @@ const ActionRegistration = () => {
                                         <TableComponent />
                                     </div>
                                     <div className={styles["div-btn-finalizar"]}>
-                                        <BlueButton txt="Finalizar Ação" />
+                                        <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
                                     </div>
                                 </div>
                             </div>
@@ -433,9 +440,10 @@ const ActionRegistration = () => {
                 title="Detalhes do Registro"
                 visible={isModalVisible}
                 onCancel={handleCancel}
+                width={700}
                 footer={[
-                    <div style={{ textAlign: 'center' }}>
-                        <Space>
+                    <div style={{ textAlign: 'center'}}>
+                        <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
                             <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
                         </Space>
@@ -463,7 +471,7 @@ const ActionRegistration = () => {
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Doação Registrada</div>}
                 visible={isRegistered}
-                onCancel={handleCancel}
+                onCancel={closeModal}
                 centered
                 footer={[
                     <div style={{ textAlign: 'center' }}>
@@ -478,18 +486,18 @@ const ActionRegistration = () => {
 
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Deseja Finalizar Ação?</div>}
-                visible={isRegistered}
-                onCancel={handleCancel}
+                visible={isFinished}
+                onCancel={closeModal}
                 centered
                 footer={[
                     <div style={{ textAlign: 'center' }}>
                         <Space>
-                            <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
-                            <BlueButton key="confirm" txt="Finalizar" onclick={() => handleOk()} />
+                            <WhiteButton key="cancel" txt="Voltar" onclick={() => closeModal()} />
+                            <BlueButton key="confirm" txt="Finalizar" onclick={() => concludeFinishAction()} />
                         </Space>
                     </div>
                 ]}
-                width={250}
+                width={300}
             >
             </Modal>
 

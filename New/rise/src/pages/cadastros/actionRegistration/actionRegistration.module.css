@@ -262,7 +262,6 @@
 
 
 .donation-form {
-    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     border-radius: 8px;
@@ -279,16 +278,20 @@
     margin-bottom: 20px;
   }
   
-  .donation-form  .form-row {
+  .form-row {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  
-  .donation-form  .form-item {
+    justify-content: space-evenly;
+}
+
+.form-row > * {
     flex: 1;
-  }
-  
+    margin-right: 10px;
+}
+
+.form-row > *:last-child {
+    margin-right: 0;
+}
+
   .donation-form  .form-buttons {
     display: flex;
     justify-content: space-between;
@@ -299,15 +302,5 @@
     width: 45%;
     padding: 10px;
   }
-  
-  .donation-form  button[type="default"] {
-    border: 1px solid #003366;
-    color: #003366;
-  }
-  
-  .donation-form  button[type="primary"] {
-    background-color: #003366;
-    border-color: #003366;
-    color: #fff;
-  }
+
   
