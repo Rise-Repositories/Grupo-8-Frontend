@@ -1,8 +1,9 @@
-
-import styles from "../profileActionHistory/ProfileActionHistory.module.css"
-import api from "../../../api"
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import styles from "../profileActionHistory/ProfileActionHistory.module.css";
+import api from "../../../api";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 const History = () => {
   const { mappingId } = useParams();
@@ -37,8 +38,6 @@ const History = () => {
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
 
-  const totalAttended = (adults, children) => adults + children;
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     // Adiciona horas para compensar o fuso horário se necessário
@@ -49,14 +48,16 @@ const History = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <button className={styles.backButton} onClick={() => window.history.back()}>{'<-'}</button>
+        <button className={styles.backButton} onClick={() => window.history.back()}>
+          <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
+        </button>
         <h2>Histórico da Marcação</h2>
       </header>
       
       {mapping && (
         <div className={styles.mappingDetails}>
           <div className={styles.cardLocate}>
-            <img className={styles.mapImage} src="/path-to-map-image.png" alt="Mapa" />
+        
             <div className={styles.cardContent}>
               <p className={styles.address}>{mapping.address.street}, {mapping.address.number}</p>
               <p className={styles.date}>{formatDate(mapping.date)}</p>
@@ -68,9 +69,11 @@ const History = () => {
           <table className={styles.actionsTable}>
             <thead>
               <tr>
-                <th>Data</th>
+                <th>Data de atendimento</th>
                 <th>Instituto</th>
-                <th>Qtde Atendidos</th>
+                <th>Descrição</th>
+                <th>Qtde Crianças Atendidas</th>
+                <th>Qtde Adultos Atendidos</th>
               </tr>
             </thead>
             <tbody>
@@ -78,7 +81,9 @@ const History = () => {
                 <tr key={action.id}>
                   <td>{new Date(action.action.datetimeEnd).toLocaleDateString()}</td>
                   <td>{action.action.ong.name}</td>
-                  <td>{totalAttended(action.qtyServedAdults, action.qtyServedChildren)}</td>
+                  <td>{mapping.description}</td>
+                  <td>{action.qtyServedChildren}</td>
+                  <td>{action.qtyServedAdults}</td>
                 </tr>
               ))}
             </tbody>
