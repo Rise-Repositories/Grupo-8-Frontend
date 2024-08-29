@@ -3,7 +3,7 @@ import styles from "./StandardInput.module.css";
 import InputMask from "react-input-mask";
 
 const StandardInput = ({
-    placeholder, onInput, mask, type, onBlur, customStyle, value, ...others
+    placeholder, onInput, mask, type, onBlur, customStyle, value, disabled, ...others
 }) => {
     return (
         <InputMask 
@@ -15,7 +15,8 @@ const StandardInput = ({
             onInput={onInput}
             onBlur={onBlur}
             {...others}
-        ></InputMask>
+            disabled={disabled}
+        />
     );
 };
 

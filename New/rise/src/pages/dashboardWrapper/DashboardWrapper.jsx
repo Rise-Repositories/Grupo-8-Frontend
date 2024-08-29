@@ -4,6 +4,7 @@ import styles from "./DashboardWrapper.module.css";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import { Offcanvas } from "react-bootstrap";
 import SidebarButton from "../../components/navbar/sidebarButton/sidebarButton";
+import { Col } from "antd";
 
 const DashboardWrapper = () => {
 
@@ -69,6 +70,12 @@ const DashboardWrapper = () => {
                     </div>
                 </>
             }
+             {/* <Col span={24} className={styles.page}>
+             <Sidebar handleOngId={useOngId}/>
+             <Col span={24}>
+                 <Outlet context={[ongId]}/>
+             </Col>
+         </Col> */}
         </>
     );
 }
