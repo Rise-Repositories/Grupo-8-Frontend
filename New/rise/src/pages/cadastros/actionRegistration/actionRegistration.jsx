@@ -124,7 +124,7 @@ const ActionRegistration = () => {
 
         },
         {
-            title: 'Qtd. Alunos',
+            title: 'Qtd. adultos',
             dataIndex: 'alunos',
             key: 'alunos',
             sorter: {
@@ -274,7 +274,7 @@ const ActionRegistration = () => {
                 rowExpandable: (record) => record.name === "",
             }}
             dataSource={data}
-            pagination={{ pageSize: 4 }}
+            pagination={{ pageSize: 3 }}
         />
     );
 

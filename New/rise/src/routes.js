@@ -11,6 +11,9 @@ import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
 import Home from "./pages/home/Home";
 import ManageVolunteers from "./pages/manageVolunteers/ManageVolunteers";
+import History from "./pages/profile-screens/profileActionHistory/profileActionHistory";
+import UserProfile from "./pages/profile-screens/profileMenu/profileMenu";
+import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/profileUpdateData";
 
 import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
 
@@ -21,7 +24,7 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
-                <Route path="/action-registration" element={<ActionRegistration />} />
+                <Route path="/action-history/:mappingId" element={<History />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <DashboardWrapper />
@@ -33,6 +36,14 @@ function Rotas() {
                     <Route path="manage-volunteers" element={<ManageVolunteers />} />
                     <Route path="action" element={<ActionRegistration />} />
                 </Route>
+                <Route path="/profileMenu" element={
+                    <PrivateRoute>
+                        <UserProfile />
+                    </PrivateRoute>
+                }>
+                </Route>
+                <Route path="/institute-list" element={<InstituteList />} />
+                <Route path="/updateData" element={<ProfileUpdateData/>}></Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
             </Routes>

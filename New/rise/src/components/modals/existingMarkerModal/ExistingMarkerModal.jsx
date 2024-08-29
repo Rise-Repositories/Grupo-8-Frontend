@@ -3,6 +3,7 @@ import styles from "./ExistingMarkerModal.module.css"
 import WhiteButton from "../../buttons/whiteButton/WhiteButton";
 import BlueButton from "../../buttons/blueButton/BlueButton";
 import GreenButton from "../../buttons/greenButton/GreenButton";
+import { toast } from "react-toastify";
 
 import { Modal, Table, Space, Col, Row } from "antd";
 
@@ -16,6 +17,7 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
             title: 'Endereço',
             dataIndex: 'shortAddress',
             key: 'shortAddress',
+            ellipsis: true
         },
         {
             title: 'Qtd. Pessoas',
@@ -23,11 +25,11 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
             key: 'qtyPeople',
         },
         {
-            title: 'Ver Detalhes',
+            title: 'Detalhes',
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <WhiteButton onclick={() => openModal(record)} txt={"Ver Detalhes"} />
+                    <WhiteButton onclick={() => openModal(record)} txt={"Detalhes"} />
                 </Space>
             ),
         },
@@ -41,6 +43,7 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
     const confirmAddMappingToUser = () => {
         setSelectedMapping(null);
         setIsModalOpen(false);
+        toast.success("Localização adicionada ao seu histórico");
         handleClose();
     }
 
@@ -64,9 +67,6 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
         referencePoint: mapping.referencePoint
     }});
 
-    console.log('data ', data);
-    console.log('data ', infos);
-
     return (
         <>
             <div className={styles["NewMarkerModal"]}>
@@ -79,7 +79,7 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
                     <Table
                         columns={columns}
                         dataSource={data}
-                        scroll={{ x: 'max-content' }}
+                        scroll={{ x: false }}
                         pagination={{ pageSize: 10 }}
                     />
                     </div>

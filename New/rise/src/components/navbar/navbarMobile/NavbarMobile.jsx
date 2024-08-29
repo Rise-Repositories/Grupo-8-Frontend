@@ -27,7 +27,7 @@ const NavbarMobile = () => {
             </button>
             <div className={style["container"]}>
                 <div className={`${style["row"]} ${style["justify-end"]}`}>
-                    <button className={`${style["button-navbar"]} ${style["min-width"]}`} onClick={() => handleNavigate('/user')}>
+                    <button className={`${style["button-navbar"]} ${style["min-width"]}`} onClick={() => handleNavigate('/profileMenu')}>
                         <FaUser size={25} color="#2968C8"/>
                     </button>
                 </div>

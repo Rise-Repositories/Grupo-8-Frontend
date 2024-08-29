@@ -119,7 +119,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 </ul>
 
                 <div className={styles["logos"]}>
-                    <img src={riseLogo} alt="Rise Logo" />
+                    <img src={riseLogo} alt="Rise Logo" onClick={() => handleNavigate('/profileMenu')} />
                     |
                     <img src={logo} alt="Logo" />
                 </div>
