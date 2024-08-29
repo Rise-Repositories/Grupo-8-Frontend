@@ -1,0 +1,32 @@
+.NewMarkerModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+  }
+  
+  .NewMarkerModal .modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    max-width: 500px;
+    z-index: 1011;
+  }
+
+  .modalButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+  }
