@@ -125,7 +125,7 @@
     width: 90%;
 }
 
-.default-box-mapping .button-group{
+.default-box-mapping .button-group {
     width: 100%;
     display: flex;
     justify-content: space-evenly;
@@ -215,7 +215,7 @@
     background: linear-gradient(to right, red, yellow, green);
 }
 
-.timeSlider{
+.timeSlider {
     width: 100%;
 }
 
@@ -266,41 +266,39 @@
     padding: 20px;
     border-radius: 8px;
     background-color: #f9f9f9;
-  }
-  
-  .donation-form  .form-title {
+}
+
+.donation-form .form-title {
     font-size: 24px;
     margin-bottom: 16px;
     color: #003366;
-  }
-  
-  .donation-form  .form-checkbox {
+}
+
+.donation-form .form-checkbox {
     margin-bottom: 20px;
-  }
-  
-  .form-row {
+}
+
+.form-row {
     display: flex;
     justify-content: space-evenly;
 }
 
-.form-row > * {
+.form-row>* {
     flex: 1;
     margin-right: 10px;
 }
 
-.form-row > *:last-child {
+.form-row>*:last-child {
     margin-right: 0;
 }
 
-  .donation-form  .form-buttons {
+.donation-form .form-buttons {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-  }
-  
-  .donation-form  button {
+}
+
+.donation-form button {
     width: 45%;
     padding: 10px;
-  }
-
-  
+}
