@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Offcanvas } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import SidebarButton from '../sidebarButton/sidebarButton';
 import styles from './Sidebar.module.css';
 import api from '../../../api';
 import { AuthContext } from '../../../pages/login/AuthContext';
@@ -10,17 +9,17 @@ import logo from '../../../utils/imgs/logo.png';
 import { Select } from "antd";
 
 
+
 const Sidebar = ({handleOngId}) => {
     const [show, setShow] = useState(false);
     const [ongs, setOngs] = useState([]);
+
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
 
-    const toggleSidebar = () => setShow(!show);
-
     const handleNavigate = (path) => {
         navigate(path);
-        setShow(false);
+        toggleSidebar();
     };
 
     useEffect(() => {
