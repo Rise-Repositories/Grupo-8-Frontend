@@ -37,6 +37,7 @@ const History = () => {
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
+  const totalAttended = (adults, children) => adults + children;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -51,7 +52,7 @@ const History = () => {
         <button className={styles.backButton} onClick={() => window.history.back()}>
           <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
         </button>
-        <h2>Histórico da Marcação</h2>
+        <h2 className={styles["h2NoMargin"]}>Histórico da Marcação</h2>
       </header>
       
       {mapping && (
@@ -71,9 +72,7 @@ const History = () => {
               <tr>
                 <th>Data de atendimento</th>
                 <th>Instituto</th>
-                <th>Descrição</th>
-                <th>Qtde Crianças Atendidas</th>
-                <th>Qtde Adultos Atendidos</th>
+                <th>Qtde Atendidos</th>
               </tr>
             </thead>
             <tbody>
@@ -81,9 +80,7 @@ const History = () => {
                 <tr key={action.id}>
                   <td>{new Date(action.action.datetimeEnd).toLocaleDateString()}</td>
                   <td>{action.action.ong.name}</td>
-                  <td>{mapping.description}</td>
-                  <td>{action.qtyServedChildren}</td>
-                  <td>{action.qtyServedAdults}</td>
+                  <td>{totalAttended(action.qtyServedAdults, action.qtyServedChildren)}</td>
                 </tr>
               ))}
             </tbody>
