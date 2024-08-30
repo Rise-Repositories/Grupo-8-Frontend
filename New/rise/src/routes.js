@@ -7,6 +7,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import InstituteList from "./pages/instituteList/InstituteList";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
 import PrivateRoute from "./pages/login/PrivateRoute";
+import ManageVolunteers from "./pages/manageVolunteers/ManageVolunteers";
 import Home from "./pages/home/Home";
 import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
 
@@ -25,6 +26,7 @@ function Rotas() {
                     <Route path="main" element={<Dashboard />} />
                     <Route path="mapping" element={<DashboardMapping />} />
                     <Route path="institute-list" element={<InstituteList />} />
+                    <Route path="manage-volunteers" element={<ManageVolunteers />} />
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
