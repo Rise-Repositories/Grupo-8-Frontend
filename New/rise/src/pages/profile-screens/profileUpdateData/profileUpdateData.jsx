@@ -3,10 +3,9 @@ import styles from './ProfileUpdateData.module.css';
 
 function ProfileUpdateData() {
   return (
-    // className={styles["container"]}
     <div className={styles["profile-edit"]}>
+      <h2 className={styles["h2EditProifle"]}>Editar Perfil</h2> 
       <button className={styles["back-button"]}>&larr;</button>
-      <h2>Editar Perfil</h2>
       <form>
         <div className={styles["input-group"]}>
           <label htmlFor="name">Nome:</label>
