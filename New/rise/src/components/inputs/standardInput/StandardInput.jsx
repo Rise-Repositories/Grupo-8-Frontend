@@ -23,7 +23,6 @@ const StandardInput = ({
             onInput={onInput}
             onBlur={onBlur}
             disabled={disabled}
-            value={value}
             {...others}
         />
     );
