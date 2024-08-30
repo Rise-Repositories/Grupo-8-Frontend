@@ -70,12 +70,6 @@ const DashboardWrapper = () => {
                     </div>
                 </>
             }
-             {/* <Col span={24} className={styles.page}>
-             <Sidebar handleOngId={useOngId}/>
-             <Col span={24}>
-                 <Outlet context={[ongId]}/>
-             </Col>
-         </Col> */}
         </>
     );
 }

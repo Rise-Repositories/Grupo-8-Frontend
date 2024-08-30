@@ -3,7 +3,16 @@ import styles from "./LabelInput.module.css";
 import StandardInput from "../standardInput/StandardInput";
 
 const LabelInput = ({
-    placeholder, label, onInput, value, mask, type, onBlur, disabled
+    placeholder,
+    label,
+    onInput,
+    value,
+    mask,
+    type,
+    onBlur,
+    disabled,
+    customStyle,
+    ...rest
 }) => {
     return (
         <div className={`${styles["label-input"]} form-group`}>
@@ -17,6 +26,8 @@ const LabelInput = ({
                 type={type} 
                 onBlur={onBlur} 
                 disabled={disabled}
+                customStyle={customStyle}
+                {...rest}
             />
         </div>
     );
