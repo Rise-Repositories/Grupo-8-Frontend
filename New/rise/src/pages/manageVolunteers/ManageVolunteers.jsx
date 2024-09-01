@@ -22,8 +22,7 @@ const ManageVolunteers = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAssociateModalOpen, setIsAssociateModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [isEditRoleModalOpen, setIsEditRoleModalOpen] = useState(false);
     const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
     const [volunteers, setVolunteers] = useState([]);
@@ -97,6 +96,8 @@ const ManageVolunteers = () => {
     }
 
     const openModal = (volunteer, status) => {
+        console.log("O RECORDD")
+        console.log(volunteer)
         setSelectedVolunteer(volunteer);
         setSelectedStatus(status);
         setIsModalOpen(true);
@@ -157,9 +158,10 @@ const ManageVolunteers = () => {
             }
         } catch (error) {
             console.error('Erro ao buscar usuário:', error);
-            setIsErrorModalOpen(true);
+            toast.error('Erro ao buscar usuário, tente novamente.');
         }
     };
+
 
     const handleConfirmAssociation = async (confirm) => {
         if (confirm && userToAssociate && selectedRole) {
@@ -178,16 +180,13 @@ const ManageVolunteers = () => {
                 const response = await api.post(`/voluntary/${ongId}/${userToAssociate.id}`, data, config);
 
                 if (response.status === 201) {
-                    console.log('Usuário associado com sucesso:', userToAssociate);
-                    setIsSuccessModalOpen(true);
+                    toast.success('Usuário associado com sucesso!');
                     fetchVolunteers();
                 } else {
-                    console.error('Erro ao associar usuário:', response);
-                    setIsErrorModalOpen(true);
+                    toast.error('Erro ao associar usuário, tente novamente.');
                 }
             } catch (error) {
-                console.error('Erro ao associar usuário:', error);
-                setIsErrorModalOpen(true);
+                toast.error('Erro ao associar usuário, tente novamente.');
             }
         }
         setIsConfirmModalOpen(false);
@@ -196,28 +195,27 @@ const ManageVolunteers = () => {
         setSelectedRole(null);
     };
 
-
     const handleSave = () => {
         if (!validateText(nome)) {
             toast.error('Nome inválido');
             return;
         }
-    
+
         if (!validateCPF(cpf)) {
             toast.error('CPF inválido');
             return;
         }
-    
+
         if (!validateCEP(cep)) {
             toast.error("CEP inválido");
             return;
         }
-    
+
         if (!validateEmail(email)) {
             toast.error('E-mail inválido');
             return;
         }
-    
+
         if (!validatePassword(senha)) {
             toast.error(
                 <div>
@@ -231,12 +229,12 @@ const ManageVolunteers = () => {
             );
             return;
         }
-    
+
         if (senha !== confirmarSenha) {
             toast.error('As senhas são diferentes');
             return;
         }
-    
+
         const objetoAdicionado = {
             name: nome,
             email,
@@ -248,38 +246,42 @@ const ManageVolunteers = () => {
                 complement: complemento
             }
         };
-    
+
         const voluntaryRequestDto = {
             role: selectedRole,
-            user: objetoAdicionado 
+            user: objetoAdicionado
         };
-        
-        // Erro no back
+
         api.post(`/voluntary/${ongId}`, voluntaryRequestDto, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-        .then(() => {
-            toast.success("Novo usuário cadastrado com sucesso!");
-            sessionStorage.setItem("voluntier", JSON.stringify(objetoAdicionado));
-    
-            setNome("");
-            setCpf("");
-            setEmail("");
-            setSenha("");
-            setConfirmarSenha("");
-            setCep("");
-            setCidade("");
-            setEstado("");
-            setLogradouro("");
-            setNumeroEstabelecimento("");
-            setComplemento("");
-        })
-        .catch((err) => {
-            console.error(err);
-            toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");
-        });
+            .then(() => {
+                toast.success("Novo usuário cadastrado com sucesso!");
+                sessionStorage.setItem("voluntier", JSON.stringify(objetoAdicionado));
+
+                setNome("");
+                setCpf("");
+                setEmail("");
+                setSenha("");
+                setConfirmarSenha("");
+                setCep("");
+                setCidade("");
+                setEstado("");
+                setLogradouro("");
+                setNumeroEstabelecimento("");
+                setComplemento("");
+
+                fetchVolunteers();
+                setIsCreateUserModalOpen(false);
+                setIsAssociateModalOpen(false);
+                setIsConfirmModalOpen(false);
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");
+            });
     };
 
     const handleNameBlur = (event) => {
@@ -325,10 +327,50 @@ const ManageVolunteers = () => {
         }
     }
 
+    const handleEditRole = (volunteer) => {
+        setSelectedVolunteer(volunteer);
+        setIsEditRoleModalOpen(true);
+    };
+
+    const handleSaveRole = async () => {
+        if (selectedVolunteer && selectedRole) {
+            alert(selectedVolunteer)
+            console.log(selectedVolunteer)
+            try {
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                const data = {
+                    VoluntaryRoles: selectedRole,
+                };
+
+                const response = await api.patch(`/voluntary/${selectedVolunteer.idVoluntarioOng}/role`, data, config);
+
+                if (response.status === 200) {
+                    toast.success('Cargo atualizado com sucesso!');
+                    fetchVolunteers();
+                    setIsEditRoleModalOpen(false);
+                    setSelectedVolunteer(null);
+                    setSelectedRole(null);
+                } else {
+                    toast.error('Erro ao atualizar o cargo, tente novamente.');
+                }
+            } catch (error) {
+                toast.error('Erro ao atualizar o cargo, tente novamente.');
+            }
+        }
+        setIsEditRoleModalOpen(false);
+        setSelectedRole(null);
+    };
+
     const fetchVolunteers = async () => {
         try {
             if (!token) {
-                console.error('Token não encontrado no sessionStorage');
+                toast.error('Não foi possível atualizar a lista de voluntários');
                 return;
             }
 
@@ -342,9 +384,10 @@ const ManageVolunteers = () => {
                 setVolunteers(response.data);
             }
         } catch (error) {
-            console.error('Erro ao buscar voluntários:', error);
+            toast.error('Erro ao buscar voluntários, tente novamente.');
         }
     };
+
 
     const columns = [
         {
@@ -385,6 +428,7 @@ const ManageVolunteers = () => {
         email: volunteer.user.email,
         role: volunteer.role,
         address: volunteer.user.address,
+        idVoluntarioOng: volunteer.id
     }));
 
     return (
@@ -396,42 +440,43 @@ const ManageVolunteers = () => {
                     },
                 }}
             >
-                <Col span={24}>
-                    <Col className={styles.content}>
-                        <div className={styles.container}>
+                <div className={`${styles["content"]}`}>
+                    <div className={styles.container}>
+                        <div className={styles["top-info"]}>
+                            <div className={styles["page-name"]}>
+                                <a>Gerenciar Voluntários</a>
+                            </div>
+                            <div className={styles["align-input"]}>
+                                <StandardInput placeholder={"Pesquise aqui"} />
+                            </div>
+                            <div className={styles["notifications"]}>
+                                <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: "#00006b" }} />
+                            </div>
+                        </div>
+
+                        <div className={`${styles["default-box"]}`}>
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
-                                    <a>Gerenciar Voluntários</a>
+                                    <a>Voluntários associados</a>
                                 </div>
-                                <div className={styles["align-input"]}>
-                                    <StandardInput placeholder={"Pesquise aqui"} />
-                                </div>
-                                <div className={styles["notifications"]}>
-                                    <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: "#00006b" }} />
-                                </div>
+                                <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} onclick={openAssociateModal} />
                             </div>
 
-                            <div className={`col - md - 12 ${styles["default-box"]}`}>
-                                <div className={styles["top-info"]}>
-                                    <div className={styles["page-name"]}>
-                                        <a>Voluntários associados</a>
-                                    </div>
-                                    <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} onclick={openAssociateModal} />
-                                </div>
-
-                                <div className={styles["table-container"]}>
+                            <div className={styles["table-container"]}>
+                                <Col>
                                     <Table
                                         columns={columns}
                                         dataSource={data}
-                                        scroll={{ x: 'max-content' }}
+                                        scrollToFirstRowOnChange={true}
+                                        scroll={{ x: '100%' }}
                                         pagination={{ pageSize: 10 }}
                                         className={styles["custom-font"]}
                                     />
-                                </div>
+                                </Col>
                             </div>
                         </div>
-                    </Col>
-                </Col >
+                    </div>
+                </div >
 
                 <Modal
                     title="Informações do Voluntário"
@@ -444,11 +489,40 @@ const ManageVolunteers = () => {
                     <Descriptions column={1}>
                         <Descriptions.Item label="Nome">{selectedVolunteer?.name}</Descriptions.Item>
                         <Descriptions.Item label="E-mail">{selectedVolunteer?.email}</Descriptions.Item>
-                        <Descriptions.Item label="Cargo">{selectedVolunteer?.role}</Descriptions.Item>
+                        <Descriptions.Item label="Cargo">
+                            {selectedVolunteer?.role}
+                            <Button
+                                type="link"
+                                onClick={() => handleEditRole(selectedVolunteer)}
+                            >
+                                Editar Cargo
+                            </Button>
+                        </Descriptions.Item>
                         <Descriptions.Item label="Endereço">
                             {selectedVolunteer?.address?.street}, {selectedVolunteer?.address?.number}, {selectedVolunteer?.address?.city}
                         </Descriptions.Item>
                     </Descriptions>
+                </Modal>
+
+                <Modal
+                    title="Editar Cargo do Voluntário"
+                    open={isEditRoleModalOpen}
+                    onCancel={() => setIsEditRoleModalOpen(false)}
+                    onOk={handleSaveRole}
+                    okText="Salvar"
+                    cancelText="Cancelar"
+                    centered
+                    className={styles["custom-font"]}
+                >
+                    <Select
+                        placeholder="Selecione o novo cargo"
+                        style={{ width: "100%" }}
+                        value={selectedRole}
+                        onChange={(value) => setSelectedRole(value)}
+                    >
+                        <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                        <Select.Option value="ADMIN">Administrador</Select.Option>
+                    </Select>
                 </Modal>
 
                 <Modal
@@ -488,55 +562,9 @@ const ManageVolunteers = () => {
                             onChange={(value) => setSelectedRole(value)}
                         >
                             <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                            <Select.Option value="OWNER">Dono</Select.Option>
                             <Select.Option value="ADMIN">Administrador</Select.Option>
                         </Select>
                     </div>
-                </Modal>
-
-                <Modal
-                    open={isSuccessModalOpen}
-                    onCancel={() => setIsSuccessModalOpen(false)}
-                    footer={null}
-                    centered
-                    className={styles["custom-font"]}
-                >
-                    <Result
-                        status="success"
-                        title="Voluntário associado com sucesso!"
-                        extra={[
-                            <Button
-                                key="close"
-                                type="primary"
-                                onClick={() => setIsSuccessModalOpen(false)}
-                            >
-                                Fechar
-                            </Button>,
-                        ]}
-                    />
-                </Modal>
-
-                <Modal
-                    open={isErrorModalOpen}
-                    onCancel={() => setIsErrorModalOpen(false)}
-                    footer={null}
-                    centered
-                    className={styles["custom-font"]}
-                >
-                    <Result
-                        status="error"
-                        title="Ocorreu um erro!"
-                        subTitle="Não foi possível concluir a operação. Por favor, tente novamente."
-                        extra={[
-                            <Button
-                                key="close"
-                                type="primary"
-                                onClick={() => setIsErrorModalOpen(false)}
-                            >
-                                Fechar
-                            </Button>,
-                        ]}
-                    />
                 </Modal>
 
                 <Modal
@@ -545,7 +573,14 @@ const ManageVolunteers = () => {
                     footer={null}
                     centered
                 >
-                    <div className={`${styles["form"]}`}>
+                    <div className={`${styles["form"]}`}
+                        style={{
+                            height: '60vh',
+                            overflowY: 'auto',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                        }}
+                    >
                         <div>
                             <div className={`${styles["form-presentation"]}`}>
                                 <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
@@ -586,24 +621,14 @@ const ManageVolunteers = () => {
 
                             <div>
                                 <label className={styles["label-spacing"]}>Informe o cargo do novo usuário</label>
-                                <ConfigProvider
-                                    theme={{
-                                        token: {
-                                            borderRadius: "15px",
-                                            colorBorder: "#2968C8"
-                                        },
-                                    }}
+                                <Select
+                                    placeholder="Selecione o cargo"
+                                    style={{ width: "100%" }}
+                                    onChange={(value) => setSelectedRole(value)}
                                 >
-                                    <Select
-                                        placeholder="Selecione o cargo"
-                                        style={{ width: "100%" }}
-                                        onChange={(value) => setSelectedRole(value)}
-                                    >
-                                        <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                                        <Select.Option value="OWNER">Dono</Select.Option>
-                                        <Select.Option value="ADMIN">Administrador</Select.Option>
-                                    </Select>
-                                </ConfigProvider>
+                                    <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                                    <Select.Option value="ADMIN">Administrador</Select.Option>
+                                </Select>
                             </div>
                         </div>
 
