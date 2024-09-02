@@ -1,7 +1,7 @@
 //npm install antd react-highlight-words @ant-design/icons
 
 import React, { useRef, useState } from 'react';
-import NavbarVertical from '../../../components/navbar/navbarVertical/NavbarVertical';
+import SidebarButton from '../../../components/navbar/sidebarButton/sidebarButton';
 import styles from './actionRegistration.module.css';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
@@ -13,6 +13,7 @@ import { SearchOutlined } from '@ant-design/icons'; // Importação do ícone de
 import Highlighter from 'react-highlight-words'; // Importação do Highlighter para destacar texto
 import 'antd/dist/reset.css';
 import { color } from 'chart.js/helpers';
+import Sidebar from '../../../components/navbar/sidebar/Sidebar';
 
 
 const ActionRegistration = () => {
@@ -309,6 +310,7 @@ const ActionRegistration = () => {
             <div className={styles.page}>
                 <div className={`col-md-10 ${styles["content"]}`}>
                     <div className={styles.container}>
+                        <Sidebar />
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
                                 <a>Registro de ação</a>
@@ -324,7 +326,7 @@ const ActionRegistration = () => {
 
                         {!showMapping && !showAddresses && (
                             <div className={`col-md-8 ${styles["default-box"]}`}>
-                                <div className={styles["top-info"]}>
+                                <div className={styles["top-info-inside"]}>
                                     <div className={styles["page-name"]}>
                                         <a>Buscar endereços próximos de:</a>
                                     </div>
@@ -380,7 +382,7 @@ const ActionRegistration = () => {
 
                         {showMapping && !showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-mapping"]}`}>
-                                <div className={styles["top-info"]}>
+                                <div className={styles["top-info-inside"]}>
                                     <div className={styles["page-name"]}>
                                         <a>Buscar endereços próximos de:</a>
                                     </div>

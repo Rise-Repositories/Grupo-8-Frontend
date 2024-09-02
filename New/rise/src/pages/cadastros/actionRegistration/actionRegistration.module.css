@@ -15,6 +15,7 @@
 
 .content {
     height: 100vh;
+    width: 100%;
     background-color: #EFF2F4;
     display: flex;
     justify-content: center;
@@ -33,8 +34,7 @@
 .top-info {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-around;
 }
 
 .align-input {
@@ -55,6 +55,7 @@
     flex-direction: column;
     gap: 20px;
     margin: auto;
+    width: 50%;
 }
 
 .input-group {
@@ -301,4 +302,108 @@
 .donation-form button {
     width: 45%;
     padding: 10px;
+}
+
+
+@media (max-width: 375px) {
+
+    .page {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .content {
+        height: auto;
+        padding: 10px;
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+        gap: 30px;
+    }
+
+    .top-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    .align-input {
+        width: 100%;
+    }
+
+    .notifications {
+        width: 20px;
+        height: 20px;
+    }
+
+    .default-box, .default-box-mapping, .default-box-addresses {
+        width: 100%;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .input-group {
+        grid-template-columns: 1fr;
+        row-gap: 15px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .slider-group {
+        align-items: center;
+    }
+
+    .slider-labels span {
+        font-size: 12px;
+    }
+
+    .map, .map-addresses {
+        width: 100%;
+        height: 35vh;
+    }
+
+    .div-time-action {
+        height: 20%;
+    }
+
+    .div-tb-addresses {
+        height: auto;
+    }
+
+    .addresses {
+        height: 100%;
+    }
+
+    .div-btn-finalizar {
+        width: 100%;
+    }
+
+    .detail-button {
+        font-size: 10px;
+        padding-left: 0.4rem;
+        padding-right: 0.4rem;
+    }
+
+    .donation-form {
+        padding: 15px;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-row > * {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .form-buttons button {
+        width: 100%;
+    }
 }
