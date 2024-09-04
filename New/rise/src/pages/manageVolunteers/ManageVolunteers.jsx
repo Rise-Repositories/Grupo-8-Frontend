@@ -334,7 +334,6 @@ const ManageVolunteers = () => {
 
     const handleSaveRole = async () => {
         if (selectedVolunteer && selectedRole) {
-            alert(selectedVolunteer)
             console.log(selectedVolunteer)
             try {
                 const config = {
@@ -345,7 +344,7 @@ const ManageVolunteers = () => {
                 };
 
                 const data = {
-                    VoluntaryRoles: selectedRole,
+                    "role": `${selectedRole}`
                 };
 
                 const response = await api.patch(`/voluntary/${selectedVolunteer.idVoluntarioOng}/role`, data, config);
