@@ -37,11 +37,11 @@ const History = () => {
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
+
   const totalAttended = (adults, children) => adults + children;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    // Adiciona horas para compensar o fuso horário se necessário
     date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
     return date.toLocaleDateString("pt-BR");
   };
@@ -58,10 +58,13 @@ const History = () => {
       {mapping && (
         <div className={styles.mappingDetails}>
           <div className={styles.cardLocate}>
-        
             <div className={styles.cardContent}>
-              <p className={styles.address}>{mapping.address.street}, {mapping.address.number}</p>
-              <p className={styles.date}>{formatDate(mapping.date)}</p>
+              <p className={styles.address}>
+                <strong>Endereço: </strong>{mapping.address.street}, {mapping.address.number}
+              </p>
+              <p className={styles.date}>
+                <strong>Data inicial de marcação: </strong>{formatDate(mapping.date)}
+              </p>
             </div>
           </div>
 
@@ -80,7 +83,9 @@ const History = () => {
                 <tr key={action.id}>
                   <td>{new Date(action.action.datetimeEnd).toLocaleDateString()}</td>
                   <td>{action.action.ong.name}</td>
-                  <td>{totalAttended(action.qtyServedAdults, action.qtyServedChildren)}</td>
+                  <td className={styles.centeredColumn}>
+                    {totalAttended(action.qtyServedAdults, action.qtyServedChildren)}
+                  </td>
                 </tr>
               ))}
             </tbody>

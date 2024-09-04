@@ -101,3 +101,9 @@ h2 {
   border-radius: 4px;
   cursor: pointer;
 }
+
+button {
+  background: none !important;
+  border: none !important;
+  font-size: 24px !important;
+}
