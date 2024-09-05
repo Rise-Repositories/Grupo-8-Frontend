@@ -12,6 +12,10 @@ import PrivateRoute from "./pages/login/PrivateRoute";
 import ManageVolunteers from "./pages/manageVolunteers/ManageVolunteers";
 import Home from "./pages/home/Home";
 import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
+import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
+import UserProfile from "./pages/profile-screens/profileMenu/ProfileMenu";
+import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/ProfileUpdateData";
+
 
 function Rotas() {
     return (
@@ -20,6 +24,7 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
+                <Route path="/action-history/:mappingId" element={<History />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <DashboardWrapper />
@@ -33,6 +38,7 @@ function Rotas() {
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
+                <Route path="/updateData" element={<ProfileUpdateData/>}></Route>
             </Routes>
         </BrowserRouter>
     );
