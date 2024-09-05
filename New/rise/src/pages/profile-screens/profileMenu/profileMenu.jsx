@@ -73,7 +73,6 @@ const UserProfile = () => {
       <div className={styles["profile-links"]}>
         <p>Olá Fernanda</p>
         <a href="#">Editar Perfil</a>
-        <a href="#">Alterar Senha</a>
       </div> <br /><br /><br />
 
       <h2>Localizações Cadastradas:</h2> <br /><br />

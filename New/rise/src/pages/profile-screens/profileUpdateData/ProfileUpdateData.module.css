@@ -1,34 +1,57 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
 body {
-  font-family: "Montserrat";
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
 }
 
-.profile-edit {
+/* .profile-edit {
     display: flex;
     flex-direction: column;
-    max-width: 430px;
+    max-width: 300px;
     margin: 0 auto;
     padding: 30px;
     font-family: Arial, sans-serif;
     align-items: center;
     text-align: center;
     justify-content: center;
+  } */
+
+  .container {
+    max-width: 400px;
+    gap: 20px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom:10vh;
   }
   
-  .back-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    position: absolute;
-    top: 20px;
-    left: 20px;
+  header {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
   }
 
+  .back-button {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1a3e95;
+  }
+  
+  h1 {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 24px;
+    color: #1a3e95;
+  }
   
   h2 {
     display: flex;
@@ -40,7 +63,9 @@ body {
   }
   
   .input-group {
-    margin-bottom: 5vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1vh;
     text-align: left;
     color: #2C5FC3;
   }
@@ -53,7 +78,7 @@ body {
   }
   
   input[type="text"],
-  input[type="email"] {
+  input[type="email"] , input[type="password"] {
     width: 300px;
     padding: 10px;
     font-size: 16px;
@@ -63,17 +88,12 @@ body {
   }
   
   .update-button {
+    margin-top: 30px;
     width: 100%;
-    padding: 15px;
     font-size: 16px;
-    color: #fff;
-    background-color: #2C5FC3;
-    border: none;
+    color: #ffffff;
+    background-color: #2C5FC3 !important; 
     border-radius: 8px;
     cursor: pointer;
-  }
-  
-  .update-button:hover {
-    background-color: #1a3f8a;
   }
   
