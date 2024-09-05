@@ -41,7 +41,7 @@ const Login = () => {
                 const token = respostaObtida.data.token;
                 login(token);
                 toast.success("Login efetuado com sucesso")
-                navigate('../dashboard');
+                navigate('../dashboard/main');
             })
             .catch((erroOcorrido) => {
                 console.log(erroOcorrido)

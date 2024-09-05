@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 
@@ -91,6 +88,8 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.75);
+    width: 100vh;
+    height: 100vh;
 }
 
 .modal {
