@@ -2,10 +2,10 @@ import React from "react";
 import styles from "./RedButton.module.css";
 
 const RedButton = ({
-    txt, onclick
+    txt, onclick, customStyle
 }) => {
     return (
-        <div className={styles["btn-red-bg"]} onClick={onclick}>{txt}</div>
+        <div className={`${styles["btn-red-bg"]} ${customStyle}`} onClick={onclick}>{txt}</div>
     );
 };
 

@@ -43,9 +43,6 @@
 
 
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 
