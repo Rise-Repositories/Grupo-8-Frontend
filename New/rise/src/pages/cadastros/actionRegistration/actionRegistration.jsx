@@ -125,11 +125,11 @@ const ActionRegistration = () => {
 
         },
         {
-            title: 'Qtd. Alunos',
-            dataIndex: 'alunos',
-            key: 'alunos',
+            title: 'Qtd. Adultos',
+            dataIndex: 'adultos',
+            key: 'adultos',
             sorter: {
-                compare: (a, b) => a.alunos - b.alunos,
+                compare: (a, b) => a.adultos - b.adultos,
                 multiple: 3,
             },
 
@@ -220,42 +220,42 @@ const ActionRegistration = () => {
         {
             key: 1,
             transtorno: 'Não',
-            alunos: 30,
+            adultos: 2,
             enderecos: 'Faria Lima, 930 - São Paulo',
             date: "20/08/2024",
-            criancas: 7
+            criancas: 1
         }, {
             key: 2,
             transtorno: 'Sim',
-            alunos: 31,
+            adultos: 3,
             enderecos: 'Haddock Lobo, 595 - Av. Paulista',
             date: "03/05/2022",
             criancas: 3
         }, {
             key: 3,
             transtorno: 'Não',
-            alunos: 30,
+            adultos: 3,
             enderecos: 'Faria Lima, 930 - São Paulo',
             date: "20/08/2024",
             criancas: 7
         }, {
             key: 4,
             transtorno: 'Não',
-            alunos: 30,
+            adultos: 4,
             enderecos: 'Faria Lima, 930 - São Paulo',
             date: "20/08/2024",
             criancas: 7
         }, {
             key: 5,
             transtorno: 'Não',
-            alunos: 30,
+            adultos: 2,
             enderecos: 'Faria Lima, 930 - São Paulo',
             date: "20/08/2024",
-            criancas: 7
+            criancas: 2
         }, {
             key: 6,
             transtorno: 'Não',
-            alunos: 32,
+            adultos: 2,
             enderecos: 'Av. Senador Vergueiro, 20 - Centro',
             date: "31/10/2023",
             criancas: 1
@@ -275,7 +275,10 @@ const ActionRegistration = () => {
                 rowExpandable: (record) => record.name === "",
             }}
             dataSource={data}
-            pagination={{ pageSize: 4 }}
+            scroll={{
+                x: 150,
+            }}
+            pagination={{ pageSize: 3 }}
         />
     );
 
@@ -299,8 +302,8 @@ const ActionRegistration = () => {
                 <Input.TextArea rows={4} />
             </Form.Item>
             <div className={styles["form-row"]}>
-            <LabelInput label={"Quantidade de adultos:"} placeholder={"Digite a quantidade"} />
-            <LabelInput label={"Quantidade de Crianças/adolescentes:"} placeholder={"Digite a quantidade"} />
+                <LabelInput label={"Quantidade de adultos:"} placeholder={"Digite a quantidade"} />
+                <LabelInput label={"Quantidade de Crianças/adolescentes:"} placeholder={"Digite a quantidade"} />
             </div>
         </Form>
     );
@@ -361,7 +364,7 @@ const ActionRegistration = () => {
                                     <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => setShowMapping(true)} />
                                 </div>
                                 <div className={styles["slider-group"]}>
-                                    <p>Em um raio de:</p>
+                                    <p>Em um raio de (em km):</p>
                                     <input
                                         type="range"
                                         min="1"
@@ -372,7 +375,7 @@ const ActionRegistration = () => {
                                     />
                                     <div className={styles["slider-labels"]}>
                                         {Array.from({ length: 10 }, (_, i) => i + 1).map((km) => (
-                                            <span key={km} className={radius == km ? styles.active : ''}>{km} km</span>
+                                            <span key={km} className={radius == km ? styles.active : ''}>{km} </span>
                                         ))}
                                     </div>
                                 </div>
@@ -443,7 +446,7 @@ const ActionRegistration = () => {
                 onCancel={handleCancel}
                 width={700}
                 footer={[
-                    <div style={{ textAlign: 'center'}}>
+                    <div style={{ textAlign: 'center' }}>
                         <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
                             <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
@@ -456,7 +459,7 @@ const ActionRegistration = () => {
                     !isFormVisible ? (
                         <>
                             <p><strong>Endereço:</strong> {selectedRecord.enderecos}</p>
-                            <p><strong>Quantidade de Alunos:</strong> {selectedRecord.alunos}</p>
+                            <p><strong>Quantidade de Adultos:</strong> {selectedRecord.adultos}</p>
                             <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord.criancas}</p>
                             <p><strong>Há pessoas com transtorno:</strong> {selectedRecord.transtorno}</p>
                             <p><strong>Última ação no local:</strong> {selectedRecord.date}</p>
