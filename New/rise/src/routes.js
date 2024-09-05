@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/login/Login";
 import VolunteerRegistration from "./pages/cadastros/volunteerRegistration/volunteerRegistration";
 import InstituteRegistration from "./pages/cadastros/instituteRegistration/InstituteRegistration";
+import ActionRegistration from "./pages/cadastros/actionRegistration/actionRegistration";
+
 import Dashboard from "./pages/dashboard/Dashboard";
 import InstituteList from "./pages/instituteList/InstituteList";
 import DashboardMapping from "./pages/dashboardMapping/DashboardMapping";
@@ -18,6 +20,7 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
+                <Route path="/action-registration" element={<ActionRegistration />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <DashboardWrapper />
