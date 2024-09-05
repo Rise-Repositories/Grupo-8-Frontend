@@ -1,41 +1,41 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-body {
+.profile-edit {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   width: 100%;
   font-family: Arial, sans-serif;
   background-color: #f7f7f7;
   margin: 0;
   padding: 0;
+
 }
 
 /* .profile-edit {
     display: flex;
+    width: 100%;
     flex-direction: column;
-    max-width: 300px;
-    margin: 0 auto;
+    margin: 0;
     padding: 30px;
     font-family: Arial, sans-serif;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
     justify-content: center;
   } */
 
   .container {
-    max-width: 400px;
-    gap: 20px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 10px;
+    padding: 20px;
     background-color: #fff;
-    margin-bottom:10vh;
   }
   
   header {
     display: flex;
     align-items: center;
     margin-top: 20px;
+    margin-bottom: 9vh;
   }
 
   .back-button {
@@ -62,8 +62,16 @@ body {
     font-weight: 700;
   }
   
+  .aux{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .input-group {
     display: flex;
+    width: 100%;
     flex-direction: column;
     margin-bottom: 1vh;
     text-align: left;
@@ -79,7 +87,7 @@ body {
   
   input[type="text"],
   input[type="email"] , input[type="password"] {
-    width: 300px;
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     border: 2px solid #c8c8c8;
