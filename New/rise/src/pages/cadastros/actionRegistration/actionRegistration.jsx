@@ -1,7 +1,6 @@
 //npm install antd react-highlight-words @ant-design/icons
 
 import React, { useRef, useState } from 'react';
-import SidebarButton from '../../../components/navbar/sidebarButton/sidebarButton';
 import styles from './actionRegistration.module.css';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
@@ -12,8 +11,6 @@ import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox } from 'antd
 import { SearchOutlined } from '@ant-design/icons'; // Importação do ícone de pesquisa
 import Highlighter from 'react-highlight-words'; // Importação do Highlighter para destacar texto
 import 'antd/dist/reset.css';
-import { color } from 'chart.js/helpers';
-import Sidebar from '../../../components/navbar/sidebar/Sidebar';
 
 
 const ActionRegistration = () => {
@@ -311,9 +308,8 @@ const ActionRegistration = () => {
     return (
         <>
             <div className={styles.page}>
-                <div className={`col-md-10 ${styles["content"]}`}>
+                <div className={`col-md-12 ${styles["content"]}`}>
                     <div className={styles.container}>
-                        <Sidebar />
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
                                 <a>Registro de ação</a>

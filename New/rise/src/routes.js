@@ -20,7 +20,6 @@ function Rotas() {
                 <Route path="/" element={<Login />} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
-                <Route path="/action-registration" element={<ActionRegistration />} />
                 <Route path="/dashboard" element={
                     <PrivateRoute>
                         <DashboardWrapper />
@@ -30,6 +29,7 @@ function Rotas() {
                     <Route path="mapping" element={<DashboardMapping />} />
                     <Route path="institute-list" element={<InstituteList />} />
                     <Route path="manage-volunteers" element={<ManageVolunteers />} />
+                    <Route path="action" element={<ActionRegistration />} />
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
