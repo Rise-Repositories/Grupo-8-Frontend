@@ -225,7 +225,8 @@ const InstituteRegistration = () => {
 
     return (
         <>
-            <NavBar />
+        <NavBar />
+        <div className={styles["body-content"]}>
             <div className={`${styles["header"]}`}>
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                 </div>
@@ -302,6 +303,7 @@ const InstituteRegistration = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </>
     );
 };

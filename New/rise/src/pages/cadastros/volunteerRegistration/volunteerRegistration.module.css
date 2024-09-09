@@ -1,15 +1,16 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
 
-body {
+.body-content {
     font-family: "Montserrat";
 }
 
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: end;
-    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100vh;
     background-color: #E9F5FE;
 }
 
@@ -28,19 +29,16 @@ body {
     box-shadow: 0px 7px 15px rgba(0, 0, 0, 1);
 }
 
-
 .right-form {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vh;
 }
 
 .form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 50%;
     margin-top: 16px;
     margin-bottom: 32px;
 }
@@ -61,5 +59,6 @@ body {
 .low-form {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     gap: 20px;
 }

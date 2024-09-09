@@ -1,19 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./DashboardMapping.module.css";
-import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import api from "../../api";
 import Heatmap from "../../components/heatmap/Heatmap";
 import { formatDate } from "../../utils/globals";
 import { AuthContext } from "../login/AuthContext";
-
-
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOutletContext } from "react-router-dom";
-
+import HashTable from "./HashTable/HashTable";
 
 const DashboardMapping = () => {
-
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
 
@@ -32,10 +28,26 @@ const DashboardMapping = () => {
                 beforeDate: dataFiltro ? dataFiltro : defaultDate.toISOString().split('T')[0]
             }
         }).then((res) => {
-            console.log(res);
-            setDadosMapeamento(res.data);
-        })
+            console.log('Dados da API:', res.data);
+            organizeMappings(res.data); // Organizar os dados na hash table
+        });
     }, [dataFiltro]);
+
+    // Função para organizar marcações utilizando a HashTable
+    const organizeMappings = (mappings) => {
+        const hashTable = new HashTable();
+
+        mappings.forEach(mapping => {
+            hashTable.addMapping(mapping);
+        });
+        console.log(hashTable)
+
+        // Definir os dados para o estado
+        setDadosMapeamento({
+            unattended: hashTable.getUnattendedMappings(),
+            prioritized: hashTable.getMappingsByPriority()
+        });
+    };
 
     return (
         <>
@@ -78,10 +90,18 @@ const DashboardMapping = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {dadosMapeamento && dadosMapeamento.map((dado, index) => (
+                                            {dadosMapeamento && dadosMapeamento.unattended.map((dado, index) => (
                                                 <tr key={index}>
-                                                    <td>{dado.address}</td>
-                                                    <td>{formatDate(dado.date)}</td>
+                                                    <td>{dado.address || 'Endereço desconhecido'}</td>
+                                                    <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
+                                                    <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
+                                                    <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
+                                                </tr>
+                                            ))}
+                                            {dadosMapeamento && dadosMapeamento.prioritized.map((dado, index) => (
+                                                <tr key={index}>
+                                                    <td>{dado.address || 'Endereço desconhecido'}</td>
+                                                    <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
                                                     <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
                                                     <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
                                                 </tr>
@@ -93,10 +113,9 @@ const DashboardMapping = () => {
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
         </>
     );
-}
-
+};
 
 export default DashboardMapping;

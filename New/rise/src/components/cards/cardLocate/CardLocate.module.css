@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+.location-card {
+  display: flex;
+  background-color: #1a3e95;
+  margin: 0;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  color: #fff;
+  font-family: "Montserrat";
+}
+
+.map-preview {
+  flex: 1;
+  /* background-image: url('path-to-your-map-image.png'); */
+  background-size: cover;
+  background-position: center;
+  height: 100px;
+}
+
+.info {
+  flex: 2;
+  padding: 10px;
+  background-color: #1a3e95;
+}
+
+.info p {
+  margin: 0;
+}
+
+.date {
+  color: #ffd700;
+  background-color: #1a3e95;
+  border-radius: 4px;
+  padding: 2px 5px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.actions-button {
+  background-color: #ffd700;
+  border: none;
+  color: #000;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}

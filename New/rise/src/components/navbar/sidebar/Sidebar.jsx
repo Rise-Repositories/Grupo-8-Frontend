@@ -1,13 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-
+import api from '../../../api';
 import { AuthContext } from '../../../pages/login/AuthContext';
 import riseLogo from '../../../utils/imgs/rise-logo.png';
 import logo from '../../../utils/imgs/logo.png';
+import { Select } from "antd";
+
 
 const Sidebar = ({ handleOngId, toggleSidebar }) => {
-
+    const [ongs, setOngs] = useState([]);
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
 
@@ -15,6 +17,45 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
         navigate(path);
         toggleSidebar();
     };
+
+    useEffect(() => {
+        const fetchOngs = async () => {
+            try {
+                const token = sessionStorage.getItem('USER_TOKEN');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+                const response = await api.get('/user/account', { headers });
+                const ongsList = response.data.voluntary.map(vol => vol.ong);
+                setOngs(ongsList);
+    
+                if (ongsList.length === 1) {
+                    sessionStorage.setItem('SELECTED_ONG_ID', ongsList[0].id);
+                    handleOngId(ongsList[0].id);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar ONGs:", error);
+            }
+        };
+    
+        fetchOngs();
+    }, []);
+    
+    const handleSelectChange = (value) => {
+        sessionStorage.setItem('SELECTED_ONG_ID', value);
+    };
+    
+    const selectProps = ongs.length > 1 ? {
+        onChange: handleSelectChange,
+        options: ongs.map((ong) => ({
+            value: ong.id,
+            label: ong.name
+        }))
+    } : {
+        value: ongs.length === 1 ? ongs[0].name : undefined,
+        disabled: true
+    };
+
 
     return (
         <>
@@ -27,6 +68,14 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                     </h3>
                     <div className={styles.instituteName}>
                         {sessionStorage.getItem("CUR_ONG")}
+                    </div>
+                    <div>
+                        <Select
+                            defaultValue={ongs.length === 1 ? ongs[0].name : "Selecione a ONG"}
+                            style={{ width: 120 }}
+                            {...selectProps}
+                            onChange={(value) => handleOngId(value)}
+                        />
                     </div>
                 </div>
 
@@ -44,21 +93,27 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                         </a>
                     </li>
                     <li className={styles.links}>
-                        <a className={styles.linkContent} href="#">
+                        <a className={styles.linkContent} onClick={() => handleNavigate('/dashboard/action')}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="#ffffff" d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z" /></svg>
                             <span>Registro de Ação</span>
                         </a>
                     </li>
                     <li className={styles.links}>
-                        <a className={styles.linkContent} href="#">
+                        <a className={styles.linkContent} onClick={() => handleNavigate('/dashboard/manage-volunteers')}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
-                            <span>Cadastrar voluntários</span>
+                            <span>Gerenciar voluntários</span>
                         </a>
                     </li>
                     <li className={styles.links} onClick={() => handleNavigate('/dashboard/institute-list')}>
                         <a className={styles.linkContent}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M480 48c0-26.5-21.5-48-48-48H336c-26.5 0-48 21.5-48 48V96H224V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V96H112V24c0-13.3-10.7-24-24-24S64 10.7 64 24V96H48C21.5 96 0 117.5 0 144v96V464c0 26.5 21.5 48 48 48H304h32 96H592c26.5 0 48-21.5 48-48V240c0-26.5-21.5-48-48-48H480V48zm96 320v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM240 416H208c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zM128 400c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM560 256c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32zM256 176v32c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM112 160c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32zM256 304c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM112 320H80c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zm304-48v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM400 64c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V80c0-8.8 7.2-16 16-16h32zm16 112v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16z" /></svg>
                             <span>Lista de instituições</span>
+                        </a>
+                    </li>
+                    <li className={styles.links} onClick={() => { handleNavigate('/home'); }}>
+                        <a className={styles.linkContent}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="#ffffff" d="M408 120c0 54.6-73.1 151.9-105.2 192c-7.7 9.6-22 9.6-29.6 0C241.1 271.9 168 174.6 168 120C168 53.7 221.7 0 288 0s120 53.7 120 120zm8 80.4c3.5-6.9 6.7-13.8 9.6-20.6c.5-1.2 1-2.5 1.5-3.7l116-46.4C558.9 123.4 576 135 576 152l0 270.8c0 9.8-6 18.6-15.1 22.3L416 503l0-302.6zM137.6 138.3c2.4 14.1 7.2 28.3 12.8 41.5c2.9 6.8 6.1 13.7 9.6 20.6l0 251.4L32.9 502.7C17.1 509 0 497.4 0 480.4L0 209.6c0-9.8 6-18.6 15.1-22.3l122.6-49zM327.8 332c13.9-17.4 35.7-45.7 56.2-77l0 249.3L192 449.4 192 255c20.5 31.3 42.3 59.6 56.2 77c20.5 25.6 59.1 25.6 79.6 0zM288 152a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
+                            <span>Cadastrar Localizações</span>
                         </a>
                     </li>
                     <li className={styles.links} onClick={() => { logout(); handleNavigate('/'); }}>
@@ -70,7 +125,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 </ul>
 
                 <div className={styles["logos"]}>
-                    <img src={riseLogo} alt="Rise Logo" />
+                    <img src={riseLogo} alt="Rise Logo" onClick={() => handleNavigate('/profileMenu')} />
                     |
                     <img src={logo} alt="Logo" />
                 </div>

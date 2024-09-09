@@ -42,6 +42,8 @@ const Dashboard = () => {
         qtyNoPeoplePercent: 0
     });
 
+    const [totalUsers, setTotalUsers] = useState(0);
+
     const [graphData, setGraphData] = useState([]);
 
     const [afterDate, setAfterDate] = useState("");
@@ -52,10 +54,11 @@ const Dashboard = () => {
 
             const params = date ? { afterDate: date } : {};
 
-            const [responseAccountData, responseKpis, responseGraphData] = await Promise.all([
+            const [responseAccountData, responseKpis, responseGraphData, userCount] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
                 api.get('/data/kpi', { params, headers }),
-                api.get('/data/mapping/graph?date=2024-07-01', { headers })
+                api.get('/data/mapping/graph?date=2024-07-01', { headers }),
+                api.get('/user/total-count', {headers})
             ]);
 
             setAccountData({
@@ -79,6 +82,7 @@ const Dashboard = () => {
             setGraphData(responseGraphData.data)
             console.log(responseGraphData.data);
 
+            setTotalUsers(userCount.data);
 
         } catch (error) {
             console.error('Erro ao buscar dados', error);
@@ -137,7 +141,7 @@ const Dashboard = () => {
 
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
-                                <a>Mapeamento</a>
+                                <a>Dashboard</a>
                             </div>
                             <div className={styles["align-input"]}>
                                 <StandardInput placeholder={"Pesquise aqui"} />
@@ -151,7 +155,7 @@ const Dashboard = () => {
                             <div className={`col-12 col-md-7 ${styles["default-box"]}`}>
                                 <div className={styles["top-info"]}>
                                     <div className={styles["page-name"]}>
-                                        <a>Gráfico mês a mês</a>
+                                        <a>Locais atendidos a cada mês</a>
                                     </div>
                                 </div>
                                 <Line
@@ -177,11 +181,14 @@ const Dashboard = () => {
                                 />
                             </div>
                             <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
+                                <div className={styles["page-name"]}>
+                                    <a>Engajamento</a>
+                                </div>
                                 <table className={styles.table}>
                                     <thead>
                                         <tr className={styles["default-list-line"]}>
-                                            <th>Cadastros</th>
-                                            <th>Cadastros Por Usuário</th>
+                                            <th>Locais Cadastrados</th>
+                                            <th>Porcentagem de Usuários</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -203,6 +210,9 @@ const Dashboard = () => {
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div className={styles["page-name"]}>
+                                    <a>Usuários cadastrados: {totalUsers}</a>
+                                </div>
                             </div>
                         </div>
                         <div className={`col-12 ${styles["default-box"]}`}>
@@ -219,7 +229,7 @@ const Dashboard = () => {
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
                                     {/* <a>Análise das métricas do mês de {afterDate}</a> */}
-                                    <a>Análise das métricas totais</a>
+                                    <a>Locais atendidos desde o início</a>
                                 </div>
                             </div>
                             <div className={styles["flexRow"]}>
