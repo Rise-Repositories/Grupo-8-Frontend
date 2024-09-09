@@ -153,6 +153,11 @@
     margin: auto;
 }
 
+.padding-detalhes{
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
 .detail-button {
     font-family: 'Montserrat';
     background-color: #2968C8;
