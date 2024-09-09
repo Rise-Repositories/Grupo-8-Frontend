@@ -15,7 +15,7 @@ const NavbarVertical = () => {
     }
 
     return (
-        <>
+        <div className={styles["body-content"]}>
             <nav className={`col-md-2 ${styles["sidebar"]}`}>
                 <div className={styles.container}>
                     <div className={styles.upPart}>
@@ -89,7 +89,7 @@ const NavbarVertical = () => {
 
                 </div>
             </nav>
-        </>
+        </div>
     );
 };
 

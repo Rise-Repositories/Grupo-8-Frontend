@@ -63,19 +63,19 @@ const UserProfile = () => {
 
   return (
     <div className={styles["container"]}>
-      <header>
-        <button className={styles.backButton} onClick={() => window.history.back()}>
+      <header className={styles["profile-header"]}>
+        <button className={styles["back-button"]} onClick={() => window.history.back()}>
           <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
         </button>
-        <h1>Histórico</h1>
+        <h1 className={styles["header-1"]}>Histórico</h1>
       </header>
 
       <div className={styles["profile-links"]}>
-        <p>Olá Fernanda</p>
-        <a onClick={() => navigate("/updateData")}>Editar Perfil</a>
+        <p className={styles["text"]}>Olá Fernanda</p>
+        <a className={styles["link"]} onClick={() => navigate("/updateData")}>Editar Perfil</a>
       </div> <br /><br /><br />
 
-      <h2>Localizações Cadastradas:</h2> <br /><br />
+      <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />
 
       {userMappings.map((i) =>
         <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)} />

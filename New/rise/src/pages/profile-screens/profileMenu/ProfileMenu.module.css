@@ -5,7 +5,7 @@
   background-color: #fff;
 }
 
-header {
+.profile-header {
   display: flex;
   align-items: center;
   margin-top: 20px;
@@ -19,7 +19,7 @@ header {
   color: #1a3e95;
 }
 
-h1 {
+.header-1 {
   flex-grow: 1;
   text-align: center;
   font-size: 24px;
@@ -33,19 +33,19 @@ h1 {
 
 }
 
-.profile-links p {
+.profile-links .text {
   font-size: 20px;
   margin-top: 20px;
 }
 
-.profile-links a {
+.profile-links .link {
   display: block;
   color: #1a3e95;
   text-decoration: none;
   margin: 5px 0;
 }
 
-h2 {
+.header-2 {
   font-size: 18px;
   color: #000;
 }
@@ -93,10 +93,4 @@ h2 {
   padding: 10px 15px;
   border-radius: 4px;
   cursor: pointer;
-}
-
-button {
-  background: none !important;
-  border: none !important;
-  font-size: 24px !important;
 }

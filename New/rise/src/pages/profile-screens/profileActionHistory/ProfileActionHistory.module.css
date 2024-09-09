@@ -13,8 +13,14 @@
 }
 
 .h2NoMargin {
+  font-size: 18px;
   color: #2C5FC3;
   margin-bottom: 0px !important;
+}
+
+.h2Margin {
+  font-size: 18px;
+  color: #0057b8;
 }
 
 .backButton {
@@ -23,11 +29,6 @@
   font-size: 24px;
   cursor: pointer;
   margin-right: 10px;
-}
-
-h2 {
-  font-size: 18px;
-  color: #0057b8;
 }
 
 .mappingDetails {
