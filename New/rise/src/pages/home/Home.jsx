@@ -3,6 +3,7 @@ import styles from "./Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { FaSearch, FaMapPin } from "react-icons/fa";
 import NewMarkerModal from "../../components/modals/newMarkerModal/NewMarkerModal";
+import ExistingMarkerModal from "../../components/modals/existingMarkerModal/ExistingMarkerModal";
 import axios from "axios";
 import { toast } from "react-toastify";
 import NavbarMobile from "../../components/navbar/navbarMobile/NavbarMobile";
@@ -20,7 +21,8 @@ const Home = () => {
     const [currentPosition, setCurrentPosition] = useState();
     const [search, setSearch] = useState();
     const [serachResults, setSearchResults] = useState();
-    const [open, setOpen] = useState(false);
+    const [openNewMapping, setOpenNewMapping] = useState(false);
+    const [openExistingMapping, setOpenExistingMapping] = useState(false);
     const [infos, setInfos] = useState()
     const mapRef = useRef();
 
@@ -106,13 +108,7 @@ const Home = () => {
                     return
                 }
 
-                setInfos({
-                    lat,
-                    lng,
-                    address,
-                })
-
-                handleModal()
+                checkLocation(lat,lng, address);
             },
             moveend: () => {
                 console.log(currentPosition)
@@ -130,9 +126,44 @@ const Home = () => {
             }
         })
     }
-    const handleModal = () => {
-        setOpen(!open)
+    const handleModalNewMapping = () => {
+        setOpenExistingMapping(false);
+        setOpenNewMapping(!openNewMapping)
     }
+
+    const handleModalExistingMapping = () => {
+        setOpenExistingMapping(!openExistingMapping)
+    }
+
+    const checkLocation = async (lat, lng, address) => {
+        const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+            },
+        });
+        if (status === 200 || status === 204) {
+            if (data.length > 0) {
+                setInfos({
+                    lat,
+                    lng,
+                    address,
+                    mappings: data
+                });
+                handleModalExistingMapping();
+            } else {
+                setInfos({
+                    lat,
+                    lng,
+                    address,
+                });
+                handleModalNewMapping();
+            }
+        }
+        console.log('data, ',data);
+        console.log('data, ',status);
+    }
+
     const icon = new Icon({
         iconUrl: MarkerIcon,
         iconSize: [30,30]
@@ -196,8 +227,13 @@ const Home = () => {
                 : null
             }
             {
-                open &&
-                    <NewMarkerModal getMarkers={getMarkers} handleClose={handleModal} infos={infos}/>
+                openNewMapping &&
+                    <NewMarkerModal getMarkers={getMarkers} handleClose={handleModalNewMapping} infos={infos}/>
+
+            }
+            {
+                openExistingMapping &&
+                    <ExistingMarkerModal getMarkers={getMarkers} handleClose={handleModalExistingMapping} handleNewMapping={handleModalNewMapping} infos={infos}/>
 
             }
         </div>
