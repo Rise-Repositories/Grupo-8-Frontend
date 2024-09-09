@@ -1,6 +1,5 @@
 
 .container {
-
     position: relative;
     z-index: 1050;
 }
@@ -8,10 +7,6 @@
 .offcanvas-backdrop {
     z-index: 1040;
   }
-
-body {
-    font-family: "Montserrat";
-}
 
 .fixed-button {
     position: fixed;
@@ -63,16 +58,16 @@ body {
     width: 30px;
 }
 
-.links svg {
-    color: #fff;
-    width: 25px;
-    height: 25px;
-}
-
 .links {
     color: #fff;
     list-style: none;
     cursor: pointer;
+}
+
+.links svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
 }
 
 .linkContent {
@@ -95,6 +90,7 @@ body {
     align-items: center;
     background-color: #2968C8;
     z-index: 99;
+    font-family: "Montserrat";
     -webkit-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
     -moz-box-shadow: 10px 0px 40px 0px rgba(0, 0, 0, 0.43);
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.43);

@@ -7,25 +7,17 @@
     height: 100%;
 }
 
-
 .dash-title {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
-
-    h1 {
-        font-size: 24px;
-        color: #00006B;
-        font-weight: 600;
-    }
 }
 
 .tableHeightScroll {
     height: 60vh;
     overflow: scroll;
 }
-
 
 .dash-map {
     display: flex;
@@ -38,9 +30,6 @@
         height: 60vh;
     }
 }
-
-
-
 
 .page {
     font-family: "Montserrat";

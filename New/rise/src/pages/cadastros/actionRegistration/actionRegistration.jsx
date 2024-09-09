@@ -158,7 +158,7 @@ const ActionRegistration = () => {
             dataIndex: '',
             key: 'x',
             render: (record) => (
-                <button onClick={() => showDetalhes(record)} className={styles["detail-button"]}>Detalhes</button>
+                <BlueButton txt="Detalhes" onClick={() => showDetalhes(record)} className={styles["detail-button"]} customStyle={styles["padding-detalhes"]}/>
             ),
         },
     ];

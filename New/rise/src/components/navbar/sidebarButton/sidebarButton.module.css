@@ -1,27 +1,27 @@
 .button {
-    text-decoration: none;
-    color: rgb(0, 0, 0);
-    height: 45px;
-    width: 45px;
-    left: 20px;
-    top: 20px;
-    z-index: 1050;
-    position: fixed;
-    background-color: #ababab;
-    opacity: 0.5;
-    border: none;
-    box-shadow: none;
-  }
-  
-  .button:focus,
-  .button:active {
-    color: rgb(0, 0, 0);
-    background-color: #ababab; 
-    opacity: 0.5;
-  }
-  
-  .button:hover {
-    background-color: #497BC6;
-    color: white;
-    opacity: 1;
-  }
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  height: 45px;
+  width: 45px;
+  left: 20px;
+  top: 20px;
+  z-index: 1050;
+  position: fixed;
+  background-color: #ababab;
+  opacity: 0.5;
+  border: none;
+  box-shadow: none;
+}
+
+.button:focus,
+.button:active {
+  color: rgb(0, 0, 0);
+  background-color: #ababab; 
+  opacity: 0.5;
+}
+
+.button:hover {
+  background-color: #497BC6;
+  color: white;
+  opacity: 1;
+}
