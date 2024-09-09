@@ -72,27 +72,14 @@ const UserProfile = () => {
 
       <div className={styles["profile-links"]}>
         <p>Olá Fernanda</p>
-        <a href="#">Editar Perfil</a>
+        <a onClick={() => navigate("/updateData")}>Editar Perfil</a>
       </div> <br /><br /><br />
 
       <h2>Localizações Cadastradas:</h2> <br /><br />
 
-
       {userMappings.map((i) =>
         <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)} />
       )}
-
-
-
-      {/* <div className={styles["location-card"]}>
-        <div className={styles["map-preview"]}></div>
-        <div className={styles["info"]}>
-          <p>R. Eduardo Prado, 28</p>
-          <p className={styles["date"]}>18/20/2024</p>
-          <button className={styles["actions-button"]}>Ver ações</button>
-        </div>
-      </div> */}
-
     </div>
   );
 };
