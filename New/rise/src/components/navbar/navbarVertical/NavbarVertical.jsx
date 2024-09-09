@@ -81,7 +81,7 @@ const NavbarVertical = () => {
                         </li>
                     </ul>
 
-                    <div className={styles["logos"]}>
+                    <div className={styles["logos"]} onClick={() => handleNavigate('/profileMenu')}>
                         <img src={riseLogo} alt="Rise Logo" />
                         |
                         <img src={logo} alt="Logo" />
