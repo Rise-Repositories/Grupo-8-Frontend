@@ -52,7 +52,7 @@ const History = () => {
         <button className={styles.backButton} onClick={() => window.history.back()}>
           <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
         </button>
-        <h2 className={styles["h2NoMargin"]}>Histórico da Marcação</h2>
+        <h2 className={styles.h2NoMargin}>Histórico da Marcação</h2>
       </header>
       
       {mapping && (
@@ -68,7 +68,7 @@ const History = () => {
             </div>
           </div>
 
-          <h2>Ações realizadas:</h2>
+          <h2 className={styles.h2Margin}>Ações realizadas:</h2>
 
           <table className={styles.actionsTable}>
             <thead>

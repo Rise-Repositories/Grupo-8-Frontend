@@ -164,7 +164,8 @@ const VolunteerRegistration = () => {
 
     return (
         <>
-            <NavBar />
+        <NavBar />
+        <div className={styles["body-content"]}>
             <div className={`${styles["header"]}`}>
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                 </div>
@@ -210,6 +211,7 @@ const VolunteerRegistration = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </>
     );
 };
