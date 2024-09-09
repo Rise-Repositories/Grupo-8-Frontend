@@ -75,7 +75,7 @@ const Login = () => {
                                     <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
                                     <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
                                 </div>
-                                <a href="#" className="forgot-password-link">Esqueci minha senha</a>
+                                <a href="/recover-password" className="forgot-password-link">Esqueci minha senha</a>
                             </div>
                         </div>
 
