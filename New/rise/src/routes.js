@@ -14,9 +14,9 @@ import Home from "./pages/home/Home";
 import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
 import RecoverPassword from "./pages/recoverPassword/RecoverPassword";
 import ChangePassword from "./pages/changePassword/ChangePassword";
-import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
-import UserProfile from "./pages/profile-screens/profileMenu/ProfileMenu";
-import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/ProfileUpdateData";
+import History from "./pages/profile-screens/profileActionHistory/profileActionHistory";
+import UserProfile from "./pages/profile-screens/profileMenu/profileMenu";
+import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/profileUpdateData";
 
 function Rotas() {
     return (
