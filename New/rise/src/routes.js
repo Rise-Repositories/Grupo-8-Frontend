@@ -12,16 +12,19 @@ import PrivateRoute from "./pages/login/PrivateRoute";
 import ManageVolunteers from "./pages/manageVolunteers/ManageVolunteers";
 import Home from "./pages/home/Home";
 import DashboardWrapper from "./pages/dashboardWrapper/DashboardWrapper";
+import RecoverPassword from "./pages/recoverPassword/RecoverPassword";
+import ChangePassword from "./pages/changePassword/ChangePassword";
 import History from "./pages/profile-screens/profileActionHistory/ProfileActionHistory";
 import UserProfile from "./pages/profile-screens/profileMenu/ProfileMenu";
 import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/ProfileUpdateData";
-
 
 function Rotas() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login />} />
+                <Route path="/recover-password" element={<RecoverPassword />} />
+                <Route path="/change-password/:id"  element={<ChangePassword/>} />
                 <Route path="/volunteer-registration" element={<VolunteerRegistration />} />
                 <Route path="/institute-registration" element={<InstituteRegistration />} />
                 <Route path="/action-history/:mappingId" element={<History />} />
