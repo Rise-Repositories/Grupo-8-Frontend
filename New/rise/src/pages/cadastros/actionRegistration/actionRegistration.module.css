@@ -310,6 +310,55 @@
     padding: 10px;
 }
 
+@media (max-width: 1635px){
+
+
+    .default-box, .default-box-mapping, .default-box-addresses {
+        width: 100%;
+        padding: 20px;
+        gap: 15px;
+    }
+
+
+    .default-box-addresses {
+        flex-direction: column;
+        height: auto;
+        padding: 0;
+    }
+
+    .map{
+        width: 70%;
+        height: 50vh;
+        margin-top: 10px;
+    }
+
+    .map-addresses {
+        width: 50%;
+        height: 50vh;
+        margin-top: 10px;
+    }
+
+    .map-addresses .div-time-action{
+        height: 15vh;
+    }
+
+    .map-addresses .indicator-labels{
+        height: 100px;
+    }
+
+    .div-tb-addresses {
+        height: auto;
+        overflow-x: auto;
+    }
+
+    .addresses {
+        height: 100%;
+        width: 100%;
+        overflow-x: scroll;
+    } 
+
+}
+
 
 @media (max-width: 450px) {
 
