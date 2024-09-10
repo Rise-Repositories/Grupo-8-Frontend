@@ -158,8 +158,9 @@ const Dashboard = () => {
                                         <a>Locais atendidos a cada mês</a>
                                     </div>
                                 </div>
+                                <div className={`${styles["chart-box"]}`}>
                                 <Line
-                                    className={styles}
+                                    className={styles.chart}
                                     data={data}
                                     options={{
                                         responsive: true,
@@ -171,6 +172,7 @@ const Dashboard = () => {
                                                 radius: 2
                                             },
                                         },
+                                        maintainAspectRatio: false,
                                         plugins: {
                                             legend: {
                                                 display: true,
@@ -179,6 +181,7 @@ const Dashboard = () => {
                                         }
                                     }}
                                 />
+                                </div>
                             </div>
                             <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
                                 <div className={styles["page-name"]}>
