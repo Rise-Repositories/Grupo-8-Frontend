@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import { toast } from "react-toastify";
-import { validateText, validateCPF, validateEmail, validateCEP, validatePassword } from "../../../utils/globals";
+import { validateText, validateCPF, validateEmail, validateCEP } from "../../../utils/globals";
 import api from "../../../api";
 
 function ProfileUpdateData() {
@@ -17,10 +17,8 @@ function ProfileUpdateData() {
   const [logradouro, setLogradouro] = useState("");
   const [numeroEstabelecimento, setNumeroEstabelecimento] = useState("");
   const [complemento, setComplemento] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
-  const [userId, setUserId] = useState(null); // Adicione um estado para o ID do usuário
+  const [userId, setUserId] = useState(null);
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   useEffect(() => {
@@ -34,10 +32,11 @@ function ProfileUpdateData() {
         }
 
         const userData = response.data;
-        setUserId(userData.id); // Supondo que a resposta contém o campo 'id'
+        setUserId(userData.id);
         setName(userData.name);
         setEmail(userData.email);
         setCpf(userData.cpf);
+        setCep(userData.address.cep);
         setAddress(userData.address);
         setCidade(userData.address.city);
         setEstado(userData.address.state);
@@ -111,28 +110,25 @@ function ProfileUpdateData() {
       return;
     }
 
-    if (!validatePassword(password)) {
-      toast.error(<div>
-        Senha deve conter:<br />
-        - 1 caractere minúsculo<br />
-        - 1 caractere maiúsculo<br />
-        - 1 número<br />
-        - 1 caractere especial<br />
-        - pelo menos 6 caracteres
-      </div>);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('As senhas são diferentes');
-      return;
-    }
-
-    const userDto = { name, email, cpf, address: { street: logradouro, number: numeroEstabelecimento, complement: complemento, city: cidade, state: estado }, password };
+    const userDto = {
+      name,
+      email,
+      cpf,
+      address: {
+        cep,
+        street: logradouro,
+        number: numeroEstabelecimento,
+        complement: complemento,
+        city: cidade,
+        state: estado
+      }
+    };
 
     try {
       const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
       const response = await api.put(`/user/${userId}`, userDto, { headers });
+
+      console.log(response)
 
       if (response.status === 200) {
         toast.success("Usuário atualizado com sucesso!");
@@ -173,25 +169,19 @@ function ProfileUpdateData() {
               <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} value={cep} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={cidade || "Cidade"} label={"Cidade"} disabled={true} />
+              <LabelInput placeholder={cidade || "Cidade"} label={"Cidade"} value={cidade} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={estado || "Estado"} label={"Estado"} disabled={true} />
+              <LabelInput placeholder={estado || "Estado"} label={"Estado"} value={estado} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={logradouro || "Logradouro"} label={"Logradouro"} disabled={true} />
+              <LabelInput placeholder={logradouro || "Logradouro"} label={"Logradouro"} value={logradouro} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"000"} label={"Número"} value={numeroEstabelecimento} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"Apto 00"} label={"Complemento"} value={complemento} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Senha"} label={"Nova Senha"} type={"password"} value={password} onInput={(e) => handleInputChange(e.target.value, setPassword)} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Confirme a Senha"} label={"Confirmar Senha"} type={"password"} value={confirmPassword} onInput={(e) => handleInputChange(e.target.value, setConfirmPassword)} />
             </div>
             <button type="submit" className={styles["update-button"]}>Atualizar</button>
           </div>
