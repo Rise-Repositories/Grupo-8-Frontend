@@ -111,15 +111,9 @@ function ProfileUpdateData() {
   }
 
   return (
-<<<<<<< Updated upstream
-        <div className={"col-12 col-md-5 mx-md-auto"} >
-    <div className={styles["container"]}>
-        <header className={styles["profile-header"]}>
-=======
     <div className={"col-12 col-md-5 mx-md-auto"}>
       <div className={styles["container"]}>
-        <header>
->>>>>>> Stashed changes
+        <header className={styles["profile-header"]}>
           <button className={styles.backButton} onClick={() => window.history.back()}>
             <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
           </button>
@@ -128,40 +122,13 @@ function ProfileUpdateData() {
         <form onSubmit={handleSubmit}>
           <div className={styles["aux"]}>
             <div className={styles["input-group"]}>
-<<<<<<< Updated upstream
-              <label className={styles["input-label"]} htmlFor="name">Nome:</label>
-              <input className={styles["text-input"]} type="text" id="name" placeholder="Nome Exemplo" />
+              <LabelInput placeholder={"Nome Exemplo"} label={"Nome"} value={name} onInput={(e) => handleInputChange(e.target.value, setName)} />
             </div>
             <div className={styles["input-group"]}>
-              <label className={styles["input-label"]} htmlFor="email">E-mail:</label>
-              <input className={styles["text-input"]} type="email" id="email" placeholder="exemplo@gmail.com" />
+              <LabelInput placeholder={"exemplo@gmail.com"} label={"E-mail"} value={email} onInput={(e) => handleInputChange(e.target.value, setEmail)} />
             </div>
             <div className={styles["input-group"]}>
-              <label className={styles["input-label"]} htmlFor="cpf">CPF:</label>
-              <input className={styles["text-input"]} type="text" id="cpf" placeholder="XXX.XXX.XXX-XX" />
-            </div>
-            <div className={styles["input-group"]}>
-              <label className={styles["input-label"]} htmlFor="address">Endereço:</label>
-              <input className={styles["text-input"]} type="text" id="address" placeholder="Rua Exemplo N°X" />
-            </div>
-            <div className={styles["input-group"]}>
-              <label className={styles["input-label"]} htmlFor="address">Nova Senha:</label>
-              <input className={styles["text-input"]} type="password" id="address" placeholder="" />
-            </div>
-            <div className={styles["input-group"]}>
-              <label className={styles["input-label"]} htmlFor="address">Confirmar nova senha:</label>
-              <input className={styles["text-input"]} type="password" id="address" placeholder="" />
-=======
-              <label htmlFor="name">Nome:</label>
-              <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome Exemplo" />
-            </div>
-            <div className={styles["input-group"]}>
-              <label htmlFor="email">E-mail:</label>
-              <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="exemplo@gmail.com" />
-            </div>
-            <div className={styles["input-group"]}>
-              <label htmlFor="cpf">CPF:</label>
-              <input type="text" id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value)} placeholder="XXX.XXX.XXX-XX" />
+              <LabelInput placeholder={"XXX.XXX.XXX-XX"} label={"CPF"} value={cpf} onInput={(e) => handleInputChange(e.target.value, setCpf)} />
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
@@ -171,31 +138,30 @@ function ProfileUpdateData() {
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={estado} label={"Estado"} disabled={true} />
->>>>>>> Stashed changes
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)}/>
+              <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
             </div>
 
-            {/*   <div className={styles["input-group"]}>
-              <label htmlFor="password">Nova Senha:</label>
-              <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            {/* Caso queira adicionar os campos de senha no futuro */}
+            {/* <div className={styles["input-group"]}>
+              <LabelInput placeholder={"Senha"} label={"Nova Senha"} type={"password"} value={password} onInput={(e) => handleInputChange(e.target.value, setPassword)} />
             </div>
             <div className={styles["input-group"]}>
-              <label htmlFor="confirmPassword">Confirmar nova senha:</label>
-              <input type="password" id="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              <LabelInput placeholder={"Confirme a Senha"} label={"Confirmar Senha"} type={"password"} value={confirmPassword} onInput={(e) => handleInputChange(e.target.value, setConfirmPassword)} />
             </div> */}
+            
             <button type="submit" className={styles["update-button"]}>Atualizar</button>
           </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
 
