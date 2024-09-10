@@ -116,13 +116,12 @@ function ProfileUpdateData() {
       cpf,
       address: {
         cep,
-        street: logradouro,
         number: numeroEstabelecimento,
-        complement: complemento,
-        city: cidade,
-        state: estado
+        complement: complemento
       }
     };
+
+    console.log(userDto)
 
     try {
       const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
