@@ -36,7 +36,7 @@ const NavbarMobile = () => {
                         <FaHeart size={25} color="#2968C8"/>
                         <p>Acesso Institucional</p>
                     </button>
-                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/dashboard')}>
+                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/dashboard/main')}>
                         <FaChartBar size={25} color="#2968C8"/>
                         <p>Dashboard</p>
                     </button>
