@@ -246,19 +246,19 @@ const InstituteRegistration = () => {
                             <LabelInput placeholder={"Digite seu CNPJ"} label={"CNPJ"} onInput={(e) => handleInputChange(e.target.value.substring(0, 18), setCnpj)} mask="99.999.999/9999-99" onBlur={(e) => handleCNPJBlur(e)}/>
                             <LabelInput placeholder={"Digite o CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCepOng)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e, "ong")}}/>
                             <div className='row'>
-                                <div className='col-md-8'>
+                                <div className='col-8 col-md-8'>
                                     <LabelInput placeholder={cidadeOng} label={"Cidade"} disabled={true}/>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-4 col-md-4'>
                                     <LabelInput placeholder={estadoOng} label={"Estado"} disabled={true}/>
                                 </div>
                             </div>
                             <LabelInput placeholder={logradouroOng} label={"Logradouro"} disabled={true}/>
                             <div className={'row'}>
-                                <div className='col-md-4'>
+                                <div className='col-4 col-md-4'>
                                     <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimentoOng)} type="number"/>
                                 </div>
-                                <div className='col-md-8'>
+                                <div className='col-8 col-md-8'>
                                     <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplementoOng)}/>
                                 </div>
                             </div>
@@ -271,19 +271,19 @@ const InstituteRegistration = () => {
                             <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)}/>
                             <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCepUser)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e, "user")}}/>
                             <div className='row'>
-                                <div className='col-md-8'>
+                                <div className='col-8 col-md-8'>
                                     <LabelInput placeholder={cidadeUser} label={"Cidade"} disabled={true}/>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-4 col-md-4'>
                                     <LabelInput placeholder={estadoUser} label={"Estado"} disabled={true}/>
                                 </div>
                             </div>
                             <LabelInput placeholder={logradouroUser} label={"Logradouro"} disabled={true}/>
                             <div className={'row'}>
-                                <div className='col-md-4'>
+                                <div className='col-4 col-md-4'>
                                     <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimentoUser)} type="number"/>
                                 </div>
-                                <div className='col-md-8'>
+                                <div className='col-8 col-md-8'>
                                     <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplementoUser)}/>
                                 </div>
                             </div>

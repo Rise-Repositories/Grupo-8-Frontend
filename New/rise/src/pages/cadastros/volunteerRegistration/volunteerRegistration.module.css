@@ -10,7 +10,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
-    height: 100vh;
+    margin-top: 10vh;
     background-color: #E9F5FE;
 }
 
@@ -33,6 +33,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 .form {

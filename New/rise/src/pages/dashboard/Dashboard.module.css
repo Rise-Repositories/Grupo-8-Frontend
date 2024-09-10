@@ -3,6 +3,11 @@
 .chart {
     min-width: 100%;
 }
+
+.chart-box {
+    min-height: 300px;
+}
+
 .page {
     font-family: "Montserrat";
 }
