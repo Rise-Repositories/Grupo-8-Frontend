@@ -49,6 +49,12 @@ const Login = () => {
             })
     }
 
+    const loginOnEnter = (event) => {
+        if (event.key === "Enter") {
+            entrar();
+        }
+    }
+
     return (
         <>
         <NavBar />
@@ -68,8 +74,8 @@ const Login = () => {
                         </div>
 
                         <div className={`${styles["container-inputs-form"]}`}>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)}/>
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password"/>
+                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)} onKeyPress={(e) => loginOnEnter(e)}/>
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password" onKeyPress={(e) => loginOnEnter(e)}/>
 
                             <div className={`${styles['low-form']}`}>
                                 <div className="form-group form-check">
