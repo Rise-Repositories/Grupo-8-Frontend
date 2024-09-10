@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import { toast } from "react-toastify";
-import { validateCEP } from "../../../utils/globals";
+import { validateText, validateCPF, validateEmail, validateCEP, validatePassword } from "../../../utils/globals";
 import api from "../../../api";
 
 function ProfileUpdateData() {
@@ -20,6 +20,7 @@ function ProfileUpdateData() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
+  const [userId, setUserId] = useState(null); // Adicione um estado para o ID do usuário
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   useEffect(() => {
@@ -31,90 +32,128 @@ function ProfileUpdateData() {
         if (response.status !== 200) {
           throw new Error('Erro ao buscar os detalhes do usuário.');
         }
-        console.log(response.data.address)
 
         const userData = response.data;
+        setUserId(userData.id); // Supondo que a resposta contém o campo 'id'
         setName(userData.name);
         setEmail(userData.email);
         setCpf(userData.cpf);
         setAddress(userData.address);
+        setCidade(userData.address.city);
+        setEstado(userData.address.state);
+        setLogradouro(userData.address.street);
+        setNumeroEstabelecimento(userData.address.number);
+        setComplemento(userData.address.complement);
       } catch (error) {
         console.error("Erro ao buscar detalhes do usuário:", error);
-        alert("Erro ao carregar os dados do usuário.");
+        toast.error("Erro ao carregar os dados do usuário.");
       }
     };
 
     fetchUserDetails();
   }, [userToken]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      alert("As senhas não coincidem!");
-      return;
-    }
-
-    const userDto = { name, email, cpf, address, password };
-
-    try {
-      const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
-      const response = await api.put(`/user/account`, userDto, { headers });
-
-      if (response.status === 200) {
-        alert("Usuário atualizado com sucesso!");
-        console.log("Usuário atualizado:", response.data);
-      } else if (response.status === 409) {
-        alert("Conflito: O email ou CPF já está em uso.");
-      } else if (response.status === 404) {
-        alert("Usuário não encontrado.");
-      } else {
-        alert("Erro ao atualizar usuário.");
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar o usuário:", error);
-      alert("Erro ao atualizar o usuário.");
+  const handleCPFBlur = (event) => {
+    if (!validateCPF(event.target.value)) {
+      toast.error('CPF inválido');
     }
   };
-
-  const fillAddress = (event) => {
-    if (validateCEP(event.target.value)) {
-      fetch(`https://viacep.com.br/ws/${event.target.value}/json`, {
-        method: 'GET'
-      })
-        .then(fetchRes => {
-          let corpoRes = fetchRes.json().then((corpoRes) => {
-            console.log(corpoRes);
-            if (corpoRes.erro) {
-              toast.error('CEP inválido');
-            } else {
-              setEstado(corpoRes.uf)
-              setCidade(corpoRes.localidade);
-              setLogradouro(corpoRes.logradouro)
-            }
-          }).catch(err => {
-            toast.error('CEP inválido');
-          });
-        });
-    }
-  }
-
 
   const handleCEPBlur = (event) => {
     if (!validateCEP(event.target.value)) {
       toast.error('CEP inválido');
     }
-  }
+  };
+
+  const fillAddress = async (event) => {
+    if (validateCEP(event.target.value)) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${event.target.value}/json`);
+        const data = await response.json();
+
+        if (data.erro) {
+          toast.error('CEP inválido');
+        } else {
+          setEstado(data.uf);
+          setCidade(data.localidade);
+          setLogradouro(data.logradouro);
+        }
+      } catch (err) {
+        toast.error('Erro ao buscar o CEP');
+      }
+    }
+  };
 
   const handleInputChange = (value, setStateFunction) => {
     setStateFunction(value);
-  }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateText(name)) {
+      toast.error('Nome inválido');
+      return;
+    }
+
+    if (!validateCPF(cpf)) {
+      toast.error('CPF inválido');
+      return;
+    }
+
+    if (!validateCEP(cep)) {
+      toast.error("CEP inválido");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error('E-mail inválido');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      toast.error(<div>
+        Senha deve conter:<br />
+        - 1 caractere minúsculo<br />
+        - 1 caractere maiúsculo<br />
+        - 1 número<br />
+        - 1 caractere especial<br />
+        - pelo menos 6 caracteres
+      </div>);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('As senhas são diferentes');
+      return;
+    }
+
+    const userDto = { name, email, cpf, address: { street: logradouro, number: numeroEstabelecimento, complement: complemento, city: cidade, state: estado }, password };
+
+    try {
+      const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
+      const response = await api.put(`/user/${userId}`, userDto, { headers });
+
+      if (response.status === 200) {
+        toast.success("Usuário atualizado com sucesso!");
+      } else if (response.status === 409) {
+        toast.error("Conflito: O email ou CPF já está em uso.");
+      } else if (response.status === 404) {
+        toast.error("Usuário não encontrado.");
+      } else {
+        toast.error("Erro ao atualizar usuário.");
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar o usuário:", error);
+      toast.error("Erro ao atualizar o usuário.");
+    }
+  };
 
   return (
     <div className={"col-12 col-md-5 mx-md-auto"}>
       <div className={styles["container"]}>
         <header className={styles["profile-header"]}>
-          <button className={styles.backButton} onClick={() => window.history.back()}>
+          <button className={styles["back-button"]} onClick={() => window.history.back()}>
             <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
           </button>
           <h1 className={styles["header-1"]}>Editar Perfil</h1>
@@ -128,35 +167,32 @@ function ProfileUpdateData() {
               <LabelInput placeholder={"exemplo@gmail.com"} label={"E-mail"} value={email} onInput={(e) => handleInputChange(e.target.value, setEmail)} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={"XXX.XXX.XXX-XX"} label={"CPF"} value={cpf} onInput={(e) => handleInputChange(e.target.value, setCpf)} />
+              <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} value={cpf} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={handleCPFBlur} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
+              <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} value={cep} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={cidade} label={"Cidade"} disabled={true} />
+              <LabelInput placeholder={cidade || "Cidade"} label={"Cidade"} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={estado} label={"Estado"} disabled={true} />
+              <LabelInput placeholder={estado || "Estado"} label={"Estado"} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true} />
+              <LabelInput placeholder={logradouro || "Logradouro"} label={"Logradouro"} disabled={true} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
+              <LabelInput placeholder={"000"} label={"Número"} value={numeroEstabelecimento} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
             </div>
             <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
+              <LabelInput placeholder={"Apto 00"} label={"Complemento"} value={complemento} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
             </div>
-
-            {/* Caso queira adicionar os campos de senha no futuro */}
-            {/* <div className={styles["input-group"]}>
+            <div className={styles["input-group"]}>
               <LabelInput placeholder={"Senha"} label={"Nova Senha"} type={"password"} value={password} onInput={(e) => handleInputChange(e.target.value, setPassword)} />
             </div>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"Confirme a Senha"} label={"Confirmar Senha"} type={"password"} value={confirmPassword} onInput={(e) => handleInputChange(e.target.value, setConfirmPassword)} />
-            </div> */}
-            
+            </div>
             <button type="submit" className={styles["update-button"]}>Atualizar</button>
           </div>
         </form>
