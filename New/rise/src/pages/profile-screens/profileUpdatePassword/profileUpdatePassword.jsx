@@ -54,7 +54,7 @@ function ProfileUpdatePassword() {
           <button className={styles["back-button"]} onClick={() => window.history.back()}>
             <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
           </button>
-          <h1 className={styles["header-1"]}>Alterar Senha</h1>
+          <h1 className={styles["header-1"]}>Atualizar Senha</h1>
         </header>
         <form onSubmit={handleSubmit}>
           <div className={styles["aux"]}>
