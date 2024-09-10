@@ -1,6 +1,6 @@
 //npm install antd react-highlight-words @ant-design/icons
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './actionRegistration.module.css';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
@@ -12,6 +12,13 @@ import { SearchOutlined } from '@ant-design/icons'; // Importação do ícone de
 import Highlighter from 'react-highlight-words'; // Importação do Highlighter para destacar texto
 import 'antd/dist/reset.css';
 
+import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet";
+import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
+import api from '../../../api';
+import axios from "axios";
+import { Icon } from "leaflet";
+import { toast } from "react-toastify";
+import MarkerIcon from "../../../utils/imgs/marker.png";
 
 const ActionRegistration = () => {
     const [radius, setRadius] = useState(3);
@@ -25,6 +32,13 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const searchInput = useRef(null);
+    const mapRef = useRef();
+    const [markers, setMarkers] = useState([])
+    const [currentPosition, setCurrentPosition] = useState();
+    const [serachResults, setSearchResults] = useState();
+    const [infos, setInfos] = useState();
+    const [openExistingMapping, setOpenExistingMapping] = useState(false);
+    const [openNewMapping, setOpenNewMapping] = useState(false);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
@@ -158,7 +172,7 @@ const ActionRegistration = () => {
             dataIndex: '',
             key: 'x',
             render: (record) => (
-                <BlueButton txt="Detalhes" onclick={() => showDetalhes(record)} className={styles["detail-button"]} customStyle={styles["padding-detalhes"]}/>
+                <BlueButton txt="Detalhes" onclick={() => showDetalhes(record)} className={styles["detail-button"]} customStyle={styles["padding-detalhes"]} />
             ),
         },
     ];
@@ -305,6 +319,132 @@ const ActionRegistration = () => {
         </Form>
     );
 
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                if(position.coords){
+                    setCurrentPosition([-23.52343833033088, -46.52506611668173])
+                    //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
+                    getMarkers(-23.52343833033088, -46.52506611668173)
+                    
+                }
+                else{
+                    setCurrentPosition([-23.5505, -46.6333]);
+                }
+            },
+            (error) => console.log(error)
+        )
+    },[])
+
+    const getMarkers = async (lat, lng) => {
+        try{
+            const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+
+            const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${10}`, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            })
+
+            if(status === 200){
+                const setData = new Set([...data, ...markers])
+                const arrayData = Array.from(setData)
+                setMarkers(arrayData)
+            }
+        }
+        catch(e){
+            toast.error("Erro ao buscar os pins")
+        }
+    }
+    
+    const handleSelectPlace = (e) => {
+        setSearchResults(null);
+        if(mapRef.current){
+            mapRef.current.setView([e.lat, e.lon], 20);
+        }
+    }
+    const EventHandler = () => {
+        const map = useMapEvent({
+            click: async () => {
+                const {lat, lng} = map.getCenter();
+
+                const {data, status} = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
+
+                const {address} = data[0]
+
+                if(address.country !== "Brasil"){
+                    toast.error("Localização fora do Brasil")
+                    return
+                }
+
+                if(status !== 200){
+                    toast.error("Erro ao buscar endereco")
+                    return
+                }
+
+                checkLocation(lat,lng, address);
+            },
+            moveend: () => {
+                console.log(currentPosition)
+                if(!currentPosition) return
+                const newPosition = map.getCenter()
+                const distance = map.distance(newPosition,{
+                    lat: currentPosition[0],
+                    lng: currentPosition[1]
+                })
+                console.log(distance)
+                if(distance > 10000){
+                    setCurrentPosition([newPosition.lat, newPosition.lng])
+                    getMarkers(newPosition.lat, newPosition.lng)
+                }
+            }
+        })
+    }
+
+    const handleModalNewMapping = () => {
+        setOpenExistingMapping(false);
+        setOpenNewMapping(!openNewMapping)
+    }
+
+    const handleModalExistingMapping = () => {
+        setOpenExistingMapping(!openExistingMapping)
+    }
+
+    const checkLocation = async (lat, lng, address) => {
+        const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+            },
+        });
+        if (status === 200 || status === 204) {
+            if (data.length > 0) {
+                setInfos({
+                    lat,
+                    lng,
+                    address,
+                    mappings: data
+                });
+                handleModalExistingMapping();
+            } else {
+                setInfos({
+                    lat,
+                    lng,
+                    address,
+                });
+                handleModalNewMapping();
+            }
+        }
+        console.log('data, ',data);
+        console.log('data, ',status);
+    }
+
+    const icon = new Icon({
+        iconUrl: MarkerIcon,
+        iconSize: [30,30]
+    })
+
     return (
         <>
             <div className={styles.page}>
@@ -388,7 +528,17 @@ const ActionRegistration = () => {
                                 </div>
 
                                 <div className={styles["map"]}>
-
+                                    <MapContainer center={currentPosition} zoom={13} 
+                                        scrollWheelZoom={true}
+                                        className={styles["interact-map"]}
+                                    >
+                                        <EventHandler />
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        
+                                    </MapContainer>
                                 </div>
 
                                 <div className={styles["align-input"]}>
@@ -404,17 +554,20 @@ const ActionRegistration = () => {
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
                                 <div className={styles["map-addresses"]}>
+                                <MapContainer center={currentPosition} zoom={13} 
+                                        scrollWheelZoom={true}
+                                        className={styles["interact-map"]}
+                                    >
+                                        <EventHandler />
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        
+                                    </MapContainer>
                                     <div className={styles["div-time-action"]}>
-                                        <div className="label-top">Tempo desde última ação</div>
+                                        <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
                                         <div className={styles["indicator-bar"]}>
-                                            <Slider
-                                                value={70}
-                                                className={styles.timeSlider}
-                                                tooltip={{
-                                                    open: false,
-                                                }}
-                                                disabled={true}
-                                            />
                                         </div>
                                         <div className={styles["indicator-labels"]}>
                                             <span>30 dias ou mais</span>
