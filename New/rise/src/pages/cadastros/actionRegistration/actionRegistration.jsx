@@ -470,19 +470,19 @@ const ActionRegistration = () => {
                                         <a>Buscar endereços próximos de:</a>
                                     </div>
                                 </div>
-                                <div className={styles["input-group"]}>
-                                    <div className='col-md-8'>
+                                <div className={`col-md-12 ${styles["input-group"]}`}>
+                                    <div className='col-md-11'>
                                         <LabelInput label={"CEP:"} placeholder={"Digite seu CEP"} />
                                     </div>
-                                    <div className='col-md-16'>
+                                    <div className='col-md-11'>
                                         <LabelInput label={"Logradouro:"} placeholder={"Digite seu logradouro"} />
                                     </div>
                                 </div>
-                                <div className={styles["input-group"]}>
-                                    <div className='col-md-8'>
+                                <div className={`col-md-12 ${styles["input-group"]}`}>
+                                    <div className='col-md-11'>
                                         <LabelInput label={"Número:"} placeholder={"Digite o número"} />
                                     </div>
-                                    <div className='col-md-12'>
+                                    <div className='col-md-11'>
                                         <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} />
                                     </div>
                                 </div>
@@ -490,7 +490,7 @@ const ActionRegistration = () => {
                                     <div className='col-md-11'>
                                         <LabelInput label={"Cidade:"} placeholder={"Digite a cidade"} />
                                     </div>
-                                    <div className='col-md-8'>
+                                    <div className='col-md-11'>
                                         <LabelInput label={"Estado:"} placeholder={"Digite o estado"} />
                                     </div>
                                 </div>
