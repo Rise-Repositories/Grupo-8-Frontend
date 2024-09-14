@@ -10,20 +10,18 @@ import { useOutletContext } from "react-router-dom";
 import HashTable from "./HashTable/HashTable";
 import { Modal, Calendar } from "antd";
 import BlueButton from "../../components/buttons/blueButton/BlueButton";
+import WhiteButton from "../../components/buttons/whiteButton/WhiteButton";
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
 
     let dataAtual = new Date();
-    if (dataAtual.getMonth() === 0) {
-        dataAtual.setFullYear(dataAtual.getFullYear() - 1);
-        dataAtual.setMonth(11);
-    } else {
-        dataAtual.setMonth(dataAtual.getMonth() - 1);
-    }
+    console.log('dataAtual ', dataAtual)
+    dataAtual.setMonth(dataAtual.getMonth() - 1);
 
     const [dataFiltro, setDataFiltro] = useState(dataAtual.toISOString().split('T')[0]);
+    const [dataFiltroTemp, setDataFiltroTemp] = useState(dataFiltro);
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -59,15 +57,20 @@ const DashboardMapping = () => {
             prioritized: hashTable.getMappingsByPriority()
         });
     };
-    const calendarioAlterarData = (value, source) => {
-        setDataFiltro(value.toISOString().split('T')[0]);
-        console.log('alterarData, ', value.format('YYYY-MM-DD'), source);
-    };
-    
-    const closeCalendario = () => {
 
+    const calendarioAlterarData = (value, source) => {
+        setDataFiltroTemp(value.format('YYYY-MM-DD'));
+    };
+
+    const confirmarData = () => {
+        setDataFiltro(dataFiltroTemp);
+        closeCalendario();
+    };
+
+    const closeCalendario = () => {
+        setDataFiltroTemp(dataFiltro);
         setIsCalendarOpen(false);
-    }
+    };
 
     return (
         <>
@@ -91,7 +94,10 @@ const DashboardMapping = () => {
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
                                     <a>Locais Não Atendidos</a>
-                                    Locais sem atendimento desde: <button onClick={() => setIsCalendarOpen(true)}>{dataFiltro}</button>
+                                </div>
+                                <div className={`${styles["top-filters"]}`}>
+                                    Locais sem atendimento desde: 
+                                    <WhiteButton txt={dataFiltro} onclick={() => setIsCalendarOpen(true)} />
                                 </div>
                             </div>
 
@@ -141,7 +147,7 @@ const DashboardMapping = () => {
                 footer={null}
                 centered>
                 <Calendar fullscreen={false} onSelect={calendarioAlterarData} />
-                <BlueButton txt={"Selecionar Data"} onclick={closeCalendario} />
+                <BlueButton txt={"Selecionar Data"} onclick={confirmarData} />
             </Modal>
         </>
     );

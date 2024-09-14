@@ -59,9 +59,16 @@
 
 .top-info {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.top-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
 }
 
 .align-input {
