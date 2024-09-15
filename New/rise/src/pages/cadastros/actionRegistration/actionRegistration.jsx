@@ -18,7 +18,13 @@ import api from '../../../api';
 import axios from "axios";
 import { Icon } from "leaflet";
 import { toast } from "react-toastify";
-import MarkerIcon from "../../../utils/imgs/marker.png";
+import MarkerIcon from "../../../utils/imgs/marker-green.png";
+import MarkerIconGreen from "../../../utils/imgs/marker-green.png"; //icon credit: https://www.flaticon.com/br/autores/iconmarketpk
+import MarkerIconLightGreen from "../../../utils/imgs/marker-light-green.png";
+import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
+import MarkerIconRed from "../../../utils/imgs/marker-red.png";
+import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
+
 
 const ActionRegistration = () => {
     const [radius, setRadius] = useState(3);
@@ -31,10 +37,18 @@ const ActionRegistration = () => {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
+    const [address, setAddress] = useState({
+        cep: '',
+        logradouro: '',
+        numero: '',
+        bairro: '',
+        cidade: '',
+        estado: '',
+    });
     const searchInput = useRef(null);
     const mapRef = useRef();
     const [markers, setMarkers] = useState([])
-    const [currentPosition, setCurrentPosition] = useState();
+    const [currentPosition, setCurrentPosition] = useState(null);
     const [serachResults, setSearchResults] = useState();
     const [infos, setInfos] = useState();
     const [openExistingMapping, setOpenExistingMapping] = useState(false);
@@ -47,11 +61,116 @@ const ActionRegistration = () => {
 
     };
 
-
     const handleReset = (clearFilters) => {
         clearFilters();
         setSearchText('');
     };
+
+    const handleGetLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+
+                    // Utilize a função para obter o CEP com base nas coordenadas
+                    const cep = await getCepFromCoordinates(latitude, longitude);
+
+                    if (cep !== 'CEP não encontrado') {
+                        try {
+                            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+                            const data = response.data;
+
+                            // Atualize os campos de endereço com os dados recebidos do ViaCEP
+                            setAddress({
+                                cep: data.cep,
+                                logradouro: data.logradouro,
+                                numero: '', // O número não vem da API ViaCEP, deve ser preenchido manualmente
+                                bairro: data.bairro,
+                                cidade: data.localidade,
+                                estado: data.uf,
+                            });
+                        } catch (error) {
+                            alert("Erro ao buscar o endereço no ViaCEP.");
+                            console.error('Erro ao buscar o endereço:', error);
+                        }
+                    } else {
+                        alert('CEP não encontrado para essas coordenadas.');
+                    }
+                },
+                (error) => {
+                    alert("Erro ao obter localização.");
+                    console.error('Erro ao obter localização:', error);
+                }
+            );
+        } else {
+            alert('Geolocalização não suportada pelo navegador');
+        }
+    };
+
+    // Função para obter o CEP diretamente utilizando lat e lng na query string
+    const getCepFromCoordinates = async (latitude, longitude) => {
+        try {
+            // Faz a requisição diretamente com lat e lng no parâmetro q
+            const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${latitude},${longitude}&format=json&limit=5&addressdetails=1`);
+
+            if (status === 200 && data.length > 0) {
+                const address = data[0].address;  // Pega o primeiro resultado da lista
+                const cep = address.postcode;  // Extrai o CEP (postcode) da resposta
+
+                console.log('Endereço obtido:', address);  // Verifique o que está sendo retornado
+                return cep || 'CEP não encontrado';  // Retorna o CEP ou uma mensagem de erro
+            } else {
+                return 'CEP não encontrado';
+            }
+        } catch (error) {
+            console.error('Erro ao obter o CEP:', error);
+            return 'Erro ao obter o CEP';
+        }
+    };
+
+    const fetchAddressByCep = async (cep) => {
+        try {
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = response.data;
+
+            if (!data.erro) {
+                setAddress((prevAddress) => ({
+                    ...prevAddress,
+                    logradouro: data.logradouro,
+                    bairro: data.bairro,
+                    cidade: data.localidade,
+                    estado: data.uf,
+                }));
+            } else {
+                alert('CEP não encontrado.');
+            }
+        } catch (error) {
+            console.error('Erro ao buscar o endereço:', error);
+            alert('Erro ao buscar o endereço. Verifique o CEP digitado.');
+        }
+    };
+
+    const handleCepChange = (e) => {
+        const { value } = e.target;
+        setAddress((prevAddress) => ({
+            ...prevAddress,
+            cep: value,
+        }));
+    };
+
+    const handleCepBlur = () => {
+        const cep = address.cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+        if (cep.length === 8) {
+            fetchAddressByCep(cep); // Busca o endereço se o CEP tiver 8 dígitos
+        } else {
+            alert('CEP inválido. Verifique o número.');
+        }
+    };
+
+
+
+
 
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -323,78 +442,78 @@ const ActionRegistration = () => {
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                if(position.coords){
+                if (position.coords) {
                     setCurrentPosition([-23.52343833033088, -46.52506611668173])
                     //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
                     getMarkers(-23.52343833033088, -46.52506611668173)
-                    
+
                 }
-                else{
+                else {
                     setCurrentPosition([-23.5505, -46.6333]);
                 }
             },
             (error) => console.log(error)
         )
-    },[])
+    }, [])
 
     const getMarkers = async (lat, lng) => {
-        try{
-            const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        try {
+            const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${10}`, {
+            const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${10}`, {
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 },
             })
 
-            if(status === 200){
+            if (status === 200) {
                 const setData = new Set([...data, ...markers])
                 const arrayData = Array.from(setData)
                 setMarkers(arrayData)
             }
         }
-        catch(e){
+        catch (e) {
             toast.error("Erro ao buscar os pins")
         }
     }
-    
+
     const handleSelectPlace = (e) => {
         setSearchResults(null);
-        if(mapRef.current){
+        if (mapRef.current) {
             mapRef.current.setView([e.lat, e.lon], 20);
         }
     }
     const EventHandler = () => {
         const map = useMapEvent({
             click: async () => {
-                const {lat, lng} = map.getCenter();
+                const { lat, lng } = map.getCenter();
 
-                const {data, status} = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
+                const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
 
-                const {address} = data[0]
+                const { address } = data[0]
 
-                if(address.country !== "Brasil"){
+                if (address.country !== "Brasil") {
                     toast.error("Localização fora do Brasil")
                     return
                 }
 
-                if(status !== 200){
+                if (status !== 200) {
                     toast.error("Erro ao buscar endereco")
                     return
                 }
 
-                checkLocation(lat,lng, address);
+                checkLocation(lat, lng, address);
             },
             moveend: () => {
                 console.log(currentPosition)
-                if(!currentPosition) return
+                if (!currentPosition) return
                 const newPosition = map.getCenter()
-                const distance = map.distance(newPosition,{
+                const distance = map.distance(newPosition, {
                     lat: currentPosition[0],
                     lng: currentPosition[1]
                 })
                 console.log(distance)
-                if(distance > 10000){
+                if (distance > 10000) {
                     setCurrentPosition([newPosition.lat, newPosition.lng])
                     getMarkers(newPosition.lat, newPosition.lng)
                 }
@@ -412,8 +531,8 @@ const ActionRegistration = () => {
     }
 
     const checkLocation = async (lat, lng, address) => {
-        const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
-        const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
+        const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
             },
@@ -436,13 +555,13 @@ const ActionRegistration = () => {
                 handleModalNewMapping();
             }
         }
-        console.log('data, ',data);
-        console.log('data, ',status);
+        console.log('data, ', data);
+        console.log('data, ', status);
     }
 
     const icon = new Icon({
         iconUrl: MarkerIcon,
-        iconSize: [30,30]
+        iconSize: [30, 30]
     })
 
     return (
@@ -472,31 +591,51 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"CEP:"} placeholder={"Digite seu CEP"} />
+                                        <LabelInput label={"CEP:"} placeholder={"Digite seu CEP"} value={address.cep} onChange={handleCepChange} onBlur={handleCepBlur} />
                                     </div>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Logradouro:"} placeholder={"Digite seu logradouro"} />
-                                    </div>
-                                </div>
-                                <div className={`col-md-12 ${styles["input-group"]}`}>
-                                    <div className='col-md-11'>
-                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} />
-                                    </div>
-                                    <div className='col-md-11'>
-                                        <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} />
+                                        <LabelInput label={"Logradouro:"} placeholder={"Digite seu logradouro"} value={address.logradouro}
+                                            onChange={(e) =>
+                                                setAddress((prevAddress) => ({
+                                                    ...prevAddress,
+                                                    logradouro: e.target.value,
+                                                }))} />
                                     </div>
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Cidade:"} placeholder={"Digite a cidade"} />
+                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} value={address.numero} />
                                     </div>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Estado:"} placeholder={"Digite o estado"} />
+                                        <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} value={address.bairro} 
+                                            onChange={(e) =>
+                                                setAddress((prevAddress) => ({
+                                                    ...prevAddress,
+                                                    bairro: e.target.value,
+                                                }))} />
+                                    </div>
+                                </div>
+                                <div className={`col-md-12 ${styles["input-group"]}`}>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Cidade:"} placeholder={"Digite a cidade"} value={address.cidade} 
+                                            onChange={(e) =>
+                                                setAddress((prevAddress) => ({
+                                                    ...prevAddress,
+                                                    cidade: e.target.value,
+                                                }))} />
+                                    </div>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Estado:"} placeholder={"Digite o estado"} value={address.estado} 
+                                            onChange={(e) =>
+                                                setAddress((prevAddress) => ({
+                                                    ...prevAddress,
+                                                    estado: e.target.value,
+                                                }))} />
                                     </div>
                                 </div>
 
                                 <div className={styles["button-group"]}>
-                                    <BlueButton txt="USAR LOCALIZAÇÃO ATUAL" />
+                                    <BlueButton txt="USAR LOCALIZAÇÃO ATUAL" onclick={() => handleGetLocation()} />
                                     <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => setShowMapping(true)} />
                                 </div>
                                 <div className={styles["slider-group"]}>
@@ -528,7 +667,7 @@ const ActionRegistration = () => {
                                 </div>
 
                                 <div className={styles["map"]}>
-                                    <MapContainer center={currentPosition} zoom={13} 
+                                    <MapContainer center={currentPosition} zoom={13}
                                         scrollWheelZoom={true}
                                         className={styles["interact-map"]}
                                     >
@@ -537,7 +676,7 @@ const ActionRegistration = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
-                                        
+
                                     </MapContainer>
                                 </div>
 
@@ -554,7 +693,7 @@ const ActionRegistration = () => {
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
                                 <div className={styles["map-addresses"]}>
-                                <MapContainer center={currentPosition} zoom={13} 
+                                    <MapContainer center={currentPosition} zoom={13}
                                         scrollWheelZoom={true}
                                         className={styles["interact-map"]}
                                     >
@@ -563,7 +702,15 @@ const ActionRegistration = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
-                                        
+                                        {
+                                            markers.map((m, index) => (
+                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
+                                                    <Popup className={styles["popup"]}>
+                                                        <PinInfosModal pin={m} />
+                                                    </Popup>
+                                                </Marker>
+                                            ))
+                                        }
                                     </MapContainer>
                                     <div className={styles["div-time-action"]}>
                                         <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
