@@ -7,7 +7,7 @@ import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox } from 'antd'; // Ant Design Components
+import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd'; // Ant Design Components
 import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
 import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
 import 'antd/dist/reset.css';
@@ -179,47 +179,47 @@ const ActionRegistration = () => {
         try {
             const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
             const data = response.data;
-          
+
             // Função para capitalizar corretamente uma string (cada palavra começa com maiúscula)
             const capitalizeWords = (str) => {
-              return str
-                .trim() // Remove espaços extras no início e no final
-                .toLowerCase() // Converte tudo para minúsculas
-                .replace(/\b\w/g, (char) => char.toUpperCase()); // Coloca em maiúscula a primeira letra de cada palavra
+                return str
+                    .trim() // Remove espaços extras no início e no final
+                    .toLowerCase() // Converte tudo para minúsculas
+                    .replace(/\b\w/g, (char) => char.toUpperCase()); // Coloca em maiúscula a primeira letra de cada palavra
             };
-          
+
             // Função para normalizar strings: remove espaços extras e converte para capitalização correta
             const normalizeString = (str) => {
-              return str ? capitalizeWords(str) : '';
+                return str ? capitalizeWords(str) : '';
             };
-          
+
             // Mapear abreviações para uma comparação flexível
             const normalizeStreet = (street) => {
-              let normalized = capitalizeWords(street);
-          
-              // Tratar abreviações comuns
-              normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
-              normalized = normalized.replace(/^Rua\s/i, 'Rua ');
-          
-              return normalized.trim();
+                let normalized = capitalizeWords(street);
+
+                // Tratar abreviações comuns
+                normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
+                normalized = normalized.replace(/^Rua\s/i, 'Rua ');
+
+                return normalized.trim();
             };
-          
+
             // Comparação das strings normalizadas
             if (
-              data.erro ||
-              normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
-              normalizeString(data.bairro) !== normalizeString(address.bairro) ||
-              normalizeString(data.localidade) !== normalizeString(address.cidade) ||
-              normalizeString(data.uf) !== normalizeString(address.estado)
+                data.erro ||
+                normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
+                normalizeString(data.bairro) !== normalizeString(address.bairro) ||
+                normalizeString(data.localidade) !== normalizeString(address.cidade) ||
+                normalizeString(data.uf) !== normalizeString(address.estado)
             ) {
-              toast.error('O endereço fornecido não é válido. Verifique os dados e abrevie somente o campo Estado');
-              return;
+                toast.error('O endereço fornecido não é válido. Verifique os dados e abrevie somente o campo Estado');
+                return;
             }
-          } catch (error) {
+        } catch (error) {
             console.error('Erro ao validar o endereço:', error);
             toast.error('Erro ao validar o endereço. Tente novamente.');
             return;
-          }
+        }
 
         toast.success('Endereço encontrado!');
         setShowAddresses(true);
@@ -364,10 +364,11 @@ const ActionRegistration = () => {
     }
 
     const handleOk = () => {
+        //try to also validate handleValidateForm
         if (isFormVisible) {
-            setIsRegistered(true);
-            setIsModalVisible(false);
-            setIsFormVisible(false);
+                setIsRegistered(true);
+                setIsModalVisible(false);
+                setIsFormVisible(false);
         } else {
             setIsFormVisible(true);
         }
@@ -395,7 +396,7 @@ const ActionRegistration = () => {
         setIsRegistered(false);
         setIsFinished(false);
         setRadius(3);
-        
+
 
         address.cep = ''
         address.logradouro = ''
@@ -470,10 +471,12 @@ const ActionRegistration = () => {
         />
     );
 
-    const DonationForm = () => (
+    const DonationForm = ({ form }) => (
         <Form
             layout="vertical"
             className="donation-form"
+            onFinish={(values) => console.log('Success:', values)}
+            onFinishFailed={(errorInfo) => console.log('Failed:', errorInfo)}
         >
             <Form.Item
                 name="notPossible"
@@ -486,15 +489,42 @@ const ActionRegistration = () => {
             <Form.Item
                 label="Descrição (O que foi doado, sugestão de doações para próxima ação)"
                 name="description"
+                rules={[{ required: true, message: 'Por favor, insira uma descrição!' }]}
             >
                 <Input.TextArea rows={4} />
             </Form.Item>
+
             <div className={styles["form-row"]}>
-                <LabelInput label={"Quantidade de adultos:"} placeholder={"Digite a quantidade"} />
-                <LabelInput label={"Quantidade de Crianças/adolescentes:"} placeholder={"Digite a quantidade"} />
+                <Form.Item
+                    label="Quantidade de Adultos:"
+                    name="qtdAdultos"
+                    rules={[{ required: true, message: 'Por favor, insira a quantidade de adultos!' }]}
+                >
+                    <InputNumber placeholder="Digite a quantidade" min={0} />
+                </Form.Item>
+
+                <Form.Item
+                    label="Quantidade de Crianças/Adolescentes:"
+                    name="qtdCriancas"
+                    rules={[{ required: true, message: 'Por favor, insira a quantidade de crianças/adolescentes!' }]}
+                >
+                    <InputNumber placeholder="Digite a quantidade" min={0} cols={9} />
+                </Form.Item>
             </div>
         </Form>
     );
+
+    const [form] = Form.useForm();
+
+    const handleValidateForm = () => {
+        form.validateFields()
+          .then(values => {
+            console.log('Success:', values);
+          })
+          .catch(errorInfo => {
+            console.log('Failed:', errorInfo);
+          });
+      };
 
 
     useEffect(() => {
@@ -820,7 +850,7 @@ const ActionRegistration = () => {
                             <p><strong>Descrição:</strong> {selectedRecord.descricao}</p>
                         </>
                     ) : (
-                        <DonationForm />
+                        <DonationForm form={form} />
                     )
 
                 )}
