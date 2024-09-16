@@ -7,9 +7,9 @@ import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox } from 'antd'; // Importação dos componentes do Ant Design
-import { SearchOutlined } from '@ant-design/icons'; // Importação do ícone de pesquisa
-import Highlighter from 'react-highlight-words'; // Importação do Highlighter para destacar texto
+import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox } from 'antd'; // Ant Design Components
+import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
+import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
 import 'antd/dist/reset.css';
 
 import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet";
@@ -19,7 +19,7 @@ import axios from "axios";
 import { Icon } from "leaflet";
 import { toast } from "react-toastify";
 import MarkerIcon from "../../../utils/imgs/marker-green.png";
-import MarkerIconGreen from "../../../utils/imgs/marker-green.png"; //icon credit: https://www.flaticon.com/br/autores/iconmarketpk
+import MarkerIconGreen from "../../../utils/imgs/marker-green.png"; //Marker Icon credit: https://www.flaticon.com/br/autores/iconmarketpk
 import MarkerIconLightGreen from "../../../utils/imgs/marker-light-green.png";
 import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
 import MarkerIconRed from "../../../utils/imgs/marker-red.png";
@@ -40,7 +40,6 @@ const ActionRegistration = () => {
     const [address, setAddress] = useState({
         cep: '',
         logradouro: '',
-        numero: '',
         bairro: '',
         cidade: '',
         estado: '',
@@ -72,7 +71,6 @@ const ActionRegistration = () => {
                 async (position) => {
                     const { latitude, longitude } = position.coords;
 
-                    // Utilize a função para obter o CEP com base nas coordenadas
                     const cep = await getCepFromCoordinates(latitude, longitude);
 
                     if (cep !== 'CEP não encontrado') {
@@ -80,45 +78,42 @@ const ActionRegistration = () => {
                             const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
                             const data = response.data;
 
-                            // Atualize os campos de endereço com os dados recebidos do ViaCEP
                             setAddress({
                                 cep: data.cep,
                                 logradouro: data.logradouro,
-                                numero: '', // O número não vem da API ViaCEP, deve ser preenchido manualmente
                                 bairro: data.bairro,
                                 cidade: data.localidade,
                                 estado: data.uf,
                             });
                         } catch (error) {
-                            alert("Erro ao buscar o endereço no ViaCEP.");
+                            toast.error("Erro ao buscar o endereço no ViaCEP.");
                             console.error('Erro ao buscar o endereço:', error);
                         }
                     } else {
-                        alert('CEP não encontrado para essas coordenadas.');
+                        toast.error('CEP não encontrado para essas coordenadas.');
                     }
                 },
                 (error) => {
-                    alert("Erro ao obter localização.");
+                    toast.error("Erro ao obter localização.");
                     console.error('Erro ao obter localização:', error);
                 }
             );
         } else {
-            alert('Geolocalização não suportada pelo navegador');
+            toast.error('Geolocalização não suportada pelo navegador');
         }
     };
 
-    // Função para obter o CEP diretamente utilizando lat e lng na query string
     const getCepFromCoordinates = async (latitude, longitude) => {
         try {
-            // Faz a requisição diretamente com lat e lng no parâmetro q
+
             const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${latitude},${longitude}&format=json&limit=5&addressdetails=1`);
 
             if (status === 200 && data.length > 0) {
-                const address = data[0].address;  // Pega o primeiro resultado da lista
-                const cep = address.postcode;  // Extrai o CEP (postcode) da resposta
+                const address = data[0].address;  // Get the first result from the list
+                const cep = address.postcode;  // Exctract CEP from response
 
-                console.log('Endereço obtido:', address);  // Verifique o que está sendo retornado
-                return cep || 'CEP não encontrado';  // Retorna o CEP ou uma mensagem de erro
+                console.log('Endereço obtido:', address);
+                return cep || 'CEP não encontrado';
             } else {
                 return 'CEP não encontrado';
             }
@@ -142,11 +137,11 @@ const ActionRegistration = () => {
                     estado: data.uf,
                 }));
             } else {
-                alert('CEP não encontrado.');
+                toast.error('CEP não encontrado.');
             }
         } catch (error) {
             console.error('Erro ao buscar o endereço:', error);
-            alert('Erro ao buscar o endereço. Verifique o CEP digitado.');
+            toast.error('Erro ao buscar o endereço. Verifique o CEP digitado.');
         }
     };
 
@@ -159,16 +154,76 @@ const ActionRegistration = () => {
     };
 
     const handleCepBlur = () => {
-        const cep = address.cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+        const cep = address.cep.replace(/\D/g, ''); // Remove non-numeric characters
 
         if (cep.length === 8) {
-            fetchAddressByCep(cep); // Busca o endereço se o CEP tiver 8 dígitos
+            fetchAddressByCep(cep);
         } else {
-            alert('CEP inválido. Verifique o número.');
+            toast.error('CEP inválido.');
         }
     };
 
+    const validateAndSubmit = async () => {
+        if (
+            address.cep == "" ||
+            address.logradouro == "" ||
+            address.bairro == "" ||
+            address.cidade == "" ||
+            address.estado == "" ||
+            address.numero == ""
+        ) {
+            toast.error('Por favor, preencha todos os campos.');
+            return;
+        }
 
+        try {
+            const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
+            const data = response.data;
+          
+            // Função para capitalizar corretamente uma string (cada palavra começa com maiúscula)
+            const capitalizeWords = (str) => {
+              return str
+                .trim() // Remove espaços extras no início e no final
+                .toLowerCase() // Converte tudo para minúsculas
+                .replace(/\b\w/g, (char) => char.toUpperCase()); // Coloca em maiúscula a primeira letra de cada palavra
+            };
+          
+            // Função para normalizar strings: remove espaços extras e converte para capitalização correta
+            const normalizeString = (str) => {
+              return str ? capitalizeWords(str) : '';
+            };
+          
+            // Mapear abreviações para uma comparação flexível
+            const normalizeStreet = (street) => {
+              let normalized = capitalizeWords(street);
+          
+              // Tratar abreviações comuns
+              normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
+              normalized = normalized.replace(/^Rua\s/i, 'Rua ');
+          
+              return normalized.trim();
+            };
+          
+            // Comparação das strings normalizadas
+            if (
+              data.erro ||
+              normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
+              normalizeString(data.bairro) !== normalizeString(address.bairro) ||
+              normalizeString(data.localidade) !== normalizeString(address.cidade) ||
+              normalizeString(data.uf) !== normalizeString(address.estado)
+            ) {
+              toast.error('O endereço fornecido não é válido. Verifique os dados e abrevie somente o campo Estado');
+              return;
+            }
+          } catch (error) {
+            console.error('Erro ao validar o endereço:', error);
+            toast.error('Erro ao validar o endereço. Tente novamente.');
+            return;
+          }
+
+        toast.success('Endereço encontrado!');
+        setShowAddresses(true);
+    };
 
 
 
@@ -340,10 +395,13 @@ const ActionRegistration = () => {
         setIsRegistered(false);
         setIsFinished(false);
         setRadius(3);
-        // Se você estiver usando refs nos inputs para resetar o valor
-        if (searchInput.current) {
-            searchInput.current.value = '';
-        }
+        
+
+        address.cep = ''
+        address.logradouro = ''
+        address.bairro = ''
+        address.cidade = ''
+        address.estado = ''
     }
 
     const data = [
@@ -604,10 +662,10 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} value={address.numero} />
+                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} value={address.numero} type="number" />
                                     </div>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} value={address.bairro} 
+                                        <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} value={address.bairro}
                                             onChange={(e) =>
                                                 setAddress((prevAddress) => ({
                                                     ...prevAddress,
@@ -617,7 +675,7 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Cidade:"} placeholder={"Digite a cidade"} value={address.cidade} 
+                                        <LabelInput label={"Cidade:"} placeholder={"Digite a cidade"} value={address.cidade}
                                             onChange={(e) =>
                                                 setAddress((prevAddress) => ({
                                                     ...prevAddress,
@@ -625,7 +683,7 @@ const ActionRegistration = () => {
                                                 }))} />
                                     </div>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Estado:"} placeholder={"Digite o estado"} value={address.estado} 
+                                        <LabelInput label={"Estado:"} placeholder={"Digite o estado"} value={address.estado}
                                             onChange={(e) =>
                                                 setAddress((prevAddress) => ({
                                                     ...prevAddress,
@@ -654,7 +712,7 @@ const ActionRegistration = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <BlueButton txt="BUSCAR" className={styles["search-button"]} onclick={() => setShowAddresses(true)} />
+                                <BlueButton txt="BUSCAR" className={styles["search-button"]} onclick={() => validateAndSubmit()} />
                             </div>
                         )}
 
@@ -685,7 +743,7 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={styles["button-group"]}>
                                     <BlueButton txt="Cancelar" onclick={() => setShowMapping(false)} />
-                                    <WhiteButton txt="Usar Endereço" onclick={() => setShowAddresses(false)} />
+                                    <WhiteButton txt="Usar Endereço" onclick={() => setShowAddresses(true)} />
                                 </div>
                             </div>
                         )}
