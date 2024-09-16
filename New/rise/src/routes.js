@@ -17,6 +17,7 @@ import ChangePassword from "./pages/changePassword/ChangePassword";
 import History from "./pages/profile-screens/profileActionHistory/profileActionHistory";
 import UserProfile from "./pages/profile-screens/profileMenu/profileMenu";
 import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/profileUpdateData";
+import ProfileUpdatePassword from "./pages/profile-screens/profileUpdatePassword/profileUpdatePassword";
 
 function Rotas() {
     return (
@@ -41,7 +42,8 @@ function Rotas() {
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/updateData" element={<ProfileUpdateData/>}></Route>
+                <Route path="/update-data" element={<ProfileUpdateData/>}></Route>
+                <Route path="/update-password" element={<ProfileUpdatePassword/>}></Route>
                 <Route path="/user" element={<UserProfile />}></Route>
             </Routes>
         </BrowserRouter>
