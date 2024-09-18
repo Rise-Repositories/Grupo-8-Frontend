@@ -72,7 +72,8 @@ const UserProfile = () => {
 
       <div className={styles["profile-links"]}>
         <p className={styles["text"]}>Olá Fernanda</p>
-        <a className={styles["link"]} onClick={() => navigate("/updateData")}>Editar Perfil</a>
+        <a className={styles["link"]} onClick={() => navigate("/updateData")}> Editar Perfil</a>
+        <a className={styles["link"]} onClick={() => navigate("/updatePassword")}> Alterar Senha</a>
       </div> <br /><br /><br />
 
       <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />

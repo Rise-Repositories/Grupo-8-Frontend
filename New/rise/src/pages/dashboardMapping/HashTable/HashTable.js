@@ -1,14 +1,13 @@
 class HashTable {
-    constructor(size = 100) { // Define o tamanho da tabela hash para uma melhor distribuição
-        this.size = size;
-        this.table = new Array(size);
+
+    constructor() {
+        this.table = new Object();
     }
 
     // Adiciona um mapeamento à tabela hash
     addMapping(mapping) {
         const { address, lastServed } = mapping;
-        const priority = this.calculatePriority(lastServed);
-        const key = this.hash(priority);
+        const key = this.hash(lastServed);
 
         if (!this.table[key]) {
             this.table[key] = [];
@@ -17,7 +16,7 @@ class HashTable {
     }
 
     // Calcula a prioridade com base no tempo desde o último atendimento
-    calculatePriority(lastServed) {
+    hash(lastServed) {
         if (!lastServed) return Number.MAX_VALUE; // Nunca atendido tem a maior prioridade
         const lastServedDate = new Date(lastServed);
         const currentDate = new Date();
@@ -25,16 +24,10 @@ class HashTable {
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Diferença em dias
     }
 
-    // Função de hash com normalização da prioridade
-    hash(priority) {
-        // Normaliza a prioridade para um índice na tabela hash
-        return Math.floor(priority % this.size);
-    }
-
     // Obtém mapeamentos não atendidos
     getUnattendedMappings() {
         const unattended = [];
-        for (const bucket of this.table) {
+        for (const [key, bucket] of Object.entries(this.table)) {
             if (bucket) {
                 bucket.forEach(item => {
                     if (!item.lastServed) {
@@ -47,17 +40,20 @@ class HashTable {
     }
 
     // Obtém mapeamentos ordenados por prioridade
-    getMappingsByPriority() {
+    getMappingsByPriority(dataFiltro = new Date()) {
+
+        const hashFiltro = this.hash(dataFiltro);
+
         const prioritized = [];
-        for (const bucket of this.table) {
-            if (bucket) {
+        for (const [key, bucket] of Object.entries(this.table)) {
+            if (bucket && key >= hashFiltro) {
                 prioritized.push(...bucket);
             }
         }
         // Ordena por prioridade, mais antigo primeiro
         prioritized.sort((a, b) => {
-            const priorityA = this.calculatePriority(a.lastServed);
-            const priorityB = this.calculatePriority(b.lastServed);
+            const priorityA = this.hash(a.lastServed);
+            const priorityB = this.hash(b.lastServed);
             return priorityB - priorityA; // Maior prioridade (mais tempo sem atendimento) vem primeiro
         });
         return prioritized;

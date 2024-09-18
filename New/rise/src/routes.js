@@ -42,8 +42,8 @@ function Rotas() {
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/update-data" element={<ProfileUpdateData/>}></Route>
-                <Route path="/update-password" element={<ProfileUpdatePassword/>}></Route>
+                <Route path="/updateData" element={<ProfileUpdateData/>}></Route>
+                <Route path="/updatePassword" element={<ProfileUpdatePassword/>}></Route>
                 <Route path="/user" element={<UserProfile />}></Route>
             </Routes>
         </BrowserRouter>
