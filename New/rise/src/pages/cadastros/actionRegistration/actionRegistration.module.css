@@ -9,7 +9,6 @@
 
 .page-name a {
     color: #00006B !important;
-    font-weight: 600;
     font-size: 24px;
 }
 
@@ -192,7 +191,7 @@
 
 .map-addresses {
     width: 40%;
-    height: 46vh;
+    height: 50vh;
     border-radius: 20px;
     display: flex;
     justify-content: center;
@@ -205,7 +204,7 @@
     background-color: #252525a2;
     color:#fff;
     padding: 10px;
-    height: 25%;
+    height: 30%;
     width: 100%;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
