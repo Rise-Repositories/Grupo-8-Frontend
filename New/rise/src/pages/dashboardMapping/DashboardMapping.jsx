@@ -35,7 +35,7 @@ const DashboardMapping = () => {
         api.get('data/mapping/alerts', {
             headers: { Authorization },
             params: {
-                beforeDate: dataFiltro ? dataFiltro : defaultDate.toISOString().split('T')[0]
+                beforeDate: dataFiltro ? dataFiltro.split('T')[0] : defaultDate.toISOString().split('T')[0]
             }
         }).then((res) => {
             console.log('Dados da API:', res.data);
@@ -73,7 +73,7 @@ const DashboardMapping = () => {
     };
 
     const calendarioAlterarData = (value, source) => {
-        setDataFiltroTemp(value.format('YYYY-MM-DD'));
+        setDataFiltroTemp(value.format('YYYY-MM-DDT00:00:00'));
     };
 
     const confirmarData = () => {
@@ -111,7 +111,7 @@ const DashboardMapping = () => {
                                 </div>
                                 <div className={`${styles["top-filters"]}`}>
                                     Locais sem atendimento desde: 
-                                    <WhiteButton txt={dataFiltro} onclick={() => setIsCalendarOpen(true)} />
+                                    <WhiteButton txt={dataFiltro.split('T')[0]} onclick={() => setIsCalendarOpen(true)} />
                                 </div>
                             </div>
 

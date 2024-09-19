@@ -21,7 +21,7 @@ class HashTable {
         const lastServedDate = new Date(lastServed);
         const currentDate = new Date();
         const diffTime = currentDate - lastServedDate;
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Diferença em dias
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Diferença em dias
     }
 
     // Obtém mapeamentos não atendidos
@@ -46,7 +46,7 @@ class HashTable {
 
         const prioritized = [];
         for (const [key, bucket] of Object.entries(this.table)) {
-            if (bucket && key >= hashFiltro) {
+            if (bucket && Number(key) >= hashFiltro) {
                 prioritized.push(...bucket);
             }
         }

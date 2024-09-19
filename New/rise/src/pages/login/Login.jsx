@@ -40,8 +40,8 @@ const Login = () => {
                 
                 const token = respostaObtida.data.token;
                 login(token);
-                toast.success("Login efetuado com sucesso")
-                navigate('../dashboard/main');
+                toast.success("Login efetuado com sucesso");
+                checkOng(token);
             })
             .catch((erroOcorrido) => {
                 console.log(erroOcorrido)
@@ -53,6 +53,18 @@ const Login = () => {
         if (event.key === "Enter") {
             entrar();
         }
+    }
+
+    const checkOng = (token) => {
+        const Authorization = 'Bearer ' + token;
+        api.get('/user/account', {headers: { Authorization }})
+        .then(res => {
+            if (res.data.voluntary.length > 0) {
+                navigate('../dashboard/main');
+            } else {
+                navigate('/home');
+            }
+        });
     }
 
     return (
