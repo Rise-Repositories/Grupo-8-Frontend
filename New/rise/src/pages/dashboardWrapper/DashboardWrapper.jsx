@@ -53,23 +53,18 @@ const DashboardWrapper = () => {
                             <Sidebar handleOngId={useOngId} toggleSidebar={toggleSidebar} />
                         </Offcanvas.Body>
                     </Offcanvas>
-                    <div className={`col-12`} >
-                        <Outlet context={[ongId]} />
-                    </div >
                 </>
-            }
-            {!isMobile &&
-                <>
-                    <div className={styles.page}>
-                        <div className={`col-md-3 col-xlg-2 ${styles['navbar']}`} >
-                            <Sidebar handleOngId={useOngId} toggleSidebar={toggleSidebar} />
-                        </div>
-                        <div className={`col-md-9 col-xlg-10 ${styles['content']}`} >
-                            <Outlet context={[ongId]} />
-                        </div >
+            }  
+            <div className={styles.page}>
+                {!isMobile && 
+                    <div className={`col-md-3 col-xlg-2 ${styles['navbar']}`} >
+                        <Sidebar handleOngId={useOngId} toggleSidebar={toggleSidebar} />
                     </div>
-                </>
-            }
+                }
+                <div className={`col-12 col-md-9 col-xlg-10 ${styles['content']}`} >
+                    <Outlet context={[ongId]} />
+                </div >
+            </div>
         </>
     );
 }

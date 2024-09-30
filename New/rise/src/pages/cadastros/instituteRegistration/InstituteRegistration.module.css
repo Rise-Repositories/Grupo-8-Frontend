@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-
-body {
+.body-content {
     font-family: "Montserrat";
 }
 
@@ -10,6 +9,7 @@ body {
     flex-direction: row;
     justify-content: end;
     width: 100%;
+    margin-top:10vh;
     background-color: #E9F5FE;
 }
 
@@ -33,14 +33,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vh;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 .form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 50%;
     margin-top: 16px;
     margin-bottom: 32px;
 }

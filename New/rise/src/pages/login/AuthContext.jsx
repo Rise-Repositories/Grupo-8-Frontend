@@ -19,7 +19,11 @@ export const AuthProvider = ({ children }) => {
         const Authorization = 'Bearer ' + token;
         await api.get('/user/account', {headers: { Authorization }})
             .then(res => {
-                sessionStorage.setItem("CUR_ONG", res.data.voluntary[0].ong.name);
+                if (res.data.voluntary.length > 0) {
+                    sessionStorage.setItem("CUR_ONG", res.data.voluntary[0].ong.name);
+                } else {
+                    sessionStorage.setItem("CUR_ONG", null);
+                }
             });
     };
 

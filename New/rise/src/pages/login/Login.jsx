@@ -40,8 +40,8 @@ const Login = () => {
                 
                 const token = respostaObtida.data.token;
                 login(token);
-                toast.success("Login efetuado com sucesso")
-                navigate('../dashboard/main');
+                toast.success("Login efetuado com sucesso");
+                checkOng(token);
             })
             .catch((erroOcorrido) => {
                 console.log(erroOcorrido)
@@ -49,14 +49,33 @@ const Login = () => {
             })
     }
 
+    const loginOnEnter = (event) => {
+        if (event.key === "Enter") {
+            entrar();
+        }
+    }
+
+    const checkOng = (token) => {
+        const Authorization = 'Bearer ' + token;
+        api.get('/user/account', {headers: { Authorization }})
+        .then(res => {
+            if (res.data.voluntary.length > 0) {
+                navigate('../dashboard/main');
+            } else {
+                navigate('/home');
+            }
+        });
+    }
+
     return (
         <>
-            <NavBar />
+        <NavBar />
+        <div className={styles["body-content"]}>
             <div className={`${styles["header"]}`}>
                 <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                 </div>
 
-                <div className={`${styles["right-form"]}`}>
+                <div className={`${styles["right-form"]} col-12 col-md-6`}>
                     <div className={`${styles["form"]}`}>
                         <div>
                             <div className={`${styles["form-presentation"]}`}>
@@ -67,15 +86,15 @@ const Login = () => {
                         </div>
 
                         <div className={`${styles["container-inputs-form"]}`}>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)}/>
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password"/>
+                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)} onKeyPress={(e) => loginOnEnter(e)}/>
+                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password" onKeyPress={(e) => loginOnEnter(e)}/>
 
                             <div className={`${styles['low-form']}`}>
                                 <div className="form-group form-check">
                                     <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
                                     <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
                                 </div>
-                                <a href="#" className="forgot-password-link">Esqueci minha senha</a>
+                                <a href="/recover-password" className="forgot-password-link">Esqueci minha senha</a>
                             </div>
                         </div>
 
@@ -83,6 +102,7 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </>
     );
 };

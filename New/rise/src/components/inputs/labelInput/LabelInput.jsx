@@ -17,6 +17,7 @@ const LabelInput = ({
     return (
         <div className={`${styles["label-input"]} form-group`}>
             <label className="form-label">{label}</label>
+
             <StandardInput 
                 placeholder={placeholder} 
                 className="form-control" 

@@ -445,12 +445,12 @@ const ManageVolunteers = () => {
                             <div className={styles["page-name"]}>
                                 <a>Gerenciar Voluntários</a>
                             </div>
-                            <div className={styles["align-input"]}>
+                            {/* <div className={styles["align-input"]}>
                                 <StandardInput placeholder={"Pesquise aqui"} />
                             </div>
                             <div className={styles["notifications"]}>
                                 <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: "#00006b" }} />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className={`${styles["default-box"]}`}>
