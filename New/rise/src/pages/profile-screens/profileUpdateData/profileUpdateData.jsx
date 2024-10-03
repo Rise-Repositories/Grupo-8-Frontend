@@ -90,18 +90,9 @@ function ProfileUpdateData() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validação dos campos obrigatórios
     if (!validateText(name)) {
       toast.error('Nome inválido');
-      return;
-    }
-
-    if (!validateCPF(cpf)) {
-      toast.error('CPF inválido');
-      return;
-    }
-
-    if (!validateCEP(cep)) {
-      toast.error("CEP inválido");
       return;
     }
 
@@ -110,24 +101,23 @@ function ProfileUpdateData() {
       return;
     }
 
+    // Criação do objeto userDto
     const userDto = {
       name,
       email,
-      cpf,
+      ...(cpf && { cpf }),  // Adiciona cpf apenas se não estiver vazio
       address: {
-        cep,
-        number: numeroEstabelecimento,
-        complement: complemento
+        ...(cep && { cep }), // Adiciona cep apenas se não estiver vazio
+        ...(numeroEstabelecimento && { number: numeroEstabelecimento }), // Adiciona número apenas se não estiver vazio
+        ...(complemento && { complement: complemento }) // Adiciona complemento apenas se não estiver vazio
       }
     };
 
-    console.log(userDto)
+    console.log(userDto);
 
     try {
       const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
       const response = await api.put(`/user/${userId}`, userDto, { headers });
-
-      console.log(response)
 
       if (response.status === 200) {
         toast.success("Usuário atualizado com sucesso!");
