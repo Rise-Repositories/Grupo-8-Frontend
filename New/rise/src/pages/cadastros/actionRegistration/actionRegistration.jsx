@@ -43,7 +43,14 @@ const ActionRegistration = () => {
         bairro: '',
         cidade: '',
         estado: '',
+        numero: '',
     });
+    const [action, setAction] = useState({
+        nome: '',
+        descricao: '',
+        dataInicio: '',
+        dataFim: ''
+    })
     const searchInput = useRef(null);
     const mapRef = useRef();
     const [markers, setMarkers] = useState([])
@@ -170,9 +177,23 @@ const ActionRegistration = () => {
             address.bairro == "" ||
             address.cidade == "" ||
             address.estado == "" ||
-            address.numero == ""
+            address.numero == "" ||
+            action.nome == "" ||
+            action.descricao == "" ||
+            action.dataInicio == "" ||
+            action.dataFim == ""
         ) {
             toast.error('Por favor, preencha todos os campos.');
+            return;
+        }
+
+        if (address.numero <= 0) {
+            toast.error('Número do endereço tem que ser maior que 0 (zero)')
+            return;
+        }
+
+        if (action.dataInicio > action.dataFim) {
+            toast.error('Data Início está maior que Data Fim')
             return;
         }
 
@@ -221,11 +242,50 @@ const ActionRegistration = () => {
             return;
         }
 
-        toast.success('Endereço encontrado!');
-        setShowAddresses(true);
+        try {
+            const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${address.cep}&format=json&limit=5&addressdetails=1`)
+
+            if (status === 200) {
+                const results = data.map((item) => {
+                    return {
+                        lat: item.lat,
+                        lon: item.lon,
+                        display_name: `${item.address.road}, ${item.address.suburb} - ${item.address.postcode}`
+                    }
+                })
+                try {
+                    getMarkers(results[0].lat, results[0].lon, radius);
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+        catch (e) {
+            toast.error("Erro ao buscar latitude e longitude")
+        }
+
+        const { data, status } = await api.post(`/actions/1`, {
+            latitude: 0,
+            longitude: 0,
+            name: action.nome,
+            description: action.descricao,
+            dateTimeStart: action.dataInicio,
+            dateTimeEnd: action.dataFim
+
+        },
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).catch((e) => {
+                console.log(e)
+            })
+
+        if (status == 201) {
+            toast.success('Ação Cadastrada e Endereço encontrado!');
+            setShowAddresses(true);
+        }
     };
-
-
 
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -366,9 +426,9 @@ const ActionRegistration = () => {
     const handleOk = () => {
         //try to also validate handleValidateForm
         if (isFormVisible) {
-                setIsRegistered(true);
-                setIsModalVisible(false);
-                setIsFormVisible(false);
+            setIsRegistered(true);
+            setIsModalVisible(false);
+            setIsFormVisible(false);
         } else {
             setIsFormVisible(true);
         }
@@ -403,6 +463,11 @@ const ActionRegistration = () => {
         address.bairro = ''
         address.cidade = ''
         address.estado = ''
+        address.numero = ''
+        action.nome = ''
+        action.descricao = ''
+        action.dataInicio = ''
+        action.dataFim = ''
     }
 
     const data = [
@@ -518,37 +583,22 @@ const ActionRegistration = () => {
 
     const handleValidateForm = () => {
         form.validateFields()
-          .then(values => {
-            console.log('Success:', values);
-          })
-          .catch(errorInfo => {
-            console.log('Failed:', errorInfo);
-          });
-      };
+            .then(values => {
+                console.log('Success:', values);
+            })
+            .catch(errorInfo => {
+                console.log('Failed:', errorInfo);
+            });
+    };
 
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                if (position.coords) {
-                    setCurrentPosition([-23.52343833033088, -46.52506611668173])
-                    //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
-                    getMarkers(-23.52343833033088, -46.52506611668173)
 
-                }
-                else {
-                    setCurrentPosition([-23.5505, -46.6333]);
-                }
-            },
-            (error) => console.log(error)
-        )
-    }, [])
 
-    const getMarkers = async (lat, lng) => {
+    const getMarkers = async (lat, lng, radius) => {
         try {
             const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${10}`, {
+            const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 },
@@ -561,7 +611,7 @@ const ActionRegistration = () => {
             }
         }
         catch (e) {
-            toast.error("Erro ao buscar os pins")
+            toast.error("e" + e)
         }
     }
 
@@ -647,6 +697,25 @@ const ActionRegistration = () => {
         console.log('data, ', status);
     }
 
+    useEffect(() => {//o erro está aqui
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                if (position.coords) {
+                    alert(position.coords.latitude)
+
+                    setCurrentPosition([position.coords.latitude, position.coords.longitude])
+                    //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
+                    getMarkers(position.coords.latitude, position.coords.longitude)
+
+                }
+                else {
+                    setCurrentPosition([-23.5505, -46.6333]);
+                }
+            },
+            (error) => console.log(error)
+        )
+    }, [])
+
     const icon = new Icon({
         iconUrl: MarkerIcon,
         iconSize: [30, 30]
@@ -692,7 +761,7 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} value={address.numero} type="number" />
+                                        <LabelInput label={"Número:"} placeholder={"Digite o número"} value={address.numero} type="number" onChange={(e) => setAddress({ ...address, numero: e.target.value })} />
                                     </div>
                                     <div className='col-md-11'>
                                         <LabelInput label={"Bairro:"} placeholder={"Digite o bairro"} value={address.bairro}
@@ -731,18 +800,34 @@ const ActionRegistration = () => {
                                     <input
                                         type="range"
                                         min="1"
-                                        max="10"
+                                        max="5"
                                         value={radius}
-                                        onChange={(e) => setRadius(e.target.value)}
+                                        onChange={(e) => setRadius(Number(e.target.value))}
                                         className={styles.slider}
                                     />
                                     <div className={styles["slider-labels"]}>
-                                        {Array.from({ length: 10 }, (_, i) => i + 1).map((km) => (
+                                        {Array.from({ length: 5 }, (_, i) => i + 1).map((km) => (
                                             <span key={km} className={radius == km ? styles.active : ''}>{km} </span>
                                         ))}
                                     </div>
                                 </div>
-                                <BlueButton txt="BUSCAR" className={styles["search-button"]} onclick={() => validateAndSubmit()} />
+                                <div className={`col-md-12 ${styles["input-group"]}`}>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Nome da Ação:"} placeholder={"Digite o nome"} value={action.nome} onChange={(e) => setAction({ ...action, nome: e.target.value })} />
+                                    </div>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Descrição:"} placeholder={"Digite a descrição"} value={action.descricao} onChange={(e) => setAction({ ...action, descricao: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={`col-md-12 ${styles["input-group"]}`}>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Data Início:"} placeholder={"Digite a Data Início"} value={action.dataInicio} type="datetime-local" onChange={(e) => setAction({ ...action, dataInicio: e.target.value })} />
+                                    </div>
+                                    <div className='col-md-11'>
+                                        <LabelInput label={"Data Fim:"} placeholder={"Digite a Data Fim"} value={action.dataFim} type="datetime-local" onChange={(e) => setAction({ ...action, dataFim: e.target.value })} />
+                                    </div>
+                                </div>
+                                <BlueButton txt="Cadastrar Ação e Buscar Endereço" className={styles["search-button"]} onclick={() => validateAndSubmit()} />
                             </div>
                         )}
 
