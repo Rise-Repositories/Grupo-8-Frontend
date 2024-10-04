@@ -26,7 +26,7 @@ const CalendarFilter = ({dataFiltro, setDataFiltro}) => {
 
     return (
         <>
-            <WhiteButton txt={dataFiltro.split('T')[0]} onclick={() => setIsCalendarOpen(true)} />
+            <WhiteButton txt={dataFiltro.split('T')[0].split("-").reverse().join(" / ")} onclick={() => setIsCalendarOpen(true)} />
             <Modal
                 open={isCalendarOpen}
                 onCancel={() => closeCalendario()}
