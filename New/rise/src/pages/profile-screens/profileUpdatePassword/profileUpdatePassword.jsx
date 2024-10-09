@@ -9,6 +9,7 @@ import api from "../../../api";
 function ProfileUpdatePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   const handleInputChange = (value, setStateFunction) => {
@@ -18,6 +19,7 @@ function ProfileUpdatePassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validações
     if (!currentPassword) {
       toast.error('Senha atual é obrigatória');
       return;
@@ -28,16 +30,34 @@ function ProfileUpdatePassword() {
       return;
     }
 
-    try {
-      const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
-      const response = await api.put('/user/change-password', { currentPassword, newPassword }, { headers });
+    if (newPassword !== confirmNewPassword) {
+      toast.error('A nova senha e a confirmação não coincidem');
+      return;
+    }
 
-      if (response.status === 200) {
+    try {
+      // Cabeçalhos da requisição com o token de autenticação
+      const headers = { 
+        'Authorization': `Bearer ${userToken}`, 
+        "Content-Type": "application/json" 
+      };
+
+      // Corpo da requisição com a nova senha
+      const body = { 
+        curPassword: currentPassword, // Adicione a senha atual se o backend requerer
+        newPassword: newPassword 
+      };
+
+      // Faz a requisição PATCH para o endpoint de atualização de senha
+      const response = await api.patch(`/user/password`, body, { headers });
+
+      // Tratamento da resposta
+      if (response.status === 204) {
         toast.success("Senha atualizada com sucesso!");
+        // Limpa os campos do formulário após o sucesso
         setCurrentPassword("");
         setNewPassword("");
-      } else if (response.status === 400) {
-        toast.error("Senha atual incorreta.");
+        setConfirmNewPassword("");
       } else {
         toast.error("Erro ao atualizar a senha.");
       }
@@ -74,6 +94,15 @@ function ProfileUpdatePassword() {
                 type="password"
                 value={newPassword}
                 onInput={(e) => handleInputChange(e.target.value, setNewPassword)}
+              />
+            </div>
+            <div className={styles["input-group"]}>
+              <LabelInput
+                placeholder={"Confirme a Nova Senha"}
+                label={"Confirme a Nova Senha"}
+                type="password"
+                value={confirmNewPassword}
+                onInput={(e) => handleInputChange(e.target.value, setConfirmNewPassword)}
               />
             </div>
             <button type="submit" className={styles["update-button"]}>Atualizar Senha</button>
