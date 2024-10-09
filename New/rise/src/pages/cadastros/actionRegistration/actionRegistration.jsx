@@ -16,7 +16,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leafl
 import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
 import api from '../../../api';
 import axios from "axios";
-import { Icon } from "leaflet";
+import { Icon, marker } from "leaflet";
 import { toast } from "react-toastify";
 import MarkerIcon from "../../../utils/imgs/marker-green.png";
 import MarkerIconGreen from "../../../utils/imgs/marker-green.png"; //Marker Icon credit: https://www.flaticon.com/br/autores/iconmarketpk
@@ -37,6 +37,7 @@ const ActionRegistration = () => {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
+    const [locationData, setLocationData] = useState([]);
     const [address, setAddress] = useState({
         cep: '',
         logradouro: '',
@@ -165,8 +166,6 @@ const ActionRegistration = () => {
 
         if (cep.length === 8) {
             fetchAddressByCep(cep);
-        } else {
-            toast.error('CEP inválido.');
         }
     };
 
@@ -264,26 +263,32 @@ const ActionRegistration = () => {
             toast.error("Erro ao buscar latitude e longitude")
         }
 
-        const { data, status } = await api.post(`/actions/1`, {
-            latitude: 0,
-            longitude: 0,
-            name: action.nome,
-            description: action.descricao,
-            dateTimeStart: action.dataInicio,
-            dateTimeEnd: action.dataFim
+        try {
+            const { data, status } = await api.post(`/actions/1`, {
+                latitude: 0,
+                longitude: 0,
+                name: action.nome,
+                description: action.descricao,
+                dateTimeStart: action.dataInicio,
+                dateTimeEnd: action.dataFim
 
-        },
-            {
-                headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
-                },
-            }).catch((e) => {
-                console.log(e)
-            })
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                    },
+                }).catch((e) => {
+                    console.log(e)
+                })
 
-        if (status == 201) {
-            toast.success('Ação Cadastrada e Endereço encontrado!');
-            setShowAddresses(true);
+            if (status === 201) {
+                toast.success('Ação Cadastrada e Endereço encontrado!');
+                setShowAddresses(true);
+            }
+
+        }
+        catch (e) {
+            toast.error("Erro ao Cadastrar Ação")
         }
     };
 
@@ -390,7 +395,7 @@ const ActionRegistration = () => {
 
         },
         {
-            title: 'Última ação no local',
+            title: 'Cadastrado em',
             dataIndex: 'date',
             key: 'date',
             ...getColumnSearchProps('date'),
@@ -470,52 +475,6 @@ const ActionRegistration = () => {
         action.dataFim = ''
     }
 
-    const data = [
-        {
-            key: 1,
-            transtorno: 'Não',
-            adultos: 2,
-            enderecos: 'Faria Lima, 930 - São Paulo',
-            date: "20/08/2024",
-            criancas: 1
-        }, {
-            key: 2,
-            transtorno: 'Sim',
-            adultos: 3,
-            enderecos: 'Haddock Lobo, 595 - Av. Paulista',
-            date: "03/05/2022",
-            criancas: 3
-        }, {
-            key: 3,
-            transtorno: 'Não',
-            adultos: 3,
-            enderecos: 'Faria Lima, 930 - São Paulo',
-            date: "20/08/2024",
-            criancas: 7
-        }, {
-            key: 4,
-            transtorno: 'Não',
-            adultos: 4,
-            enderecos: 'Faria Lima, 930 - São Paulo',
-            date: "20/08/2024",
-            criancas: 7
-        }, {
-            key: 5,
-            transtorno: 'Não',
-            adultos: 2,
-            enderecos: 'Faria Lima, 930 - São Paulo',
-            date: "20/08/2024",
-            criancas: 2
-        }, {
-            key: 6,
-            transtorno: 'Não',
-            adultos: 2,
-            enderecos: 'Av. Senador Vergueiro, 20 - Centro',
-            date: "31/10/2023",
-            criancas: 1
-        },
-    ];
-
     const TableComponent = () => (
 
         <Table
@@ -528,7 +487,7 @@ const ActionRegistration = () => {
                 ),
                 rowExpandable: (record) => record.name === "",
             }}
-            dataSource={data}
+            dataSource={locationData}
             scroll={{
                 x: 150,
             }}
@@ -605,9 +564,18 @@ const ActionRegistration = () => {
             })
 
             if (status === 200) {
-                const setData = new Set([...data, ...markers])
+                const setData = new Set([ ...data, ...markers])
                 const arrayData = Array.from(setData)
                 setMarkers(arrayData)
+                alert(marker.address)
+                setLocationData(arrayData.map(marker => ({
+                    enderecos: marker.address.street,
+                    adultos: marker.qtyAdults,
+                    criancas: marker.qtyChildren,
+                    date: marker.date,
+                    transtorno: marker.hasDisorders ? 'Sim' : 'Não',
+                    descricao: marker.description
+                })));
             }
         }
         catch (e) {
