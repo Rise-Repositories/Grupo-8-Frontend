@@ -19,7 +19,7 @@ function ProfileUpdatePassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validações
+  
     if (!currentPassword) {
       toast.error('Senha atual é obrigatória');
       return;
