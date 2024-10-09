@@ -90,7 +90,7 @@ function ProfileUpdateData() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação dos campos obrigatórios
+    
     if (!validateText(name)) {
       toast.error('Nome inválido');
       return;
@@ -101,15 +101,15 @@ function ProfileUpdateData() {
       return;
     }
 
-    // Criação do objeto userDto
+  
     const userDto = {
       name,
       email,
-      ...(cpf && { cpf }),  // Adiciona cpf apenas se não estiver vazio
+      ...(cpf && { cpf }),  
       address: {
-        ...(cep && { cep }), // Adiciona cep apenas se não estiver vazio
-        ...(numeroEstabelecimento && { number: numeroEstabelecimento }), // Adiciona número apenas se não estiver vazio
-        ...(complemento && { complement: complemento }) // Adiciona complemento apenas se não estiver vazio
+        ...(cep && { cep }), 
+        ...(numeroEstabelecimento && { number: numeroEstabelecimento }), 
+        ...(complemento && { complement: complemento }) 
       }
     };
 

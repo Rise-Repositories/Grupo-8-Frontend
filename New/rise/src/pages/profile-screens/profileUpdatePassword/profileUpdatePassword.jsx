@@ -36,25 +36,23 @@ function ProfileUpdatePassword() {
     }
 
     try {
-      // Cabeçalhos da requisição com o token de autenticação
       const headers = { 
         'Authorization': `Bearer ${userToken}`, 
         "Content-Type": "application/json" 
       };
 
-      // Corpo da requisição com a nova senha
+  
       const body = { 
-        curPassword: currentPassword, // Adicione a senha atual se o backend requerer
+        curPassword: currentPassword,
         newPassword: newPassword 
       };
 
-      // Faz a requisição PATCH para o endpoint de atualização de senha
+    
       const response = await api.patch(`/user/password`, body, { headers });
 
-      // Tratamento da resposta
+     
       if (response.status === 204) {
         toast.success("Senha atualizada com sucesso!");
-        // Limpa os campos do formulário após o sucesso
         setCurrentPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
