@@ -6,12 +6,14 @@ import { AuthContext } from '../../../pages/login/AuthContext';
 import riseLogo from '../../../utils/imgs/rise-logo.png';
 import logo from '../../../utils/imgs/logo.png';
 import { Select } from "antd";
+import { OngContext } from '../../context/ongContext/OngContext';
+import { Option } from 'antd/es/mentions';
 
 
 const Sidebar = ({ handleOngId, toggleSidebar }) => {
-    const [ongs, setOngs] = useState([]);
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
+    const { ongList, setOngList, curOngId, setCurOngId, userRole, setUserRole } = useContext(OngContext);
 
     const handleNavigate = (path) => {
         navigate(path);
@@ -26,33 +28,43 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                     'Authorization': `Bearer ${token}`
                 };
                 const response = await api.get('/user/account', { headers });
-                const ongsList = response.data.voluntary.map(vol => vol.ong);
-                setOngs(ongsList);
-    
-                if (ongsList.length === 1) {
+                const ongsList = response.data.voluntary.map((v) => {
+                    return {
+                        id: v.ong.id,
+                        name: v.ong.name,
+                        role: v.role
+                    };
+                });
+                setOngList(ongsList);
+
+                if (ongsList.length > 1 && curOngId === 0) {
                     sessionStorage.setItem('SELECTED_ONG_ID', ongsList[0].id);
-                    handleOngId(ongsList[0].id);
+                    setCurOngId(ongList[0].id);
+                    setUserRole(ongList[0].role);
                 }
             } catch (error) {
                 console.error("Erro ao buscar ONGs:", error);
             }
         };
-    
+
         fetchOngs();
+        console.log('=== ONG, ', ongList)
     }, []);
-    
+
     const handleSelectChange = (value) => {
-        sessionStorage.setItem('SELECTED_ONG_ID', value);
+        console.log(value);
+        setCurOngId(ongList[value].id);
+        setUserRole(ongList[value].role);
     };
-    
-    const selectProps = ongs.length > 1 ? {
+
+    const selectProps = ongList.length > 1 ? {
         onChange: handleSelectChange,
-        options: ongs.map((ong) => ({
+        options: ongList.map((ong) => ({
             value: ong.id,
             label: ong.name
         }))
     } : {
-        value: ongs.length === 1 ? ongs[0].name : undefined,
+        value: ongList.length === 1 ? ongList[0].name : undefined,
         disabled: true
     };
 
@@ -70,12 +82,19 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                         {sessionStorage.getItem("CUR_ONG")}
                     </div>
                     <div>
-                        <Select
-                            defaultValue={ongs.length === 1 ? ongs[0].name : "Selecione a ONG"}
-                            style={{ width: 120 }}
-                            {...selectProps}
-                            onChange={(value) => handleOngId(value)}
-                        />
+                        <select
+                            onChange={(e) => {handleSelectChange(e.target.value)}}
+                            disabled={ongList.length <= 1}
+                            className={styles.ongDropdown}
+                        >
+                            {
+                                ongList.map((ong, key) => {
+                                    return (
+                                        <option value={key}>{ong.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
                     </div>
                 </div>
 
@@ -112,7 +131,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                     </li>
                     <li className={styles.links} onClick={() => { handleNavigate('/home'); }}>
                         <a className={styles.linkContent}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="#ffffff" d="M408 120c0 54.6-73.1 151.9-105.2 192c-7.7 9.6-22 9.6-29.6 0C241.1 271.9 168 174.6 168 120C168 53.7 221.7 0 288 0s120 53.7 120 120zm8 80.4c3.5-6.9 6.7-13.8 9.6-20.6c.5-1.2 1-2.5 1.5-3.7l116-46.4C558.9 123.4 576 135 576 152l0 270.8c0 9.8-6 18.6-15.1 22.3L416 503l0-302.6zM137.6 138.3c2.4 14.1 7.2 28.3 12.8 41.5c2.9 6.8 6.1 13.7 9.6 20.6l0 251.4L32.9 502.7C17.1 509 0 497.4 0 480.4L0 209.6c0-9.8 6-18.6 15.1-22.3l122.6-49zM327.8 332c13.9-17.4 35.7-45.7 56.2-77l0 249.3L192 449.4 192 255c20.5 31.3 42.3 59.6 56.2 77c20.5 25.6 59.1 25.6 79.6 0zM288 152a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="#ffffff" d="M408 120c0 54.6-73.1 151.9-105.2 192c-7.7 9.6-22 9.6-29.6 0C241.1 271.9 168 174.6 168 120C168 53.7 221.7 0 288 0s120 53.7 120 120zm8 80.4c3.5-6.9 6.7-13.8 9.6-20.6c.5-1.2 1-2.5 1.5-3.7l116-46.4C558.9 123.4 576 135 576 152l0 270.8c0 9.8-6 18.6-15.1 22.3L416 503l0-302.6zM137.6 138.3c2.4 14.1 7.2 28.3 12.8 41.5c2.9 6.8 6.1 13.7 9.6 20.6l0 251.4L32.9 502.7C17.1 509 0 497.4 0 480.4L0 209.6c0-9.8 6-18.6 15.1-22.3l122.6-49zM327.8 332c13.9-17.4 35.7-45.7 56.2-77l0 249.3L192 449.4 192 255c20.5 31.3 42.3 59.6 56.2 77c20.5 25.6 59.1 25.6 79.6 0zM288 152a40 40 0 1 0 0-80 40 40 0 1 0 0 80z" /></svg>
                             <span>Cadastrar Localizações</span>
                         </a>
                     </li>
