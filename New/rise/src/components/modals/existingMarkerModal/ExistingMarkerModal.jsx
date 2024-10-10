@@ -5,8 +5,14 @@ import BlueButton from "../../buttons/blueButton/BlueButton";
 import GreenButton from "../../buttons/greenButton/GreenButton";
 
 import { Modal, Table, Space, Col, Row } from "antd";
+import api from "../../../api";
+import { toast } from "react-toastify";
+import { AuthContext } from "../../../pages/login/AuthContext";
 
 const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping }) => {
+
+    const { authToken } = useContext(AuthContext);
+    const authorization = 'Bearer ' + authToken;
 
     const [selectedMapping, setSelectedMapping] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,9 +45,23 @@ const ExistingMarkerModal = ({ handleClose, getMarkers, infos, handleNewMapping 
     };
 
     const confirmAddMappingToUser = () => {
-        setSelectedMapping(null);
-        setIsModalOpen(false);
-        handleClose();
+        const config = {
+            headers: {
+                'Authorization': authorization,
+            }
+        };
+
+        api.post(`/mapping/${selectedMapping.id}/add-user`, null, config)
+        .then(() => {
+            toast.success("Localização adicionada ao seu histórico!");
+            setSelectedMapping(null);
+            setIsModalOpen(false);
+            handleClose();
+        })
+        .catch((error) => {
+            toast.error("Não foi possível adicionar a localização ao seu histórico. Tente novamente mais tarde.");
+        });
+
     }
 
     const closeModal = () => {
