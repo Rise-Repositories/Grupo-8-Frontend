@@ -159,3 +159,16 @@
     width: 40px;
     height: 40px;
 }
+
+.top-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+    
+}
+
+.aux-top-filters{
+    display: flex;
+    gap: 40px;
+}
