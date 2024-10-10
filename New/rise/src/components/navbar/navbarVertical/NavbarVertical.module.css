@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-body {
+.body-content {
     height: 100vh;
     font-family: "Montserrat";
 }

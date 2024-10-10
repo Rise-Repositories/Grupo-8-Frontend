@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+.container {
+  padding: 20px;
+  background-color: #ffffff;
+  font-family: 'Montserrat';
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.h2NoMargin {
+  font-size: 18px;
+  color: #2C5FC3;
+  margin-bottom: 0px !important;
+}
+
+.h2Margin {
+  font-size: 18px;
+  color: #0057b8;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.mappingDetails {
+  margin-top: 20px;
+}
+
+.cardLocate {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #eef4ff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mapImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.cardContent {
+  flex-grow: 1;
+  padding: 10px;
+}
+
+.address {
+  font-size: 15px;
+  color: #333333;
+}
+
+.date {
+  font-size: 15px;
+  color: #333333;
+}
+
+.actionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  display: block;
+  overflow-x: auto;
+}
+
+.actionsTable thead,
+.actionsTable tbody {
+  display: block;
+  width: 100%;
+}
+
+.actionsTable thead tr {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  color: #333333;
+}
+
+.actionsTable tbody tr {
+  display: flex;
+  justify-content: space-between;
+}
+
+.actionsTable th,
+.actionsTable td {
+  flex: 1;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center; /* Center align text by default */
+}
+
+.actionsTable td.centeredColumn {
+  text-align: center; /* Center align text for specific column */
+}
+
+@media (max-width: 768px) {
+  .actionsTable th,
+  .actionsTable td {
+    font-size: 12px;
+    padding: 6px;
+    text-align: center; /* Ensure centering on smaller screens */
+  }
+
+  .actionsTable th,
+  .actionsTable td.centeredColumn {
+    justify-content: center;
+  }
+}

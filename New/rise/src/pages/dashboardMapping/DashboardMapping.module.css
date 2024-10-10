@@ -7,18 +7,11 @@
     height: 100%;
 }
 
-
 .dash-title {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
-
-    h1 {
-        font-size: 24px;
-        color: #00006B;
-        font-weight: 600;
-    }
 }
 
 .tableHeightScroll {
@@ -26,11 +19,11 @@
     overflow: scroll;
 }
 
-
 .dash-map {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
 
     .map {
         border-radius: 16px;
@@ -38,13 +31,7 @@
     }
 }
 
-
-
-
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 
@@ -72,9 +59,16 @@
 
 .top-info {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.top-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
 }
 
 .align-input {

@@ -3,10 +3,12 @@
 .chart {
     min-width: 100%;
 }
+
+.chart-box {
+    min-height: 300px;
+}
+
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 
@@ -21,7 +23,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: scroll;
 }
 
 .container {
@@ -30,7 +31,7 @@
 
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 32px;
 }
 
 .top-info {
@@ -118,7 +119,24 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
+
+.kpi-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (min-width: 992px) { 
+    .kpi-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+}
+
 
 .standardKPI {
     border-radius: 15px;
@@ -140,5 +158,17 @@
 .iconKPI {
     width: 40px;
     height: 40px;
-    margin-bottom: 10px;
+}
+
+.top-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+    
+}
+
+.aux-top-filters{
+    display: flex;
+    gap: 40px;
 }
