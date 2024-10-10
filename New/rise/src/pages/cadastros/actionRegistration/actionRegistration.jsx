@@ -1,6 +1,6 @@
 //npm install antd react-highlight-words @ant-design/icons
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './actionRegistration.module.css';
 import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
@@ -38,6 +38,8 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
+    const [idAction, setIdAction] = useState();
+    const {ongId} = useContext();
     const [address, setAddress] = useState({
         cep: '',
         logradouro: '',
@@ -264,7 +266,7 @@ const ActionRegistration = () => {
         }
 
         try {
-            const { data, status } = await api.post(`/actions/1`, {
+            const { data, status } = await api.post(`/actions/${ongId}`, {
                 latitude: 0,
                 longitude: 0,
                 name: action.nome,
@@ -283,6 +285,7 @@ const ActionRegistration = () => {
 
             if (status === 201) {
                 toast.success('Ação Cadastrada e Endereço encontrado!');
+                setIdAction(data.id);
                 setShowAddresses(true);
             }
 
@@ -428,15 +431,55 @@ const ActionRegistration = () => {
         setIsFinished(false);
     }
 
-    const handleOk = () => {
-        //try to also validate handleValidateForm
+    const handleOk = async () => {
+
         if (isFormVisible) {
-            setIsRegistered(true);
+            try {
+                await form.validateFields();
+
+                const values = form.getFieldsValue();
+                console.log(values)
+                const { description, qtdAdultos, qtdCriancas, notPossible } = values;
+
+                const noDonation = !!notPossible;
+
+                const noPeople = qtdAdultos === 0 && qtdCriancas === 0;
+
+                console.log(qtdAdultos, qtdCriancas, noDonation, noPeople, description)
+
+                const { data, status } = await api.patch(`/actions/${idAction}/add-mapping/${selectedRecord.id}`, {
+                    qtyServedAdults: qtdAdultos,
+                    qtyServedChildren: qtdCriancas,
+                    noDonation: noDonation,
+                    noPeople: noPeople,
+                    description: description,
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                        },
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+
+                if (status === 201 || status === 200) {
+                    setIsRegistered(true);
+                } else {
+                    toast.error('Erro inesperado ao cadastrar doação')
+                }
+
+            }
+            catch (e) {
+                console.log(e)
+                toast.error("Erro ao Cadastrar Doação")
+            }
             setIsModalVisible(false);
             setIsFormVisible(false);
         } else {
             setIsFormVisible(true);
         }
+
+
     };
 
     const handleCancel = () => {
@@ -499,6 +542,7 @@ const ActionRegistration = () => {
         <Form
             layout="vertical"
             className="donation-form"
+            form={form}
             onFinish={(values) => console.log('Success:', values)}
             onFinishFailed={(errorInfo) => console.log('Failed:', errorInfo)}
         >
@@ -564,22 +608,22 @@ const ActionRegistration = () => {
             })
 
             if (status === 200) {
-                const setData = new Set([ ...data, ...markers])
+                const setData = new Set([...data, ...markers])
                 const arrayData = Array.from(setData)
                 setMarkers(arrayData)
-                alert(marker.address)
                 setLocationData(arrayData.map(marker => ({
-                    enderecos: marker.address.street,
+                    id: marker.id,
+                    enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}, ${marker.address.city} - ${marker.address.state}`,
                     adultos: marker.qtyAdults,
                     criancas: marker.qtyChildren,
-                    date: marker.date,
+                    date: new Date(marker.date).toLocaleDateString('pt-BR'),
                     transtorno: marker.hasDisorders ? 'Sim' : 'Não',
                     descricao: marker.description
                 })));
             }
         }
         catch (e) {
-            toast.error("e" + e)
+            toast.error("e: " + e.message)
         }
     }
 
@@ -789,10 +833,10 @@ const ActionRegistration = () => {
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Data Início:"} placeholder={"Digite a Data Início"} value={action.dataInicio} type="datetime-local" onChange={(e) => setAction({ ...action, dataInicio: e.target.value })} />
+                                        <LabelInput label={"Data Início:"} placeholder={"Digite a Data Início"} value={action.dataInicio} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataInicio: e.target.value })} />
                                     </div>
                                     <div className='col-md-11'>
-                                        <LabelInput label={"Data Fim:"} placeholder={"Digite a Data Fim"} value={action.dataFim} type="datetime-local" onChange={(e) => setAction({ ...action, dataFim: e.target.value })} />
+                                        <LabelInput label={"Data Fim:"} placeholder={"Digite a Data Fim"} value={action.dataFim} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataFim: e.target.value })} />
                                     </div>
                                 </div>
                                 <BlueButton txt="Cadastrar Ação e Buscar Endereço" className={styles["search-button"]} onclick={() => validateAndSubmit()} />
@@ -895,6 +939,7 @@ const ActionRegistration = () => {
                 {selectedRecord && (
                     !isFormVisible ? (
                         <>
+                            <p><strong>ID:</strong> {selectedRecord.id}</p>
                             <p><strong>Endereço:</strong> {selectedRecord.enderecos}</p>
                             <p><strong>Quantidade de Adultos:</strong> {selectedRecord.adultos}</p>
                             <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord.criancas}</p>
