@@ -11,10 +11,13 @@ import HashTable from "./HashTable/HashTable";
 
 import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
 import { formatDateTime } from "../../utils/globals";
+import { OngContext } from "../../components/context/ongContext/OngContext";
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
+
+    const {ongList, curOngId} = useContext(OngContext);
 
     let dataAtual = new Date();
     const [dataFiltro, setDataFiltro] = useState(formatDateTime(dataAtual));
