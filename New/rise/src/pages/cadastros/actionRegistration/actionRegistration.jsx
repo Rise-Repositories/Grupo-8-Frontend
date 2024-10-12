@@ -11,6 +11,7 @@ import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber
 import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
 import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
 import 'antd/dist/reset.css';
+import { OngContext } from '../../../components/context/ongContext/OngContext';
 
 import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet";
 import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
@@ -39,7 +40,7 @@ const ActionRegistration = () => {
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
     const [idAction, setIdAction] = useState();
-    const {ongId} = useContext();
+    const { curOngId } = useContext(OngContext);
     const [address, setAddress] = useState({
         cep: '',
         logradouro: '',
@@ -266,7 +267,7 @@ const ActionRegistration = () => {
         }
 
         try {
-            const { data, status } = await api.post(`/actions/${ongId}`, {
+            const { data, status } = await api.post(`/actions/${curOngId}`, {
                 latitude: 0,
                 longitude: 0,
                 name: action.nome,
@@ -496,26 +497,44 @@ const ActionRegistration = () => {
         setIsFinished(true);
     }
 
-    const concludeFinishAction = () => {
-        setShowMapping(false);
-        setShowAddresses(false);
-        setIsModalVisible(false);
-        setIsFormVisible(false);
-        setIsRegistered(false);
-        setIsFinished(false);
-        setRadius(3);
+    const concludeFinishAction = async () => {
+        try {
+            const { data, status } = await api.delete(`/actions/${idAction}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                    },
+                }).catch((e) => {
+                    console.log(e)
+                })
 
+            if (status === 204) {
+                setShowMapping(false);
+                setShowAddresses(false);
+                setIsModalVisible(false);
+                setIsFormVisible(false);
+                setIsRegistered(false);
+                setIsFinished(false);
+                setRadius(3);
 
-        address.cep = ''
-        address.logradouro = ''
-        address.bairro = ''
-        address.cidade = ''
-        address.estado = ''
-        address.numero = ''
-        action.nome = ''
-        action.descricao = ''
-        action.dataInicio = ''
-        action.dataFim = ''
+                address.cep = ''
+                address.logradouro = ''
+                address.bairro = ''
+                address.cidade = ''
+                address.estado = ''
+                address.numero = ''
+                action.nome = ''
+                action.descricao = ''
+                action.dataInicio = ''
+                action.dataFim = ''
+            } else {
+                toast.error('Erro inesperado ao Finalizar Ação')
+            }
+        }
+        catch (e) {
+            console.log(e)
+            toast.error('Erro ao Finalizar Ação')
+        }
     }
 
     const TableComponent = () => (
@@ -709,23 +728,18 @@ const ActionRegistration = () => {
         console.log('data, ', status);
     }
 
-    useEffect(() => {//o erro está aqui
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                if (position.coords) {
-                    alert(position.coords.latitude)
-
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
                     setCurrentPosition([position.coords.latitude, position.coords.longitude])
-                    //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
-                    getMarkers(position.coords.latitude, position.coords.longitude)
-
-                }
-                else {
-                    setCurrentPosition([-23.5505, -46.6333]);
-                }
-            },
-            (error) => console.log(error)
-        )
+                    getMarkers(position.coords.latitude, position.coords.longitude, 1)
+                },
+                (error) => console.log(error)
+            )
+        } else {
+            toast.error("Geolocalização não suportada por este nagevador.")
+        }
     }, [])
 
     const icon = new Icon({
@@ -742,13 +756,16 @@ const ActionRegistration = () => {
                             <div className={styles["page-name"]}>
                                 <a>Registro de ação</a>
                             </div>
-                            {/* <div className={styles["align-input"]}>
-                                <StandardInput placeholder={"Pesquise aqui"} />
-                            </div>
-                            <div className={styles["notifications"]}>
-                                <FontAwesomeIcon icon="fa-regular fa-bell" style={{ color: "#00006b", }} />
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#00006b" d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v25.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V208c0-61.9 50.1-112 112-112zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z" /></svg>
-                            </div> */}
+                            {
+                                /* <div className={styles["align-input"]}>
+                                    <StandardInput placeholder={"Pesquise aqui"} />
+                                </div>
+                                <div className={styles["notifications"]}>
+                                    <FontAwesomeIcon icon="fa-regular fa-bell" style={{ color: "#00006b", }} />
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#00006b" d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v25.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V208c0-61.9 50.1-112 112-112zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z" /></svg>
+                                </div> */
+                            }
+
                         </div>
 
                         {!showMapping && !showAddresses && (
@@ -921,6 +938,7 @@ const ActionRegistration = () => {
                     </div>
                 </div>
             </div>
+
             <Modal
                 title="Detalhes do Registro"
                 visible={isModalVisible}
@@ -968,6 +986,7 @@ const ActionRegistration = () => {
                 ]}
                 width={250}
             >
+
             </Modal>
 
             <Modal
