@@ -13,13 +13,15 @@ import Highlighter from 'react-highlight-words'; // Highlighter to highlight tex
 import 'antd/dist/reset.css';
 import { OngContext } from '../../../components/context/ongContext/OngContext';
 
-import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents, useMap } from "react-leaflet";
 import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
 import api from '../../../api';
 import axios from "axios";
 import { Icon, marker } from "leaflet";
+import L from "leaflet";
+import 'leaflet/dist/leaflet.css';
 import { toast } from "react-toastify";
-import MarkerIcon from "../../../utils/imgs/marker-green.png";
+import MarkerIcon from "../../../utils/imgs/marker.png";
 import MarkerIconGreen from "../../../utils/imgs/marker-green.png"; //Marker Icon credit: https://www.flaticon.com/br/autores/iconmarketpk
 import MarkerIconLightGreen from "../../../utils/imgs/marker-light-green.png";
 import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
@@ -31,6 +33,8 @@ const ActionRegistration = () => {
     const [radius, setRadius] = useState(3);
     const [showMapping, setShowMapping] = useState(false);
     const [showAddresses, setShowAddresses] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [clickedPosition, setClickedPosition] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -142,6 +146,7 @@ const ActionRegistration = () => {
             if (!data.erro) {
                 setAddress((prevAddress) => ({
                     ...prevAddress,
+                    cep: data.cep,
                     logradouro: data.logradouro,
                     bairro: data.bairro,
                     cidade: data.localidade,
@@ -172,6 +177,33 @@ const ActionRegistration = () => {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') searchAddress(searchQuery);
+    }
+
+    const customIcon = new L.Icon({
+        iconUrl: MarkerIcon,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+    });
+
+    const extractCepFromAddress = (address) => {
+        const cepRegex = /\b\d{5}-?\d{3}\b/; 
+        const match = address.match(cepRegex); 
+        return match ? match[0] : null; 
+    };
+
+    const useAddress = () => {
+        const cep = extractCepFromAddress(searchQuery); 
+        if (cep) {
+            fetchAddressByCep(cep); 
+        } else {
+            toast.error('CEP não encontrado no endereço.'); 
+        }
+        setShowMapping(false);
+    }
+
     const validateAndSubmit = async () => {
         if (
             address.cep == "" ||
@@ -186,6 +218,13 @@ const ActionRegistration = () => {
             action.dataFim == ""
         ) {
             toast.error('Por favor, preencha todos os campos.');
+            return;
+        }
+
+        const dataInicio = new Date(action.dataInicio);
+        const dataAtual = new Date();
+        if (dataInicio < dataAtual) {
+            toast.error("Data e Hora de Início não podem ser menores que os atuais")
             return;
         }
 
@@ -652,43 +691,25 @@ const ActionRegistration = () => {
             mapRef.current.setView([e.lat, e.lon], 20);
         }
     }
-    const EventHandler = () => {
-        const map = useMapEvent({
-            click: async () => {
-                const { lat, lng } = map.getCenter();
 
-                const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
+    const EventHandler = ({ setClickedPosition, setSearchQuery }) => {
+        useMapEvents({
+            click: async (e) => {
+                const { lat, lng } = e.latlng;
+                setClickedPosition([lat, lng]);
 
-                const { address } = data[0]
-
-                if (address.country !== "Brasil") {
-                    toast.error("Localização fora do Brasil")
-                    return
+                try {
+                    const response = await axios.get('https://nominatim.openstreetmap.org/reverse', {
+                        params: { lat, lon: lng, format: 'json' },
+                    });
+                    if (response.data) setSearchQuery(response.data.display_name);
+                } catch (error) {
+                    console.error('Erro ao obter o endereço:', error);
                 }
-
-                if (status !== 200) {
-                    toast.error("Erro ao buscar endereco")
-                    return
-                }
-
-                checkLocation(lat, lng, address);
             },
-            moveend: () => {
-                console.log(currentPosition)
-                if (!currentPosition) return
-                const newPosition = map.getCenter()
-                const distance = map.distance(newPosition, {
-                    lat: currentPosition[0],
-                    lng: currentPosition[1]
-                })
-                console.log(distance)
-                if (distance > 10000) {
-                    setCurrentPosition([newPosition.lat, newPosition.lng])
-                    getMarkers(newPosition.lat, newPosition.lng)
-                }
-            }
-        })
-    }
+        });
+        return null;
+    };
 
     const handleModalNewMapping = () => {
         setOpenExistingMapping(false);
@@ -742,6 +763,42 @@ const ActionRegistration = () => {
         }
     }, [])
 
+    const RecenterMap = ({ position }) => {
+        const map = useMap();
+        useEffect(() => {
+            if (position) map.setView(position, 13);
+        }, [position, map]);
+        return null;
+    };
+
+    const searchAddress = async (query) => {
+        try {
+            const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+                params: {
+                    q: query,
+                    format: 'json',
+                    limit: 1,
+                    addressdetails: 1,
+                    countrycodes: 'BR',
+                },
+            });
+
+            if (response.data.length) {
+                const { lat, lon, display_name } = response.data[0];
+                const newPosition = [parseFloat(lat), parseFloat(lon)];
+                setCurrentPosition(newPosition); // Centraliza o mapa
+                setClickedPosition(newPosition); // Move o pin
+                setSearchQuery(display_name);
+            } else {
+                alert('Endereço não encontrado. Tente ser mais específico.');
+            }
+        } catch (error) {
+            console.error('Erro na busca do endereço:', error);
+            alert('Erro ao buscar o endereço. Tente novamente.');
+        }
+    };
+
+
     const icon = new Icon({
         iconUrl: MarkerIcon,
         iconSize: [30, 30]
@@ -756,16 +813,6 @@ const ActionRegistration = () => {
                             <div className={styles["page-name"]}>
                                 <a>Registro de ação</a>
                             </div>
-                            {
-                                /* <div className={styles["align-input"]}>
-                                    <StandardInput placeholder={"Pesquise aqui"} />
-                                </div>
-                                <div className={styles["notifications"]}>
-                                    <FontAwesomeIcon icon="fa-regular fa-bell" style={{ color: "#00006b", }} />
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#00006b" d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v25.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V208c0-61.9 50.1-112 112-112zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z" /></svg>
-                                </div> */
-                            }
-
                         </div>
 
                         {!showMapping && !showAddresses && (
@@ -873,21 +920,30 @@ const ActionRegistration = () => {
                                         scrollWheelZoom={true}
                                         className={styles["interact-map"]}
                                     >
-                                        <EventHandler />
                                         <TileLayer
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
+                                        <EventHandler setClickedPosition={setClickedPosition} setSearchQuery={setSearchQuery} />
+                                        <RecenterMap position={currentPosition} />
 
+                                        {clickedPosition && (
+                                            <Marker position={clickedPosition} icon={customIcon} />
+                                        )}
                                     </MapContainer>
                                 </div>
 
                                 <div className={styles["align-input"]}>
-                                    <StandardInput placeholder={"Pesquise aqui"} />
+                                    <StandardInput
+                                        placeholder={"Pesquise Aqui ou Clique no Mapa"}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                    />
                                 </div>
                                 <div className={styles["button-group"]}>
                                     <BlueButton txt="Cancelar" onclick={() => setShowMapping(false)} />
-                                    <WhiteButton txt="Usar Endereço" onclick={() => setShowAddresses(true)} />
+                                    <WhiteButton txt="Usar Endereço" onclick={useAddress} />
                                 </div>
                             </div>
                         )}
