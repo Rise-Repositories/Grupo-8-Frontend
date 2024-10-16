@@ -6,7 +6,6 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd'; // Ant Design Components
 import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
 import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
@@ -81,6 +80,8 @@ const ActionRegistration = () => {
     };
 
     const handleGetLocation = () => {
+        toast.info("Carregando Informações")
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
@@ -189,17 +190,17 @@ const ActionRegistration = () => {
     });
 
     const extractCepFromAddress = (address) => {
-        const cepRegex = /\b\d{5}-?\d{3}\b/; 
-        const match = address.match(cepRegex); 
-        return match ? match[0] : null; 
+        const cepRegex = /\b\d{5}-?\d{3}\b/;
+        const match = address.match(cepRegex);
+        return match ? match[0] : null;
     };
 
     const useAddress = () => {
-        const cep = extractCepFromAddress(searchQuery); 
+        const cep = extractCepFromAddress(searchQuery);
         if (cep) {
-            fetchAddressByCep(cep); 
+            fetchAddressByCep(cep);
         } else {
-            toast.error('CEP não encontrado no endereço.'); 
+            toast.error('CEP não encontrado no endereço.');
         }
         setShowMapping(false);
     }
@@ -239,6 +240,8 @@ const ActionRegistration = () => {
         }
 
         try {
+            toast.info("Carregando Mapeamento")
+
             const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
             const data = response.data;
 
@@ -295,6 +298,7 @@ const ActionRegistration = () => {
                     }
                 })
                 try {
+                    setCurrentPosition([results[0].lat, results[0].lon])
                     getMarkers(results[0].lat, results[0].lon, radius);
                 } catch (error) {
                     console.error(error)
@@ -438,7 +442,7 @@ const ActionRegistration = () => {
 
         },
         {
-            title: 'Cadastrado em',
+            title: 'Última ação',
             dataIndex: 'date',
             key: 'date',
             ...getColumnSearchProps('date'),
@@ -642,19 +646,6 @@ const ActionRegistration = () => {
 
     const [form] = Form.useForm();
 
-    const handleValidateForm = () => {
-        form.validateFields()
-            .then(values => {
-                console.log('Success:', values);
-            })
-            .catch(errorInfo => {
-                console.log('Failed:', errorInfo);
-            });
-    };
-
-
-
-
     const getMarkers = async (lat, lng, radius) => {
         try {
             const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
@@ -666,18 +657,33 @@ const ActionRegistration = () => {
             })
 
             if (status === 200) {
-                const setData = new Set([...data, ...markers])
-                const arrayData = Array.from(setData)
-                setMarkers(arrayData)
-                setLocationData(arrayData.map(marker => ({
-                    id: marker.id,
-                    enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}, ${marker.address.city} - ${marker.address.state}`,
-                    adultos: marker.qtyAdults,
-                    criancas: marker.qtyChildren,
-                    date: new Date(marker.date).toLocaleDateString('pt-BR'),
-                    transtorno: marker.hasDisorders ? 'Sim' : 'Não',
-                    descricao: marker.description
-                })));
+                const setData = new Set([...data, ...markers]);
+                const arrayData = Array.from(setData);
+
+                setMarkers(arrayData);
+
+                setLocationData(arrayData.map(marker => {
+                    // Verifica se mappingActions é um array e se possui elementos
+                    const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
+                        ? marker.mappingActions.at(-1)?.action?.datetimeEnd
+                        : null;
+
+                    const date = lastAction ? new Date(lastAction) : null;
+
+                    const formattedDate = date && !isNaN(date)
+                        ? date.toLocaleDateString('pt-BR')
+                        : 'Sem Ação';
+
+                    return {
+                        id: marker.id,
+                        enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
+                        adultos: marker.qtyAdults,
+                        criancas: marker.qtyChildren,
+                        date: formattedDate,
+                        transtorno: marker.hasDisorders ? 'Sim' : 'Não',
+                        descricao: marker.description
+                    };
+                }));
             }
         }
         catch (e) {
@@ -786,8 +792,8 @@ const ActionRegistration = () => {
             if (response.data.length) {
                 const { lat, lon, display_name } = response.data[0];
                 const newPosition = [parseFloat(lat), parseFloat(lon)];
-                setCurrentPosition(newPosition); // Centraliza o mapa
-                setClickedPosition(newPosition); // Move o pin
+                setCurrentPosition(newPosition);
+                setClickedPosition(newPosition);
                 setSearchQuery(display_name);
             } else {
                 alert('Endereço não encontrado. Tente ser mais específico.');
@@ -800,6 +806,8 @@ const ActionRegistration = () => {
 
 
     const icon = new Icon({
+        
+
         iconUrl: MarkerIcon,
         iconSize: [30, 30]
     })
@@ -955,7 +963,7 @@ const ActionRegistration = () => {
                                         scrollWheelZoom={true}
                                         className={styles["interact-map"]}
                                     >
-                                        <EventHandler />
+
                                         <TileLayer
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
