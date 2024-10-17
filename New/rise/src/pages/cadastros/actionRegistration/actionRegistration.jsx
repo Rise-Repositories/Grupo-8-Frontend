@@ -417,6 +417,16 @@ const ActionRegistration = () => {
 
     const columns = [
         {
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
+            sorter: {
+                compare: (a, b) => a.id - b.id,
+                multiple: 4,
+            },
+
+        },
+        {
             title: 'Endereço',
             dataIndex: 'enderecos',
             key: 'enderecos',
