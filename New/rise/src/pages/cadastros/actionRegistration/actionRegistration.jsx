@@ -26,6 +26,7 @@ import MarkerIconLightGreen from "../../../utils/imgs/marker-light-green.png";
 import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
 import MarkerIconRed from "../../../utils/imgs/marker-red.png";
 import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
+import MarkerIconGray from "../../../utils/imgs/marker-gray.png";
 
 
 const ActionRegistration = () => {
@@ -66,6 +67,7 @@ const ActionRegistration = () => {
     const [infos, setInfos] = useState();
     const [openExistingMapping, setOpenExistingMapping] = useState(false);
     const [openNewMapping, setOpenNewMapping] = useState(false);
+    const [iconDate, setIconDate] = useState();
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
@@ -540,44 +542,26 @@ const ActionRegistration = () => {
         setIsFinished(true);
     }
 
-    const concludeFinishAction = async () => {
-        try {
-            const { data, status } = await api.delete(`/actions/${idAction}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
-                    },
-                }).catch((e) => {
-                    console.log(e)
-                })
+    const concludeFinishAction = () => {
+        setShowMapping(false);
+        setShowAddresses(false);
+        setIsModalVisible(false);
+        setIsFormVisible(false);
+        setIsRegistered(false);
+        setIsFinished(false);
+        setRadius(3);
 
-            if (status === 204) {
-                setShowMapping(false);
-                setShowAddresses(false);
-                setIsModalVisible(false);
-                setIsFormVisible(false);
-                setIsRegistered(false);
-                setIsFinished(false);
-                setRadius(3);
 
-                address.cep = ''
-                address.logradouro = ''
-                address.bairro = ''
-                address.cidade = ''
-                address.estado = ''
-                address.numero = ''
-                action.nome = ''
-                action.descricao = ''
-                action.dataInicio = ''
-                action.dataFim = ''
-            } else {
-                toast.error('Erro inesperado ao Finalizar Ação')
-            }
-        }
-        catch (e) {
-            console.log(e)
-            toast.error('Erro ao Finalizar Ação')
-        }
+        address.cep = ''
+        address.logradouro = ''
+        address.bairro = ''
+        address.cidade = ''
+        address.estado = ''
+        address.numero = ''
+        action.nome = ''
+        action.descricao = ''
+        action.dataInicio = ''
+        action.dataFim = ''
     }
 
     const TableComponent = () => (
@@ -663,14 +647,19 @@ const ActionRegistration = () => {
                 setMarkers(arrayData);
 
                 setLocationData(arrayData.map(marker => {
-                    // Verifica se mappingActions é um array e se possui elementos
+
                     const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
                         ? marker.mappingActions.at(-1)?.action?.datetimeEnd
                         : null;
 
                     const date = lastAction ? new Date(lastAction) : null;
+                    const today = new Date();
 
-                    const formattedDate = date && !isNaN(date)
+                    const daysDifference = date && !isNaN(date)
+                        ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
+                        : null;
+
+                    const formattedDate = daysDifference !== null && !isNaN(daysDifference)
                         ? date.toLocaleDateString('pt-BR')
                         : 'Sem Ação';
 
@@ -687,7 +676,8 @@ const ActionRegistration = () => {
             }
         }
         catch (e) {
-            toast.error("e: " + e.message)
+            toast.error("Não foi possível localizar os markers")
+            console.log("error: " + e.message)
         }
     }
 
@@ -804,13 +794,14 @@ const ActionRegistration = () => {
         }
     };
 
-
-    const icon = new Icon({
-        
-
-        iconUrl: MarkerIcon,
-        iconSize: [30, 30]
-    })
+    const getIconByDays = (days) => {
+        if (days === null) return MarkerIconGray; 
+        if (days <= 1 && days < 4) return MarkerIconGreen;   
+        if (days >= 4 && days < 13) return MarkerIconLightGreen; 
+        if (days >= 13 && days < 17) return MarkerIconYellow; 
+        if (days >= 17 && days < 25) return MarkerIconOrange;   
+        return MarkerIconRed;              
+    };
 
     return (
         <>
@@ -959,24 +950,36 @@ const ActionRegistration = () => {
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
                                 <div className={styles["map-addresses"]}>
-                                    <MapContainer center={currentPosition} zoom={13}
-                                        scrollWheelZoom={true}
-                                        className={styles["interact-map"]}
-                                    >
-
+                                    <MapContainer center={currentPosition} zoom={13} scrollWheelZoom={true} className={styles["interact-map"]}>
                                         <TileLayer
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
-                                        {
-                                            markers.map((m, index) => (
+                                        {markers.map((m, index) => {
+                                            const lastAction = Array.isArray(m.mappingActions) && m.mappingActions.length > 0
+                                                ? m.mappingActions.at(-1)?.action?.datetimeEnd
+                                                : null;
+
+                                            const date = lastAction ? new Date(lastAction) : null;
+                                            const today = new Date();
+
+                                            const daysDifference = date && !isNaN(date)
+                                                ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
+                                                : null;
+
+                                            const icon = new L.Icon({
+                                                iconUrl: getIconByDays(daysDifference),
+                                                iconSize: [30, 30]
+                                            });
+
+                                            return (
                                                 <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
                                                     <Popup className={styles["popup"]}>
                                                         <PinInfosModal pin={m} />
                                                     </Popup>
                                                 </Marker>
-                                            ))
-                                        }
+                                            );
+                                        })}
                                     </MapContainer>
                                     <div className={styles["div-time-action"]}>
                                         <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
