@@ -5,23 +5,53 @@ import Heatmap from "../../components/heatmap/Heatmap";
 import { formatDate } from "../../utils/globals";
 import { AuthContext } from "../login/AuthContext";
 import BlueButton from "../../components/buttons/blueButton/BlueButton";
-import StandardInput from "../../components/inputs/standardInput/StandardInput";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useOutletContext } from "react-router-dom";
-import HashTable from "./HashTable/HashTable";
 import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
-import { formatDateTime } from "../../utils/globals";
+import HashTable from "./HashTable/HashTable";
+import ImportTxtModal from "../../components/modals/importTxtModal/importTxtModal";
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
 
     let dataAtual = new Date();
-    const [dataFiltro, setDataFiltro] = useState(formatDateTime(dataAtual));
-
+    const [dataFiltro, setDataFiltro] = useState(formatDate(dataAtual));
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
     const [hashTableTotal, setHashTableTotal] = useState(null);
-    const [ongId] = useOutletContext();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleExport = () => {
+        const startDate = dataFiltro.split('T')[0]; 
+        const endDate = new Date().toISOString().split('T')[0]; 
+
+        api.get('data/mapping/archive/txt', {
+            headers: { Authorization },
+            params: {
+                startDate: startDate || null,
+                endDate: endDate || null,
+            },
+            responseType: 'blob', 
+        })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'RiseMapping.txt');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            })
+            .catch((error) => {
+                console.error('Erro ao exportar o arquivo:', error);
+            });
+    };
 
     useEffect(() => {
         let defaultDate = new Date();
@@ -30,22 +60,22 @@ const DashboardMapping = () => {
         api.get('data/mapping/alerts', {
             headers: { Authorization },
             params: {
-                beforeDate: dataFiltro ? dataFiltro.split('T')[0] : defaultDate.toISOString().split('T')[0]
-            }
+                beforeDate: dataFiltro ? dataFiltro.split('T')[0] : defaultDate.toISOString().split('T')[0],
+            },
         }).then((res) => {
             console.log('Dados da API:', res.data);
             organizeMappings(res.data);
         });
-    }, []);
+    }, [Authorization, dataFiltro]); 
 
     useEffect(() => {
         if (hashTableTotal) {
             setDadosMapeamento({
                 unattended: hashTableTotal.getUnattendedMappings(),
-                prioritized: hashTableTotal.getMappingsByPriority(dataFiltro)
+                prioritized: hashTableTotal.getMappingsByPriority(dataFiltro),
             });
         }
-    }, [dataFiltro]);
+    }, [dataFiltro, hashTableTotal]);
 
     const organizeMappings = (mappings) => {
         const hashTable = new HashTable(mappings.length + 1);
@@ -54,7 +84,7 @@ const DashboardMapping = () => {
         });
         setDadosMapeamento({
             unattended: hashTable.getUnattendedMappings(),
-            prioritized: hashTable.getMappingsByPriority()
+            prioritized: hashTable.getMappingsByPriority(),
         });
         setHashTableTotal(hashTable);
     };
@@ -63,6 +93,8 @@ const DashboardMapping = () => {
         <div className={styles.page}>
             <div className={styles.content}>
                 <div className={styles.container}>
+                    <ImportTxtModal visible={isModalVisible} onClose={handleModalClose} />
+
                     <div className={styles["top-info"]}>
                         <div className={styles["page-name"]}>
                             <a>Mapeamento</a>
@@ -78,8 +110,8 @@ const DashboardMapping = () => {
                                 <span>Locais sem atendimento desde:</span>
                                 <CalendarFilter dataFiltro={dataFiltro} setDataFiltro={setDataFiltro} />
                                 <div className={`${styles["button-container"]}`}>
-                                    <BlueButton txt={"Importar txt"} />
-                                    <BlueButton txt={"Exportar txt"} />
+                                    <BlueButton txt={"Importar dados"} onclick={showModal} />
+                                    <BlueButton txt={"Exportar dados"} onclick={handleExport} />
                                 </div>
                             </div>
                         </div>
