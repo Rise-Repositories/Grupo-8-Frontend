@@ -520,6 +520,7 @@ const ActionRegistration = () => {
 
                 if (status === 201 || status === 200) {
                     setIsRegistered(true);
+                    form.resetFields(); 
                 } else {
                     toast.error('Erro inesperado ao cadastrar doação')
                 }
@@ -997,8 +998,8 @@ const ActionRegistration = () => {
                                         </div>
                                         <div className={styles["indicator-labels"]}>
                                             <span>30 dias ou mais</span>
-                                            <span>15 dias</span>
-                                            <span>1 dia</span>
+                                            <span class = "text-center">15 dias</span>
+                                            <span class = "text-end">1 dia</span>
                                         </div>
                                     </div>
                                 </div>
