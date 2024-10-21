@@ -203,7 +203,6 @@
     background-color: #252525a2;
     color:#fff;
     padding: 10px;
-    height: 25%;
     width: 100%;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -353,10 +352,6 @@
         width: 50%;
         height: 70vh;
         margin-top: 10px;
-    }
-
-    .map-addresses .div-time-action{
-        height: 13vh;
     }
 
     .div-tb-addresses {

@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Slider, Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd'; // Ant Design Components
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd'; // Ant Design Components
 import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
 import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
 import 'antd/dist/reset.css';
@@ -16,7 +16,6 @@ import { MapContainer, Marker, Popup, TileLayer, useMapEvents, useMap } from "re
 import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
 import api from '../../../api';
 import axios from "axios";
-import { Icon, marker } from "leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 import { toast } from "react-toastify";
@@ -67,7 +66,6 @@ const ActionRegistration = () => {
     const [infos, setInfos] = useState();
     const [openExistingMapping, setOpenExistingMapping] = useState(false);
     const [openNewMapping, setOpenNewMapping] = useState(false);
-    const [iconDate, setIconDate] = useState();
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
@@ -247,31 +245,31 @@ const ActionRegistration = () => {
             const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
             const data = response.data;
 
-            // Função para capitalizar corretamente uma string (cada palavra começa com maiúscula)
+            
             const capitalizeWords = (str) => {
                 return str
-                    .trim() // Remove espaços extras no início e no final
-                    .toLowerCase() // Converte tudo para minúsculas
-                    .replace(/\b\w/g, (char) => char.toUpperCase()); // Coloca em maiúscula a primeira letra de cada palavra
+                    .trim() 
+                    .toLowerCase() 
+                    .replace(/\b\w/g, (char) => char.toUpperCase()); 
             };
 
-            // Função para normalizar strings: remove espaços extras e converte para capitalização correta
+            
             const normalizeString = (str) => {
                 return str ? capitalizeWords(str) : '';
             };
 
-            // Mapear abreviações para uma comparação flexível
+            
             const normalizeStreet = (street) => {
                 let normalized = capitalizeWords(street);
 
-                // Tratar abreviações comuns
+                
                 normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
                 normalized = normalized.replace(/^Rua\s/i, 'Rua ');
 
                 return normalized.trim();
             };
 
-            // Comparação das strings normalizadas
+            
             if (
                 data.erro ||
                 normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
@@ -313,8 +311,8 @@ const ActionRegistration = () => {
 
         try {
             const { data, status } = await api.post(`/actions/${curOngId}`, {
-                latitude: 0,
-                longitude: 0,
+                latitude: currentPosition[0],
+                longitude: currentPosition[1],
                 name: action.nome,
                 description: action.descricao,
                 dateTimeStart: action.dataInicio,
@@ -520,7 +518,7 @@ const ActionRegistration = () => {
 
                 if (status === 201 || status === 200) {
                     setIsRegistered(true);
-                    form.resetFields(); 
+                    form.resetFields();
                 } else {
                     toast.error('Erro inesperado ao cadastrar doação')
                 }
@@ -692,13 +690,6 @@ const ActionRegistration = () => {
         }
     }
 
-    const handleSelectPlace = (e) => {
-        setSearchResults(null);
-        if (mapRef.current) {
-            mapRef.current.setView([e.lat, e.lon], 20);
-        }
-    }
-
     const EventHandler = ({ setClickedPosition, setSearchQuery }) => {
         useMapEvents({
             click: async (e) => {
@@ -725,35 +716,6 @@ const ActionRegistration = () => {
 
     const handleModalExistingMapping = () => {
         setOpenExistingMapping(!openExistingMapping)
-    }
-
-    const checkLocation = async (lat, lng, address) => {
-        const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
-        const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
-            },
-        });
-        if (status === 200 || status === 204) {
-            if (data.length > 0) {
-                setInfos({
-                    lat,
-                    lng,
-                    address,
-                    mappings: data
-                });
-                handleModalExistingMapping();
-            } else {
-                setInfos({
-                    lat,
-                    lng,
-                    address,
-                });
-                handleModalNewMapping();
-            }
-        }
-        console.log('data, ', data);
-        console.log('data, ', status);
     }
 
     useEffect(() => {
@@ -806,12 +768,12 @@ const ActionRegistration = () => {
     };
 
     const getIconByDays = (days) => {
-        if (days === null) return MarkerIconGray; 
-        if (days <= 1 && days < 4) return MarkerIconGreen;   
-        if (days >= 4 && days < 13) return MarkerIconLightGreen; 
-        if (days >= 13 && days < 17) return MarkerIconYellow; 
-        if (days >= 17 && days < 25) return MarkerIconOrange;   
-        return MarkerIconRed;              
+        if (days === null) return MarkerIconGray;
+        if (days <= 1 && days < 4) return MarkerIconGreen;
+        if (days >= 4 && days < 13) return MarkerIconLightGreen;
+        if (days >= 13 && days < 17) return MarkerIconYellow;
+        if (days >= 17 && days < 25) return MarkerIconOrange;
+        return MarkerIconRed;
     };
 
     return (
@@ -998,8 +960,8 @@ const ActionRegistration = () => {
                                         </div>
                                         <div className={styles["indicator-labels"]}>
                                             <span>30 dias ou mais</span>
-                                            <span class = "text-center">15 dias</span>
-                                            <span class = "text-end">1 dia</span>
+                                            <span class="text-center">15 dias</span>
+                                            <span class="text-end">1 dia</span>
                                         </div>
                                     </div>
                                 </div>
