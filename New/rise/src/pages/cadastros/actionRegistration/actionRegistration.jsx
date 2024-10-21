@@ -225,7 +225,7 @@ const ActionRegistration = () => {
         const dataInicio = new Date(action.dataInicio);
         const dataAtual = new Date();
         if (dataInicio < dataAtual) {
-            toast.error("Data e Hora de Início não podem ser menores que os atuais")
+            toast.error("Data e Hora de Início devem ser futuras")
             return;
         }
 
