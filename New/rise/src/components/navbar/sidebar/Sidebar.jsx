@@ -5,15 +5,18 @@ import api from '../../../api';
 import { AuthContext } from '../../../pages/login/AuthContext';
 import riseLogo from '../../../utils/imgs/rise-logo.png';
 import logo from '../../../utils/imgs/logo.png';
-import { Select } from "antd";
 import { OngContext } from '../../context/ongContext/OngContext';
 import { Option } from 'antd/es/mentions';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 
 const Sidebar = ({ handleOngId, toggleSidebar }) => {
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
     const { ongList, setOngList, curOngId, setCurOngId, userRole, setUserRole } = useContext(OngContext);
+    const [ ongIndex, setOngIndex ] = useState(0);
 
     const handleNavigate = (path) => {
         navigate(path);
@@ -40,10 +43,11 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 });
                 setOngList(ongsList);
 
-                if (ongsList.length > 1 && curOngId === 0) {
+                if (curOngId === 0) {
                     sessionStorage.setItem('SELECTED_ONG_ID', ongsList[0].id);
                     setCurOngId(ongList[0].id);
                     setUserRole(ongList[0].role);
+                    setOngIndex(0);
                 }
             } catch (error) {
                 console.error("Erro ao buscar ONGs:", error);
@@ -54,9 +58,9 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
     }, []);
 
     const handleSelectChange = (value) => {
-        console.log(value);
         setCurOngId(ongList[value].id);
         setUserRole(ongList[value].role);
+        setOngIndex(value);
     };
 
     const selectProps = ongList.length > 1 ? {
@@ -83,21 +87,22 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                     <div className={styles.instituteName}>
                         {sessionStorage.getItem("CUR_ONG")}
                     </div>
-                    <div>
-                        <select
-                            onChange={(e) => {handleSelectChange(e.target.value)}}
-                            disabled={ongList.length <= 1}
-                            className={styles.ongDropdown}
-                        >
+                    <Dropdown
+                        as={ButtonGroup}
+                        onSelect={(e) => {handleSelectChange(e)}}
+                    >
+                        <Dropdown.Toggle className={styles["ong-dropdown"]}>{ongList[ongIndex].name}</Dropdown.Toggle>
+                        <Dropdown.Menu className={styles["ong-dropdown-menu"]}>
                             {
                                 ongList.map((ong, key) => {
                                     return (
-                                        <option value={key}>{ong.name}</option>
+                                        <Dropdown.Item className={styles["ong-dropdown-option"]}
+                                            eventKey={key}>{ong.name}</Dropdown.Item>
                                     )
                                 })
                             }
-                        </select>
-                    </div>
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </div>
 
                 <ul className={styles.menuElements}>
