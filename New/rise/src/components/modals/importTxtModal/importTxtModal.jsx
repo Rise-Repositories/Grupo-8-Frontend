@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Steps, Button, Upload, message, Spin } from "antd";
+import { Modal, Steps, Button, Upload, message, Spin, ConfigProvider } from "antd";
 import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import api from "../../../api";
 
@@ -83,74 +83,83 @@ const ImportTxtModal = ({ visible, onClose }) => {
     };
 
     return (
-        <Modal
-            visible={visible}
-            onCancel={handleClose}
-            footer={null}
-            title="Importar dados de mapeamento"
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: "#2968C8",
+                    borderRadius: 5, 
+                },
+            }}
         >
-            <Steps current={currentStep}>
-                <Step title="Envio de dados" />
-                <Step title="Processando" />
-            </Steps>
-            <div style={{ marginTop: 20 }}>
-                {currentStep === 0 && (
-                    <>
-                        <p style={{ marginBottom: 10 }}>
-                            Para importar dados de mapeamento, confira o documento de referência e envie um arquivo com os parâmetros indicados conforme o indicado.
-                        </p>
-                        <Button type="primary" href="/path/to/layout.docx" target="_blank" style={{ marginBottom: 10, textDecoration: "none" }}>
-                            Documento de referência
-                        </Button>
-                        <Upload.Dragger
-                            name="file"
-                            beforeUpload={() => false}
-                            onChange={handleFileChange}
-                            fileList={file ? [file] : []}
-                        >
-                            <p className="ant-upload-drag-icon">
-                                <UploadOutlined />
+            <Modal
+                visible={visible}
+                onCancel={handleClose}
+                footer={null}
+                title="Importar dados de mapeamento"
+            >
+                <Steps current={currentStep}>
+                    <Step title="Envio de dados" />
+                    <Step title="Processamento" />
+                </Steps>
+                <div style={{ marginTop: 20 }}>
+                    {currentStep === 0 && (
+                        <>
+                            <p style={{ marginBottom: 10 }}>
+                                Para importar dados de mapeamento, confira o documento de referência e envie um arquivo com os parâmetros indicados conforme o indicado.
                             </p>
-                            <p className="ant-upload-text">Arraste o arquivo para cá ou clique para selecionar</p>
-                        </Upload.Dragger>
-                    </>
-                )}
+                            <Button type="primary" href="/path/to/layout.docx" target="_blank" style={{ marginBottom: 10, textDecoration: "none" }}>
+                                Documento de referência
+                            </Button>
+                            <Upload.Dragger
+                                name="file"
+                                beforeUpload={() => false}
+                                onChange={handleFileChange}
+                                fileList={file ? [file] : []}
+                            >
+                                <p className="ant-upload-drag-icon">
+                                    <UploadOutlined />
+                                </p>
+                                <p className="ant-upload-text">Arraste o arquivo para cá ou clique para selecionar</p>
+                            </Upload.Dragger>
+                        </>
+                    )}
 
-                {currentStep === 1 && (
-                    <div style={{ textAlign: "center" }}>
-                        {loading ? (
-                            <Spin size="large" />
-                        ) : (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                {isError ? (
-                                    <>
-                                        <CloseCircleOutlined style={{ fontSize: 24, color: "red" }} />
-                                        <p style={{ color: "red" }}>{uploadResult}</p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <CheckCircleOutlined style={{ fontSize: 24, color: "green" }} />
-                                        <p style={{ color: "green" }}>{uploadResult}</p>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-            <div style={{ marginTop: 20, textAlign: "right" }}>
-                {currentStep === 0 && (
-                    <Button type="primary" onClick={handleNext}>
-                        Continuar
-                    </Button>
-                )}
-                {currentStep === 1 && (
-                    <Button type="primary" onClick={handleClose}>
-                        Fechar
-                    </Button>
-                )}
-            </div>
-        </Modal>
+                    {currentStep === 1 && (
+                        <div style={{ textAlign: "center" }}>
+                            {loading ? (
+                                <Spin size="large" />
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    {isError ? (
+                                        <>
+                                            <CloseCircleOutlined style={{ fontSize: 24, color: "red" }} />
+                                            <p style={{ color: "red" }}>{uploadResult}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircleOutlined style={{ fontSize: 24, color: "green" }} />
+                                            <p style={{ color: "green" }}>{uploadResult}</p>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+                <div style={{ marginTop: 20, textAlign: "right" }}>
+                    {currentStep === 0 && (
+                        <Button type="primary" onClick={handleNext}>
+                            Continuar
+                        </Button>
+                    )}
+                    {currentStep === 1 && (
+                        <Button type="primary" onClick={handleClose}>
+                            Fechar
+                        </Button>
+                    )}
+                </div>
+            </Modal>
+        </ConfigProvider>
     );
 };
 
