@@ -8,10 +8,15 @@ import BlueButton from "../../components/buttons/blueButton/BlueButton";
 import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
 import HashTable from "./HashTable/HashTable";
 import ImportTxtModal from "../../components/modals/importTxtModal/importTxtModal";
+import { formatDateTime } from "../../utils/globals";
+import { OngContext } from "../../components/context/ongContext/OngContext";
+
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
+
+    const {ongList, curOngId} = useContext(OngContext);
 
     let dataAtual = new Date();
     const [dataFiltro, setDataFiltro] = useState(formatDate(dataAtual));

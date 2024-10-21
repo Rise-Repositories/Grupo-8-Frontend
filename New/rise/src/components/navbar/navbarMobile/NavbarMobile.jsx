@@ -3,9 +3,13 @@ import style from './NavbarMobile.module.css';
 import logo from '../../../utils/imgs/logo.png';    
 import riselogo from '../../../utils/imgs/rise-logo.png';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { OngContext } from '../../context/ongContext/OngContext';
 
 const NavbarMobile = () => {
     const navigate = useNavigate();
+
+    const { ongList } = useContext(OngContext);
 
     const handleClose = () => {
         const navbar = document.querySelector(`.${style["container"]}`);
@@ -36,10 +40,12 @@ const NavbarMobile = () => {
                         <FaHeart size={25} color="#2968C8"/>
                         <p>Acesso Institucional</p>
                     </button>
-                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/dashboard/main')}>
-                        <FaChartBar size={25} color="#2968C8"/>
-                        <p>Dashboard</p>
-                    </button>
+                    { ongList.length > 0 &&
+                        <button className={style["button-navbar"]} onClick={() => handleNavigate('/dashboard/main')}>
+                            <FaChartBar size={25} color="#2968C8"/>
+                            <p>Dashboard</p>
+                        </button>
+                    }
                     <button className={style["button-navbar"]} onClick={() => handleNavigate('/')}>
                         <FaSignOutAlt size={25} color="#2968C8"/>
                         <p>Sair</p>
