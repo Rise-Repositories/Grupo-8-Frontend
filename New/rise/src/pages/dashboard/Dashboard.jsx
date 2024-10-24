@@ -112,10 +112,10 @@ const Dashboard = () => {
         labels: graphData.map((data) => getMonthName(data.month)),
         datasets: [
             {
-                label: "Sem Pessoas",
+                label: "Total",
                 backgroundColor: "#A700FF",
                 borderColor: "#A700FF",
-                data: graphData.map((data) => data.no_People),
+                data: graphData.map((data) => data.total),
             },
             {
                 label: "Não Atendidos",
@@ -166,7 +166,7 @@ const Dashboard = () => {
                                         responsive: true,
                                         elements: {
                                             line: {
-                                                tension: 0.5
+                                                tension: 0
                                             },
                                             point: {
                                                 radius: 2
