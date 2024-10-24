@@ -50,9 +50,17 @@ const ManageActions = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
-        const body = {};
 
-        const response = await api.patch(`/actions/${actionId}`, body, config);
+        await api.patch(`/actions/${curOngId}/${actionId}?status=${newStatus}`, null, config )
+        .then((res) => {
+            console.log('res', res);
+            toast.success("Status da ação atualizado com sucesso");
+            closeModal();
+        })
+        .catch((err) => {
+            console.log('erro', err);
+            toast.error(err.response.data.message);
+        });
 
         fetchActions();
     }
@@ -154,7 +162,7 @@ const ManageActions = () => {
             key: 'fim',
         },
         {
-            title: <span style={{ fontFamily: 'Montserrat' }}>Quantidade de locais</span>,
+            title: <span style={{ fontFamily: 'Montserrat' }}>Locais Atendidos</span>,
             dataIndex: 'qtdeMapeamentos',
             key: 'qtdeMapeamentos'
         },
@@ -244,8 +252,8 @@ const ManageActions = () => {
                     className={styles["custom-font"]}
                     footer={[
                         <div className={styles["modal-buttons-container"]}>
-                            <RedButton customStyle={styles["modal-button"]} txt={"Cancelar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'CANCELAR')}} />
-                            <BlueButton customStyle={styles["modal-button"]} txt={"Finalizar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'FINALIZAR')}} />
+                            <RedButton customStyle={styles["modal-button"]} txt={"Cancelar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'CANCELED')}} />
+                            <BlueButton customStyle={styles["modal-button"]} txt={"Finalizar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'DONE')}} />
                         </div>
                     ]}
                 >
