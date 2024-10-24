@@ -18,6 +18,7 @@ import History from "./pages/profile-screens/profileActionHistory/profileActionH
 import UserProfile from "./pages/profile-screens/profileMenu/profileMenu";
 import ProfileUpdateData from "./pages/profile-screens/profileUpdateData/profileUpdateData";
 import ProfileUpdatePassword from "./pages/profile-screens/profileUpdatePassword/profileUpdatePassword";
+import ManageActions from "./pages/manageActions/ManageActions";
 
 function Rotas() {
     return (
@@ -38,7 +39,8 @@ function Rotas() {
                     <Route path="mapping" element={<DashboardMapping />} />
                     <Route path="institute-list" element={<InstituteList />} />
                     <Route path="manage-volunteers" element={<ManageVolunteers />} />
-                    <Route path="action" element={<ActionRegistration />} />
+                    <Route path="action" element={<ManageActions />} />
+                    <Route path="new-action" element={<ActionRegistration />} />
                 </Route>
                 <Route path="/institute-list" element={<InstituteList />} />
                 <Route path="/home" element={<Home />} />
