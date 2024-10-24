@@ -158,7 +158,7 @@
 
 .modal-buttons-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 8px;
     width: 100%;
 }

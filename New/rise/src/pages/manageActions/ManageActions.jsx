@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { OngContext } from "../../components/context/ongContext/OngContext";
 import WhiteButton from "../../components/buttons/whiteButton/WhiteButton";
 import RedButton from "../../components/buttons/redButton/RedButton";
+import GreenButton from "../../components/buttons/greenButton/GreenButton";
 
 
 const ManageActions = () => {
@@ -30,8 +31,12 @@ const ManageActions = () => {
     }, [curOngId]);
 
 
-    const navigateNewActionRegistration = () => {
-        navigate('/dashboard/new-action', { state: { key: "value" } });
+    const navigateNewActionRegistration = (curAction) => {
+        if (curAction) {
+            navigate('/dashboard/new-action', { state: { curAction } });
+        } else {
+            navigate('/dashboard/new-action');
+        }
     };
 
     const openModal = (action) => {
@@ -121,7 +126,10 @@ const ManageActions = () => {
                         fim: action.datetimeEnd,
                         qtdeMapeamentos: action.mappingAction.length,
                         status: action.status,
-                        actionId: action.id
+                        actionId: action.id,
+                        latitude: action.latitude,
+                        longitude: action.longitude,
+                        radius: action.radius
                     })
                 ));
             }
@@ -208,7 +216,7 @@ const ManageActions = () => {
                                 <div className={styles["page-name"]}>
                                     <a>Ações atuais</a>
                                 </div>
-                                <BlueButton txt={"Criar Nova Ação"} onclick={() => {navigateNewActionRegistration()}} />
+                                <BlueButton txt={"Criar Nova Ação"} onclick={() => {navigateNewActionRegistration(null)}} />
                             </div>
                             <div className={`${styles["filter-box"]}`}>
                                 Status das ações:
@@ -252,8 +260,11 @@ const ManageActions = () => {
                     className={styles["custom-font"]}
                     footer={[
                         <div className={styles["modal-buttons-container"]}>
-                            <RedButton customStyle={styles["modal-button"]} txt={"Cancelar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'CANCELED')}} />
+                            { selectedAction?.status !== 'IN_PROGRESS' &&
+                                <GreenButton customStyle={styles["modal-button"]} txt={"Iniciar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'IN_PROGRESS')}} />
+                            }
                             <BlueButton customStyle={styles["modal-button"]} txt={"Finalizar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'DONE')}} />
+                            <RedButton customStyle={styles["modal-button"]} txt={"Cancelar Ação"} onclick={() => {handleActionStatus(selectedAction?.actionId, 'CANCELED')}} />
                         </div>
                     ]}
                 >
