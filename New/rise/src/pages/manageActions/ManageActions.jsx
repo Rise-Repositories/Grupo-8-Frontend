@@ -11,7 +11,7 @@ import { OngContext } from "../../components/context/ongContext/OngContext";
 import WhiteButton from "../../components/buttons/whiteButton/WhiteButton";
 import RedButton from "../../components/buttons/redButton/RedButton";
 import GreenButton from "../../components/buttons/greenButton/GreenButton";
-
+import { printDateTime } from "../../utils/globals";
 
 const ManageActions = () => {
     const { authToken } = useContext(AuthContext);
@@ -122,8 +122,8 @@ const ManageActions = () => {
                 setTableData(filteredTable.map((action, index) => ({
                         key: index,
                         name: action.name,
-                        inicio: action.datetimeStart,
-                        fim: action.datetimeEnd,
+                        inicio: new Date(action.datetimeStart),
+                        fim: new Date(action.datetimeEnd),
                         qtdeMapeamentos: action.mappingAction.length,
                         status: action.status,
                         actionId: action.id,
@@ -163,11 +163,13 @@ const ManageActions = () => {
             title: <span style={{ fontFamily: 'Montserrat' }}>Início</span>,
             dataIndex: 'inicio',
             key: 'inicio',
+            render: (text, record) => (<>{printDateTime(text)}</>)
         },
         {
             title: <span style={{ fontFamily: 'Montserrat' }}>Fim</span>,
             dataIndex: 'fim',
             key: 'fim',
+            render: (text, record) => (<>{printDateTime(text)}</>)
         },
         {
             title: <span style={{ fontFamily: 'Montserrat' }}>Locais Atendidos</span>,
