@@ -257,7 +257,7 @@ const Dashboard = () => {
                                                     position: "bottom",
                                                 }
                                             }
-                                        }}
+                                        }}}
                                     />
                                 </div>
                             </div>
