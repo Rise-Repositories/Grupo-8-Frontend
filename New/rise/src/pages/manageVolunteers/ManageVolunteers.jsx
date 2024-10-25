@@ -18,7 +18,7 @@ import { OngContext } from "../../components/context/ongContext/OngContext";
 const ManageVolunteers = () => {
     const { authToken } = useContext(AuthContext);
     const token = sessionStorage.getItem('USER_TOKEN');
-    const { curOngId } = useContext(OngContext);
+    const { curOngId, userRole } = useContext(OngContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAssociateModalOpen, setIsAssociateModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -72,6 +72,12 @@ const ManageVolunteers = () => {
 
         fetchVolunteers();
     }, [curOngId]);
+
+    useEffect(() => {
+        if (userRole !== 'OWNER' && userRole !== 'ADMIN') {
+            navigate('/dashboard/main');
+        }
+    }, [userRole]);
 
     const fillAddress = (event) => {
         if (validateCEP(event.target.value)) {

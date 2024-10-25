@@ -26,12 +26,19 @@ import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
 import MarkerIconRed from "../../../utils/imgs/marker-red.png";
 import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
 import MarkerIconGray from "../../../utils/imgs/marker-gray.png";
+import { useLocation } from 'react-router-dom';
 
 
 const ActionRegistration = () => {
-    const [radius, setRadius] = useState(3);
+
+    const state = useLocation().state?.curAction;
+    const [markersLoaded, setMarkersLoaded] = useState(false);
+
+    console.log('ESTADO', state);
+
+    const [radius, setRadius] = useState(state ? state.radius : 3);
     const [showMapping, setShowMapping] = useState(false);
-    const [showAddresses, setShowAddresses] = useState(false);
+    const [showAddresses, setShowAddresses] = useState(state? true : false);
     const [searchQuery, setSearchQuery] = useState('');
     const [clickedPosition, setClickedPosition] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -42,7 +49,8 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
-    const [idAction, setIdAction] = useState();
+    const [idAction, setIdAction] = useState(state ? state.id : null);
+    const [statusAction, setStatusAction] = useState(state ? state.status : null);
     const { curOngId } = useContext(OngContext);
     const [address, setAddress] = useState({
         cep: '',
@@ -61,7 +69,7 @@ const ActionRegistration = () => {
     const searchInput = useRef(null);
     const mapRef = useRef();
     const [markers, setMarkers] = useState([])
-    const [currentPosition, setCurrentPosition] = useState(null);
+    const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : null);
     const [serachResults, setSearchResults] = useState();
     const [infos, setInfos] = useState();
     const [openExistingMapping, setOpenExistingMapping] = useState(false);
@@ -313,6 +321,7 @@ const ActionRegistration = () => {
             const { data, status } = await api.post(`/actions/${curOngId}`, {
                 latitude: currentPosition[0],
                 longitude: currentPosition[1],
+                radius: radius,
                 name: action.nome,
                 description: action.descricao,
                 dateTimeStart: action.dataInicio,
@@ -330,6 +339,7 @@ const ActionRegistration = () => {
             if (status === 201) {
                 toast.success('Ação Cadastrada e Endereço encontrado!');
                 setIdAction(data.id);
+                setStatusAction(data.status);
                 setShowAddresses(true);
             }
 
@@ -640,53 +650,57 @@ const ActionRegistration = () => {
     const [form] = Form.useForm();
 
     const getMarkers = async (lat, lng, radius) => {
-        try {
-            const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        if (!markersLoaded) {
+            try {
+                const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
-                headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
-                },
-            })
+                const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                    },
+                })
 
-            if (status === 200) {
-                const setData = new Set([...data, ...markers]);
-                const arrayData = Array.from(setData);
+                if (status === 200) {
+                    const setData = new Set([...data, ...markers]);
+                    const arrayData = Array.from(setData);
 
-                setMarkers(arrayData);
+                    setMarkers(arrayData);
 
-                setLocationData(arrayData.map(marker => {
+                    setLocationData(arrayData.map(marker => {
 
-                    const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
-                        ? marker.mappingActions.at(-1)?.action?.datetimeEnd
-                        : null;
+                        const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
+                            ? marker.mappingActions.at(-1)?.action?.datetimeEnd
+                            : null;
 
-                    const date = lastAction ? new Date(lastAction) : null;
-                    const today = new Date();
+                        const date = lastAction ? new Date(lastAction) : null;
+                        const today = new Date();
 
-                    const daysDifference = date && !isNaN(date)
-                        ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
-                        : null;
+                        const daysDifference = date && !isNaN(date)
+                            ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
+                            : null;
 
-                    const formattedDate = daysDifference !== null && !isNaN(daysDifference)
-                        ? date.toLocaleDateString('pt-BR')
-                        : 'Sem Ação';
+                        const formattedDate = daysDifference !== null && !isNaN(daysDifference)
+                            ? date.toLocaleDateString('pt-BR')
+                            : 'Sem Ação';
 
-                    return {
-                        id: marker.id,
-                        enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
-                        adultos: marker.qtyAdults,
-                        criancas: marker.qtyChildren,
-                        date: formattedDate,
-                        transtorno: marker.hasDisorders ? 'Sim' : 'Não',
-                        descricao: marker.description
-                    };
-                }));
+                        return {
+                            id: marker.id,
+                            enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
+                            adultos: marker.qtyAdults,
+                            criancas: marker.qtyChildren,
+                            date: formattedDate,
+                            transtorno: marker.hasDisorders ? 'Sim' : 'Não',
+                            descricao: marker.description
+                        };
+                    }));
+
+                    setMarkersLoaded(true);
+                }
             }
-        }
-        catch (e) {
-            toast.error("Não foi possível localizar os markers")
-            console.log("error: " + e.message)
+            catch (e) {
+                toast.error("Não foi possível localizar os markers")
+                console.log("error: " + e.message)
+            }
         }
     }
 
@@ -723,12 +737,15 @@ const ActionRegistration = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     setCurrentPosition([position.coords.latitude, position.coords.longitude])
-                    getMarkers(position.coords.latitude, position.coords.longitude, 1)
                 },
                 (error) => console.log(error)
             )
         } else {
             toast.error("Geolocalização não suportada por este nagevador.")
+        }
+
+        if (state) {
+            getMarkers(state.latitude, state.longitude, state.radius);
         }
     }, [])
 
@@ -969,9 +986,11 @@ const ActionRegistration = () => {
                                     <div className={styles["addresses"]}>
                                         <TableComponent />
                                     </div>
-                                    <div className={styles["div-btn-finalizar"]}>
-                                        <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
-                                    </div>
+                                    { statusAction === 'IN_PROGRESS' &&
+                                        <div className={styles["div-btn-finalizar"]}>
+                                            <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         )}
@@ -988,7 +1007,9 @@ const ActionRegistration = () => {
                     <div style={{ textAlign: 'center' }}>
                         <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
-                            <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
+                            { statusAction === "IN_PROGRESS" &&
+                                <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
+                            }
                         </Space>
                     </div>
                 ]}
