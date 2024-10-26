@@ -44,6 +44,22 @@
     width: 24px;
 }
 
+.links svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    color: #fff;
+
+    gap: 10%;
+    list-style: none;
+    cursor: pointer;
+}
+
 .default-box {
     background-color: #fff;
     padding: 35px;
@@ -129,6 +145,17 @@
     width: 100%;
     display: flex;
     justify-content: space-evenly;
+}
+
+.default-box-mapping .top-info-inside{
+    align-items: center;
+}
+
+.default-box-mapping .top-info-inside .checkbox-info{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .map {

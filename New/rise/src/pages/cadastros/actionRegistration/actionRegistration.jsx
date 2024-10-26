@@ -6,14 +6,15 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd'; // Ant Design Components
-import { SearchOutlined } from '@ant-design/icons'; // Table Search Icon
-import Highlighter from 'react-highlight-words'; // Highlighter to highlight text
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
 import 'antd/dist/reset.css';
 import { OngContext } from '../../../components/context/ongContext/OngContext';
 
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMapEvent, useMapEvents, useMap } from "react-leaflet";
 import PinInfosModal from '../../../components/modals/pinInfosModal/pinInfosModal';
+import PinActionsModal from '../../../components/modals/pinActionsModal/pinActionsModal'
 import api from '../../../api';
 import axios from "axios";
 import L from "leaflet";
@@ -26,6 +27,7 @@ import MarkerIconOrange from "../../../utils/imgs/marker-orange.png";
 import MarkerIconRed from "../../../utils/imgs/marker-red.png";
 import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
 import MarkerIconGray from "../../../utils/imgs/marker-gray.png";
+import Person from "../../../utils/imgs/person.png"
 import { useLocation } from 'react-router-dom';
 
 
@@ -33,12 +35,13 @@ const ActionRegistration = () => {
 
     const state = useLocation().state?.curAction;
     const [markersLoaded, setMarkersLoaded] = useState(false);
+    const [actionsLoaded, setActionsLoaded] = useState(false);
 
     console.log('ESTADO', state);
 
     const [radius, setRadius] = useState(state ? state.radius : 3);
     const [showMapping, setShowMapping] = useState(false);
-    const [showAddresses, setShowAddresses] = useState(state? true : false);
+    const [showAddresses, setShowAddresses] = useState(state ? true : false);
     const [searchQuery, setSearchQuery] = useState('');
     const [clickedPosition, setClickedPosition] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -67,13 +70,9 @@ const ActionRegistration = () => {
         dataFim: ''
     })
     const searchInput = useRef(null);
-    const mapRef = useRef();
-    const [markers, setMarkers] = useState([])
+    const [markers, setMarkers] = useState([]);
+    const [actions, setActions] = useState([]);
     const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : null);
-    const [serachResults, setSearchResults] = useState();
-    const [infos, setInfos] = useState();
-    const [openExistingMapping, setOpenExistingMapping] = useState(false);
-    const [openNewMapping, setOpenNewMapping] = useState(false);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
@@ -94,6 +93,8 @@ const ActionRegistration = () => {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
+
+                    alert("position: " + position[0])
 
                     const cep = await getCepFromCoordinates(latitude, longitude);
 
@@ -197,6 +198,12 @@ const ActionRegistration = () => {
         popupAnchor: [0, -32],
     });
 
+    const personIcon = new L.Icon({
+        iconUrl: Person,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30]
+    });
+
     const extractCepFromAddress = (address) => {
         const cepRegex = /\b\d{5}-?\d{3}\b/;
         const match = address.match(cepRegex);
@@ -253,31 +260,31 @@ const ActionRegistration = () => {
             const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
             const data = response.data;
 
-            
+
             const capitalizeWords = (str) => {
                 return str
-                    .trim() 
-                    .toLowerCase() 
-                    .replace(/\b\w/g, (char) => char.toUpperCase()); 
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\b\w/g, (char) => char.toUpperCase());
             };
 
-            
+
             const normalizeString = (str) => {
                 return str ? capitalizeWords(str) : '';
             };
 
-            
+
             const normalizeStreet = (street) => {
                 let normalized = capitalizeWords(street);
 
-                
+
                 normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
                 normalized = normalized.replace(/^Rua\s/i, 'Rua ');
 
                 return normalized.trim();
             };
 
-            
+
             if (
                 data.erro ||
                 normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
@@ -544,7 +551,6 @@ const ActionRegistration = () => {
             setIsFormVisible(true);
         }
 
-
     };
 
     const handleCancel = () => {
@@ -650,6 +656,7 @@ const ActionRegistration = () => {
     const [form] = Form.useForm();
 
     const getMarkers = async (lat, lng, radius) => {
+        console.log("[getMarkers] Lat: " + lat + ", long: " + lat + ", radius: " + radius)
         if (!markersLoaded) {
             try {
                 const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
@@ -704,6 +711,34 @@ const ActionRegistration = () => {
         }
     }
 
+    const getActions = async (lat, lng, radius) => {
+        console.log("[getActions] Lat: " + lat + ", long: " + lat + ", radius: " + radius)
+        if (!actionsLoaded) {
+            try {
+                const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+
+                const { data, status } = await api.get(`/actions/by-coordinates?coordinates=${coord}&radius=${radius}`, {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                    },
+                })
+
+                if (status === 200) {
+                    const setData = new Set([...data, ...actions]);
+                    const arrayData = Array.from(setData);
+
+                    setActions(arrayData);
+
+                    setActionsLoaded(true);
+                }
+            }
+            catch (e) {
+                toast.error("Não foi possível localizar as ações")
+                console.log("error: " + e.message)
+            }
+        }
+    }
+
     const EventHandler = ({ setClickedPosition, setSearchQuery }) => {
         useMapEvents({
             click: async (e) => {
@@ -723,23 +758,16 @@ const ActionRegistration = () => {
         return null;
     };
 
-    const handleModalNewMapping = () => {
-        setOpenExistingMapping(false);
-        setOpenNewMapping(!openNewMapping)
-    }
-
-    const handleModalExistingMapping = () => {
-        setOpenExistingMapping(!openExistingMapping)
-    }
-
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    console.log("Posição do Navegador: " + position.coords.latitude + ", " + position.coords.longitude)
                     setCurrentPosition([position.coords.latitude, position.coords.longitude])
                 },
                 (error) => console.log(error)
             )
+
         } else {
             toast.error("Geolocalização não suportada por este nagevador.")
         }
@@ -792,6 +820,15 @@ const ActionRegistration = () => {
         if (days >= 17 && days < 25) return MarkerIconOrange;
         return MarkerIconRed;
     };
+
+    function MapEventListener({ getMarkers }) {
+        useMapEvent('moveend', (e) => {
+            const center = e.target.getCenter();
+            getMarkers(center.lat, center.lng, 5);
+            getActions(center.lat, center.lng, 5);
+        });
+        return null;
+    }
 
     return (
         <>
@@ -858,7 +895,7 @@ const ActionRegistration = () => {
 
                                 <div className={styles["button-group"]}>
                                     <BlueButton txt="USAR LOCALIZAÇÃO ATUAL" onclick={() => handleGetLocation()} />
-                                    <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => setShowMapping(true)} />
+                                    <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => { setShowMapping(true); getMarkers(...currentPosition, 5); getActions(...currentPosition, 5) }} />
                                 </div>
                                 <div className={styles["slider-group"]}>
                                     <p>Em um raio de (em km):</p>
@@ -902,6 +939,18 @@ const ActionRegistration = () => {
                                     <div className={styles["page-name"]}>
                                         <a>Buscar endereços próximos de:</a>
                                     </div>
+                                    <div className={styles["checkbox-info"]}>
+                                        <img src={MarkerIconGray} alt="Ícone de marcador" />
+                                        <label>Endereços já cadastrados</label>
+                                    </div>
+                                    <div className={styles["checkbox-info"]}>
+                                        <a className={styles.links} href="#">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                                <path fill="#000000" d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z" />
+                                            </svg>
+                                        </a>
+                                        <label>Ações pendentes e em progresso</label>
+                                    </div>
                                 </div>
 
                                 <div className={styles["map"]}>
@@ -914,11 +963,65 @@ const ActionRegistration = () => {
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
                                         <EventHandler setClickedPosition={setClickedPosition} setSearchQuery={setSearchQuery} />
-                                        <RecenterMap position={currentPosition} />
+
+                                        <MapEventListener getMarkers={getMarkers} getActions={getActions} />
 
                                         {clickedPosition && (
                                             <Marker position={clickedPosition} icon={customIcon} />
                                         )}
+
+                                        {currentPosition && (
+                                            <Marker position={currentPosition} icon={personIcon}>
+                                                <Popup>Você está aqui</Popup>
+                                            </Marker>
+                                        )}
+
+                                        {markers.map((m, index) => {
+                                            const lastAction = Array.isArray(m.mappingActions) && m.mappingActions.length > 0
+                                                ? m.mappingActions.at(-1)?.action?.datetimeEnd
+                                                : null;
+
+                                            const date = lastAction ? new Date(lastAction) : null;
+                                            const today = new Date();
+
+                                            const daysDifference = date && !isNaN(date)
+                                                ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
+                                                : null;
+
+                                            const icon = new L.Icon({
+                                                iconUrl: getIconByDays(daysDifference),
+                                                iconSize: [30, 30]
+                                            });
+
+                                            return (
+                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
+                                                    <Popup className={styles["popup"]}>
+                                                        <PinInfosModal pin={m} />
+                                                    </Popup>
+                                                </Marker>
+                                            );
+                                        })}
+
+                                        {actions.map((m, index) => {
+
+                                            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                                                <path fill="#000000" d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z" />
+                                                            </svg>
+                                                            `;
+                                            const encodedSvg = `data:image/svg+xml;base64,${btoa(svgIcon)}`;
+                                            const icon = new L.Icon({
+                                                iconUrl: encodedSvg,
+                                                iconSize: [30, 30]
+                                            });
+
+                                            return (
+                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
+                                                    <Popup className={styles["popup"]}>
+                                                        <PinActionsModal action={m} />
+                                                    </Popup>
+                                                </Marker>
+                                            );
+                                        })}
                                     </MapContainer>
                                 </div>
 
@@ -986,7 +1089,7 @@ const ActionRegistration = () => {
                                     <div className={styles["addresses"]}>
                                         <TableComponent />
                                     </div>
-                                    { statusAction === 'IN_PROGRESS' &&
+                                    {statusAction === 'IN_PROGRESS' &&
                                         <div className={styles["div-btn-finalizar"]}>
                                             <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
                                         </div>
@@ -1007,7 +1110,7 @@ const ActionRegistration = () => {
                     <div style={{ textAlign: 'center' }}>
                         <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
-                            { statusAction === "IN_PROGRESS" &&
+                            {statusAction === "IN_PROGRESS" &&
                                 <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
                             }
                         </Space>
