@@ -3,7 +3,7 @@ import styles from "./Dashboard.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
 import { AuthContext } from "../login/AuthContext";
-
+import { Button, Spin } from "antd";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -56,28 +56,28 @@ const Dashboard = () => {
 
 
     const handleExportCsv = async () => {
-        // Formata as datas de início e fim
+       
         console.log('Função handleExportCsv chamada');
-        const dataInicio = dataFiltro.split('T')[0]; // Formata a data de início
-        const dataFim = dataFiltro2.split('T')[0]; // Formata a data de fim
-    
+        const dataInicio = dataFiltro.split('T')[0]; 
+        const dataFim = dataFiltro2.split('T')[0];
+
         try {
-            // Cria a URL com os parâmetros
+           
             const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
-            
+
             const response = await api.get(url, {
-                responseType: 'blob', // Para download de arquivos
+                responseType: 'blob', 
                 headers: { Authorization: authorization },
             });
-    
-            // Adicionando console.log para ver a resposta
+
+           
             console.log('Resposta do servidor:', response);
-    
-            // Criar um link para o download do CSV
+
+          
             const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = blobUrl;
-            link.setAttribute('download', 'mapping_graph.csv'); // Nome do arquivo
+            link.setAttribute('download', 'mapping_graph.csv'); 
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -85,8 +85,53 @@ const Dashboard = () => {
             console.error('Erro ao exportar CSV', error);
         }
     };
-    
-    
+
+
+    const handleExportJson = async () => {
+        console.log('Função handleExportJson chamada');
+        const dataInicio = dataFiltro.split('T')[0];
+        const dataFim = dataFiltro2.split('T')[0];
+
+        try {
+            const url = `/data/export-json?startDate=${dataInicio}&endDate=${dataFim}`;
+
+            const response = await api.get(url, {
+                responseType: 'json',
+                headers: { Authorization: authorization },
+            });
+
+            console.log('Resposta do servidor:', response);
+
+            // Converte para string JSON formatada
+            const formattedJson = JSON.stringify(response.data, null, 2); // O `2` define o nível de indentação
+
+            const blob = new Blob([formattedJson], { type: 'application/json' });
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.setAttribute('download', 'mapping_graph.json');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao exportar o JSON', error);
+        }
+    };
+
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = (type) => {
+        if (exporting) return;
+
+        setExporting(true);
+        if (type === "CSV") {
+            handleExportCsv();
+        } else if (type === "JSON") {
+            handleExportJson();
+        }
+        setTimeout(() => setExporting(false), 1000);
+    };
+
 
     const [totalUsers, setTotalUsers] = useState(0);
 
@@ -178,6 +223,7 @@ const Dashboard = () => {
         ],
     };
 
+
     // Função para formatar a data como dd / mm / yyyy (com espaço entre as barras)
     const formatarData = (data) => {
         return new Date(data).toLocaleDateString('pt-BR', {
@@ -186,6 +232,7 @@ const Dashboard = () => {
             day: '2-digit'
         }).replace(/\//g, ' / '); // Adiciona espaços entre as barras
     };
+
 
     return (
         <>
@@ -212,9 +259,6 @@ const Dashboard = () => {
                                     <div className={styles["page-name"]}>
                                         <div className={styles["header"]}>
                                             <a>Locais atendidos mês a mês</a>
-                                            <div className={styles["button-header"]}>
-                                            <BlueButton txt={"Exportar csv"} onclick={handleExportCsv} />
-                                        </div>
                                         </div>
                                         <div className={`${styles["aux-top-filters"]}`}>
                                             <div className={`${styles["top-filters"]}`}>
@@ -238,27 +282,38 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`${styles["chart-box"]}`}>
 
-                                <Line
-                                    className={styles.chart}
-                                    data={data}
-                                    options={{
-                                        responsive: true,
-                                        elements: {
-                                            line: {
-                                                tension: 0
-                                            },
-                                            point: {
-                                                radius: 2
-                                            },
-                                            maintainAspectRatio: false,
-                                            plugins: {
-                                                legend: {
-                                                    display: true,
-                                                    position: "bottom",
+                                    <Line
+                                        className={styles.chart}
+                                        data={data}
+                                        options={{
+                                            responsive: true,
+                                            elements: {
+                                                line: {
+                                                    tension: 0
+                                                },
+                                                point: {
+                                                    radius: 2
+                                                },
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    legend: {
+                                                        display: true,
+                                                        position: "bottom",
+                                                    }
                                                 }
                                             }
-                                        }}}
+                                        }}
                                     />
+                                </div>
+                                <div className={styles["button-header"]}>
+                                    <h6>Exportar Dados em: </h6>
+                                    <Button.Group>
+                                        <Button onClick={() => handleExport("CSV")}>CSV</Button>
+                                        <Button onClick={() => handleExport("JSON")}>JSON</Button>
+                                        <Button onClick={() => handleExport("Parquet")}>Parquet</Button>
+                                        <Button onClick={() => handleExport("XML")}>XML</Button>
+                                    </Button.Group>
+                                    {exporting && <Spin />}
                                 </div>
                             </div>
                             <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
