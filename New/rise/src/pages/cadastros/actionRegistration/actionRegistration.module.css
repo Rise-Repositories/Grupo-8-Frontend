@@ -7,9 +7,22 @@
     font-family: "Montserrat";
 }
 
+.page-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+}
+
 .page-name a {
     color: #00006B !important;
     font-size: 24px;
+}
+
+.page-name svg {
+    color: #00006B;
+    width: 25px;
+    height: 25px;
 }
 
 .content {
@@ -32,7 +45,6 @@
 .top-info {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
 }
 
 .align-input {
@@ -42,6 +54,22 @@
 .notifications {
     height: 100%;
     width: 24px;
+}
+
+.links svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    color: #fff;
+
+    gap: 10%;
+    list-style: none;
+    cursor: pointer;
 }
 
 .default-box {
@@ -129,6 +157,17 @@
     width: 100%;
     display: flex;
     justify-content: space-evenly;
+}
+
+.default-box-mapping .top-info-inside{
+    align-items: center;
+}
+
+.default-box-mapping .top-info-inside .checkbox-info{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .map {
@@ -269,8 +308,6 @@
     height: 90%;
     display: flex;
     justify-content: center;
-    align-items: center;
-
 }
 
 .div-btn-finalizar {
@@ -362,8 +399,7 @@
     .addresses {
         height: 100%;
         width: 100%;
-        overflow-x: scroll;
-    } 
+    }
 
     .div-btn-finalizar {
         margin-top: auto;
@@ -398,10 +434,6 @@
 
     .top-info .notifications{
         margin-left: auto;
-    }
-
-    .top-info .page-name{
-        margin-left: 23%;
     }
 
     .top-info .align-input{
@@ -470,10 +502,14 @@
     .addresses {
         height: 100%;
         width: 100%;
-        overflow-x: scroll;
-    }   
+    }
 
     .div-btn-finalizar {
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .div-btn-start {
         margin-top: 10px;
         width: 100%;
     }
@@ -500,4 +536,10 @@
     .form-buttons button {
         width: 100%;
     }
+}
+
+.already-donated {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
 }
