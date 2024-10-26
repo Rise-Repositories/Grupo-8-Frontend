@@ -27,6 +27,7 @@ import MarkerIconRed from "../../../utils/imgs/marker-red.png";
 import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
 import MarkerIconGray from "../../../utils/imgs/marker-gray.png";
 import { useLocation } from 'react-router-dom';
+import GreenButton from '../../../components/buttons/greenButton/GreenButton';
 
 
 const ActionRegistration = () => {
@@ -34,11 +35,9 @@ const ActionRegistration = () => {
     const state = useLocation().state?.curAction;
     const [markersLoaded, setMarkersLoaded] = useState(false);
 
-    console.log('ESTADO', state);
-
     const [radius, setRadius] = useState(state ? state.radius : 3);
     const [showMapping, setShowMapping] = useState(false);
-    const [showAddresses, setShowAddresses] = useState(state? true : false);
+    const [showAddresses, setShowAddresses] = useState(state ? true : false);
     const [searchQuery, setSearchQuery] = useState('');
     const [clickedPosition, setClickedPosition] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -49,7 +48,7 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
-    const [idAction, setIdAction] = useState(state ? state.id : null);
+    const [idAction, setIdAction] = useState(state ? state.actionId : null);
     const [statusAction, setStatusAction] = useState(state ? state.status : null);
     const { curOngId } = useContext(OngContext);
     const [address, setAddress] = useState({
@@ -68,7 +67,6 @@ const ActionRegistration = () => {
     })
     const searchInput = useRef(null);
     const mapRef = useRef();
-    const [markers, setMarkers] = useState([])
     const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : null);
     const [serachResults, setSearchResults] = useState();
     const [infos, setInfos] = useState();
@@ -253,31 +251,31 @@ const ActionRegistration = () => {
             const response = await axios.get(`https://viacep.com.br/ws/${address.cep}/json/`);
             const data = response.data;
 
-            
+
             const capitalizeWords = (str) => {
                 return str
-                    .trim() 
-                    .toLowerCase() 
-                    .replace(/\b\w/g, (char) => char.toUpperCase()); 
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\b\w/g, (char) => char.toUpperCase());
             };
 
-            
+
             const normalizeString = (str) => {
                 return str ? capitalizeWords(str) : '';
             };
 
-            
+
             const normalizeStreet = (street) => {
                 let normalized = capitalizeWords(street);
 
-                
+
                 normalized = normalized.replace(/^Av\s|Avenida\s/i, 'Av ');
                 normalized = normalized.replace(/^Rua\s/i, 'Rua ');
 
                 return normalized.trim();
             };
 
-            
+
             if (
                 data.erro ||
                 normalizeStreet(data.logradouro) !== normalizeStreet(address.logradouro) ||
@@ -294,28 +292,7 @@ const ActionRegistration = () => {
             return;
         }
 
-        try {
-            const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${address.cep}&format=json&limit=5&addressdetails=1`)
-
-            if (status === 200) {
-                const results = data.map((item) => {
-                    return {
-                        lat: item.lat,
-                        lon: item.lon,
-                        display_name: `${item.address.road}, ${item.address.suburb} - ${item.address.postcode}`
-                    }
-                })
-                try {
-                    setCurrentPosition([results[0].lat, results[0].lon])
-                    getMarkers(results[0].lat, results[0].lon, radius);
-                } catch (error) {
-                    console.error(error)
-                }
-            }
-        }
-        catch (e) {
-            toast.error("Erro ao buscar latitude e longitude")
-        }
+        let curActionId = -1;
 
         try {
             const { data, status } = await api.post(`/actions/${curOngId}`, {
@@ -339,13 +316,37 @@ const ActionRegistration = () => {
             if (status === 201) {
                 toast.success('Ação Cadastrada e Endereço encontrado!');
                 setIdAction(data.id);
+                curActionId = data.id;
                 setStatusAction(data.status);
                 setShowAddresses(true);
             }
-
         }
         catch (e) {
             toast.error("Erro ao Cadastrar Ação")
+        }
+
+
+        try {
+            const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${address.cep}&format=json&limit=5&addressdetails=1`)
+
+            if (status === 200) {
+                const results = data.map((item) => {
+                    return {
+                        lat: item.lat,
+                        lon: item.lon,
+                        display_name: `${item.address.road}, ${item.address.suburb} - ${item.address.postcode}`
+                    }
+                })
+                try {
+                    setCurrentPosition([results[0].lat, results[0].lon]);
+                    getMarkers(curActionId);
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+        catch (e) {
+            toast.error("Erro ao buscar latitude e longitude")
         }
     };
 
@@ -466,12 +467,26 @@ const ActionRegistration = () => {
             dataIndex: 'date',
             key: 'date',
             ...getColumnSearchProps('date'),
-
         },
         {
             title: 'Há pessoas com transtorno',
             dataIndex: 'transtorno',
             key: 'transtorno',
+        },
+        {
+            title: "Já atendida",
+            dataIndex: 'alreadyDonated',
+            key: 'alreadyDonated',
+            defaultSortOrder: 'ascend',
+            sorter: {
+                compare: (a, b) => a.alreadyDonated === b.alreadyDonated ? 0 : a.alreadyDonated ? 1 : -1
+            },
+            render: (record) => (
+                <>
+                    { record && <b>Sim</b> }
+                    { !record && <b>Não</b> }
+                </>
+            )
         },
         {
             title: 'Ver Detalhes',
@@ -489,6 +504,7 @@ const ActionRegistration = () => {
     };
 
     const closeModal = () => {
+        setSelectedRecord(null);
         setIsModalVisible(false);
         setShowMapping(true);
         setIsRegistered(false);
@@ -527,6 +543,16 @@ const ActionRegistration = () => {
                     })
 
                 if (status === 201 || status === 200) {
+                    setLocationData(locationData.map((ld) => {
+                        if (ld.id === selectedRecord.id) {
+                            ld.alreadyDonated = true;
+                            ld.icon = new L.Icon({
+                                iconUrl: MarkerIconGray,
+                                iconSize: [30, 30]
+                            });
+                        }
+                        return ld;
+                    }))
                     setIsRegistered(true);
                     form.resetFields();
                 } else {
@@ -540,6 +566,7 @@ const ActionRegistration = () => {
             }
             setIsModalVisible(false);
             setIsFormVisible(false);
+            setSelectedRecord(null);
         } else {
             setIsFormVisible(true);
         }
@@ -553,6 +580,7 @@ const ActionRegistration = () => {
             setIsFormVisible(false);
         } else {
             setIsModalVisible(false);
+            setSelectedRecord(null);
         }
 
     };
@@ -565,6 +593,7 @@ const ActionRegistration = () => {
         setShowMapping(false);
         setShowAddresses(false);
         setIsModalVisible(false);
+        setSelectedRecord(null);
         setIsFormVisible(false);
         setIsRegistered(false);
         setIsFinished(false);
@@ -582,26 +611,6 @@ const ActionRegistration = () => {
         action.dataInicio = ''
         action.dataFim = ''
     }
-
-    const TableComponent = () => (
-
-        <Table
-            columns={columns}
-            expandable={{
-                expandedRowRender: (record) => (
-                    <p style={{ margin: 0 }}>
-                        {record.description}
-                    </p>
-                ),
-                rowExpandable: (record) => record.name === "",
-            }}
-            dataSource={locationData}
-            scroll={{
-                x: 150,
-            }}
-            pagination={{ pageSize: 3 }}
-        />
-    );
 
     const DonationForm = ({ form }) => (
         <Form
@@ -649,22 +658,24 @@ const ActionRegistration = () => {
 
     const [form] = Form.useForm();
 
-    const getMarkers = async (lat, lng, radius) => {
+    const getMarkers = async (curActionId) => {
         if (!markersLoaded) {
             try {
-                const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+                // const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-                const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
+                const { data, status } = await api.get(`/actions/${curActionId}/mapping`, {
                     headers: {
                         Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                     },
-                })
+                });
 
-                if (status === 200) {
-                    const setData = new Set([...data, ...markers]);
+                if (status === 204) {
+                    toast.warn('Não há localizações cadastradas no raio especificado');
+
+                    setMarkersLoaded(true);
+                } else if (status === 200) {
+                    const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
-
-                    setMarkers(arrayData);
 
                     setLocationData(arrayData.map(marker => {
 
@@ -683,6 +694,16 @@ const ActionRegistration = () => {
                             ? date.toLocaleDateString('pt-BR')
                             : 'Sem Ação';
 
+                        const alreadyDonated = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
+                            ? marker.mappingActions.filter((ma) => { return ma.action.id === curActionId }).length > 0
+                            : false;
+
+                        const icon = new L.Icon({
+                            iconUrl: getIconByDays(daysDifference, alreadyDonated),
+                            iconSize: [30, 30]
+                        });
+
+
                         return {
                             id: marker.id,
                             enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
@@ -690,7 +711,10 @@ const ActionRegistration = () => {
                             criancas: marker.qtyChildren,
                             date: formattedDate,
                             transtorno: marker.hasDisorders ? 'Sim' : 'Não',
-                            descricao: marker.description
+                            descricao: marker.description,
+                            marker: marker,
+                            icon: icon,
+                            alreadyDonated: alreadyDonated
                         };
                     }));
 
@@ -698,7 +722,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível localizar os markers")
+                toast.error("Não foi possível carregar as localizações desta ação")
                 console.log("error: " + e.message)
             }
         }
@@ -745,7 +769,7 @@ const ActionRegistration = () => {
         }
 
         if (state) {
-            getMarkers(state.latitude, state.longitude, state.radius);
+            getMarkers(state.actionId);
         }
     }, [])
 
@@ -784,8 +808,9 @@ const ActionRegistration = () => {
         }
     };
 
-    const getIconByDays = (days) => {
-        if (days === null) return MarkerIconGray;
+    const getIconByDays = (days, alreadyDonated) => {
+        if (alreadyDonated) return MarkerIconGray;
+        if (days === null) return MarkerIconRed;
         if (days <= 1 && days < 4) return MarkerIconGreen;
         if (days >= 4 && days < 13) return MarkerIconLightGreen;
         if (days >= 13 && days < 17) return MarkerIconYellow;
@@ -945,48 +970,50 @@ const ActionRegistration = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
-                                        {markers.map((m, index) => {
-                                            const lastAction = Array.isArray(m.mappingActions) && m.mappingActions.length > 0
-                                                ? m.mappingActions.at(-1)?.action?.datetimeEnd
-                                                : null;
-
-                                            const date = lastAction ? new Date(lastAction) : null;
-                                            const today = new Date();
-
-                                            const daysDifference = date && !isNaN(date)
-                                                ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
-                                                : null;
-
-                                            const icon = new L.Icon({
-                                                iconUrl: getIconByDays(daysDifference),
-                                                iconSize: [30, 30]
-                                            });
-
+                                        {locationData.map((loc, index) => {
                                             return (
-                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
-                                                    <Popup className={styles["popup"]}>
-                                                        <PinInfosModal pin={m} />
-                                                    </Popup>
-                                                </Marker>
+                                                <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
+                                                    eventHandlers={{
+                                                        click: (e) => {
+                                                            showDetalhes(loc)
+                                                        },
+                                                    }} />
                                             );
                                         })}
                                     </MapContainer>
-                                    <div className={styles["div-time-action"]}>
-                                        <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
-                                        <div className={styles["indicator-bar"]}>
+                                    { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
+                                        <div className={styles["div-time-action"]}>
+                                            <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
+                                            <div className={styles["indicator-bar"]}>
+                                            </div>
+                                            <div className={styles["indicator-labels"]}>
+                                                <span>30 dias ou mais</span>
+                                                <span class="text-center">15 dias</span>
+                                                <span class="text-end">1 dia</span>
+                                            </div>
                                         </div>
-                                        <div className={styles["indicator-labels"]}>
-                                            <span>30 dias ou mais</span>
-                                            <span class="text-center">15 dias</span>
-                                            <span class="text-end">1 dia</span>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                                 <div className={styles["div-tb-addresses"]}>
                                     <div className={styles["addresses"]}>
-                                        <TableComponent />
+                                        <Table
+                                            columns={columns}
+                                            expandable={{
+                                                expandedRowRender: (record) => (
+                                                    <p style={{ margin: 0 }}>
+                                                        {record.description}
+                                                    </p>
+                                                ),
+                                                rowExpandable: (record) => record.name === "",
+                                            }}
+                                            dataSource={locationData}
+                                            scroll={{
+                                                x: 150,
+                                            }}
+                                            pagination={{ pageSize: 3 }}
+                                        />
                                     </div>
-                                    { statusAction === 'IN_PROGRESS' &&
+                                    {statusAction === 'IN_PROGRESS' &&
                                         <div className={styles["div-btn-finalizar"]}>
                                             <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
                                         </div>
@@ -1000,14 +1027,14 @@ const ActionRegistration = () => {
 
             <Modal
                 title="Detalhes do Registro"
-                visible={isModalVisible}
+                open={isModalVisible}
                 onCancel={handleCancel}
                 width={700}
                 footer={[
                     <div style={{ textAlign: 'center' }}>
                         <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
-                            { statusAction === "IN_PROGRESS" &&
+                            {statusAction === "IN_PROGRESS" && !selectedRecord?.alreadyDonated &&
                                 <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
                             }
                         </Space>
@@ -1015,27 +1042,29 @@ const ActionRegistration = () => {
                 ]}
                 centered
             >
-                {selectedRecord && (
-                    !isFormVisible ? (
-                        <>
-                            <p><strong>ID:</strong> {selectedRecord.id}</p>
-                            <p><strong>Endereço:</strong> {selectedRecord.enderecos}</p>
-                            <p><strong>Quantidade de Adultos:</strong> {selectedRecord.adultos}</p>
-                            <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord.criancas}</p>
-                            <p><strong>Há pessoas com transtorno:</strong> {selectedRecord.transtorno}</p>
-                            <p><strong>Última ação no local:</strong> {selectedRecord.date}</p>
-                            <p><strong>Descrição:</strong> {selectedRecord.descricao}</p>
-                        </>
-                    ) : (
-                        <DonationForm form={form} />
-                    )
+                {!isFormVisible ? (
+                    <>
+                        <p><strong>ID:</strong> {selectedRecord?.id}</p>
+                        <p><strong>Endereço:</strong> {selectedRecord?.enderecos}</p>
+                        <p><strong>Quantidade de Adultos:</strong> {selectedRecord?.adultos}</p>
+                        <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord?.criancas}</p>
+                        <p><strong>Há pessoas com transtorno:</strong> {selectedRecord?.transtorno}</p>
+                        <p><strong>Última ação no local:</strong> {selectedRecord?.date}</p>
+                        <p><strong>Descrição:</strong> {selectedRecord?.descricao}</p>
+                        {selectedRecord?.alreadyDonated &&
+                            <p className={styles["already-donated"]}>Doação já realizada</p>
+                        }
+                    </>
+                ) : (
+                    <DonationForm form={form} />
+                )
 
-                )}
+                }
             </Modal>
 
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Doação Registrada</div>}
-                visible={isRegistered}
+                open={isRegistered}
                 onCancel={closeModal}
                 centered
                 footer={[
@@ -1052,7 +1081,7 @@ const ActionRegistration = () => {
 
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Deseja Finalizar Ação?</div>}
-                visible={isFinished}
+                open={isFinished}
                 onCancel={closeModal}
                 centered
                 footer={[
