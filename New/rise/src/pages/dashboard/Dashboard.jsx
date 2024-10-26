@@ -19,11 +19,23 @@ import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import Chart from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 
+import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
+import { formatDateTime } from "../../utils/globals";
+
+
+
 
 const Dashboard = () => {
 
     const { authToken } = useContext(AuthContext);
     const authorization = 'Bearer ' + authToken;
+
+    let dataAtual = new Date();
+    let dataInicial = new Date();
+    dataInicial.setFullYear(dataInicial.getFullYear() - 1);
+    const [dataFiltro, setDataFiltro] = useState(formatDateTime(dataInicial));
+    const [dataFiltro2, setDataFiltro2] = useState(formatDateTime(dataAtual));
+
 
     const [accountData, setAccountData] = useState({
         zero: 0,
@@ -42,6 +54,40 @@ const Dashboard = () => {
         qtyNoPeoplePercent: 0
     });
 
+
+    const handleExportCsv = async () => {
+        // Formata as datas de início e fim
+        console.log('Função handleExportCsv chamada');
+        const dataInicio = dataFiltro.split('T')[0]; // Formata a data de início
+        const dataFim = dataFiltro2.split('T')[0]; // Formata a data de fim
+    
+        try {
+            // Cria a URL com os parâmetros
+            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
+            
+            const response = await api.get(url, {
+                responseType: 'blob', // Para download de arquivos
+                headers: { Authorization: authorization },
+            });
+    
+            // Adicionando console.log para ver a resposta
+            console.log('Resposta do servidor:', response);
+    
+            // Criar um link para o download do CSV
+            const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.setAttribute('download', 'mapping_graph.csv'); // Nome do arquivo
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao exportar CSV', error);
+        }
+    };
+    
+    
+
     const [totalUsers, setTotalUsers] = useState(0);
 
     const [graphData, setGraphData] = useState([]);
@@ -56,9 +102,9 @@ const Dashboard = () => {
 
             const [responseAccountData, responseKpis, responseGraphData, userCount] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
-                api.get('/data/kpi', { params, headers }),
-                api.get('/data/mapping/graph?date=2024-07-01', { headers }),
-                api.get('/user/total-count', {headers})
+                api.get(`/data/kpi?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { params, headers }),
+                api.get(`/data/mapping/graph?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { headers }),
+                api.get('/user/total-count', { headers })
             ]);
 
             setAccountData({
@@ -91,7 +137,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchData(afterDate);
-    }, [afterDate]);
+    }, [dataFiltro, dataFiltro2]);
 
     const handleDateChange = (e) => {
         const date = e.target.value;
@@ -132,6 +178,15 @@ const Dashboard = () => {
         ],
     };
 
+    // Função para formatar a data como dd / mm / yyyy (com espaço entre as barras)
+    const formatarData = (data) => {
+        return new Date(data).toLocaleDateString('pt-BR', {
+            year: 'numeric',  // Mudamos para 'numeric' para obter o ano completo
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\//g, ' / '); // Adiciona espaços entre as barras
+    };
+
     return (
         <>
             <div className={styles.page}>
@@ -155,10 +210,34 @@ const Dashboard = () => {
                             <div className={`col-12 col-md-7 ${styles["default-box"]}`}>
                                 <div className={styles["top-info"]}>
                                     <div className={styles["page-name"]}>
-                                        <a>Locais atendidos a cada mês</a>
+                                        <div className={styles["header"]}>
+                                            <a>Locais atendidos mês a mês</a>
+                                            <div className={styles["button-header"]}>
+                                            <BlueButton txt={"Exportar csv"} onclick={handleExportCsv} />
+                                        </div>
+                                        </div>
+                                        <div className={`${styles["aux-top-filters"]}`}>
+                                            <div className={`${styles["top-filters"]}`}>
+                                                De:
+                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
+                                                <CalendarFilter
+                                                    dataFiltro={formatarData(dataFiltro)}
+                                                    setDataFiltro={setDataFiltro}
+                                                />
+                                            </div>
+                                            <div className={`${styles["top-filters"]}`}>
+                                                Até:
+                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
+                                                <CalendarFilter
+                                                    dataFiltro={formatarData(dataFiltro2)}
+                                                    setDataFiltro={setDataFiltro2}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={`${styles["chart-box"]}`}>
+
                                 <Line
                                     className={styles.chart}
                                     data={data}
@@ -171,16 +250,15 @@ const Dashboard = () => {
                                             point: {
                                                 radius: 2
                                             },
-                                        },
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                                position: "bottom",
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: {
+                                                    display: true,
+                                                    position: "bottom",
+                                                }
                                             }
-                                        }
-                                    }}
-                                />
+                                        }}}
+                                    />
                                 </div>
                             </div>
                             <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
@@ -232,7 +310,8 @@ const Dashboard = () => {
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
                                     {/* <a>Análise das métricas do mês de {afterDate}</a> */}
-                                    <a>Locais atendidos desde o início</a>
+                                    <a>Locais atendidos de {new Date(dataFiltro).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })} até {new Date(dataFiltro2).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                                    </a>
                                 </div>
                             </div>
                             <div className={styles["flexRow"]}>
@@ -271,7 +350,7 @@ const Dashboard = () => {
                                         <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
                                         <div className="titleKPI">Não havia pessoas no local</div>
                                     </div>
-                                </div>  
+                                </div>
                             </div>
 
                             {/* <div className={styles["flexRow"]}>
