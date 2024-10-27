@@ -1149,6 +1149,11 @@ const ActionRegistration = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
+                                        {geolocation && (
+                                            <Marker position={geolocation} icon={personIcon}>
+                                                <Popup>Você está aqui</Popup>
+                                            </Marker>
+                                        )}
                                         {locationData.map((loc, index) => {
                                             return (
                                                 <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 

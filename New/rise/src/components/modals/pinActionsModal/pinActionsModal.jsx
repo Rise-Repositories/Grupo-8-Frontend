@@ -6,6 +6,8 @@ const PinActionsModal = ({ action }) => {
     const statusTranslations = {
         "PENDING": "Pendente",
         "IN PROGRESS": "Em Andamento",
+        "CANCELED": "Cancelada",
+        "DONE": "Finalizada",
     };
 
     return (
@@ -15,7 +17,7 @@ const PinActionsModal = ({ action }) => {
                     <FaInfoCircle size={20} />
                     <p>Status:</p>
                 </div>
-                <p>{statusTranslations[action.status] || action.status}</p>
+                <p>{statusTranslations[action.status] || action.status || "Pendente"}</p>
             </div>
 
             <div className={`${styles["info-row"]}`}>
