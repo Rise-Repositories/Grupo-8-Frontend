@@ -28,16 +28,15 @@ import MarkerIconRed from "../../../utils/imgs/marker-red.png";
 import MarkerIconYellow from "../../../utils/imgs/marker-yellow.png";
 import MarkerIconGray from "../../../utils/imgs/marker-gray.png";
 import Person from "../../../utils/imgs/person.png"
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import GreenButton from '../../../components/buttons/greenButton/GreenButton';
 
 
 const ActionRegistration = () => {
 
+    const navigate = useNavigate();
     const state = useLocation().state?.curAction;
     const [markersLoaded, setMarkersLoaded] = useState(false);
-    const [actionsLoaded, setActionsLoaded] = useState(false);
-
-    console.log('ESTADO', state);
 
     const [radius, setRadius] = useState(state ? state.radius : 3);
     const [showMapping, setShowMapping] = useState(false);
@@ -52,7 +51,7 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
-    const [idAction, setIdAction] = useState(state ? state.id : null);
+    const [idAction, setIdAction] = useState(state ? state.actionId : null);
     const [statusAction, setStatusAction] = useState(state ? state.status : null);
     const { curOngId } = useContext(OngContext);
     const [address, setAddress] = useState({
@@ -70,9 +69,12 @@ const ActionRegistration = () => {
         dataFim: ''
     })
     const searchInput = useRef(null);
-    const [markers, setMarkers] = useState([]);
-    const [actions, setActions] = useState([]);
+    const mapRef = useRef();
+
+    const [searchMarkers, setSearchMarkers] = useState([]);
+    const [searchActions, setSearchActions] = useState([]);
     const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : null);
+    const [geolocation, setGeolocation] = useState(null);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
@@ -93,8 +95,6 @@ const ActionRegistration = () => {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-
-                    alert("position: " + position[0])
 
                     const cep = await getCepFromCoordinates(latitude, longitude);
 
@@ -152,6 +152,7 @@ const ActionRegistration = () => {
         try {
             const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
             const data = response.data;
+            console.log('dados endereço', data);
 
             if (!data.erro) {
                 setAddress((prevAddress) => ({
@@ -301,6 +302,8 @@ const ActionRegistration = () => {
             return;
         }
 
+        let coordinates = [];
+
         try {
             const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${address.cep}&format=json&limit=5&addressdetails=1`)
 
@@ -313,8 +316,8 @@ const ActionRegistration = () => {
                     }
                 })
                 try {
-                    setCurrentPosition([results[0].lat, results[0].lon])
-                    getMarkers(results[0].lat, results[0].lon, radius);
+                    setCurrentPosition([results[0].lat, results[0].lon]);
+                    coordinates = [results[0].lat, results[0].lon];
                 } catch (error) {
                     console.error(error)
                 }
@@ -323,36 +326,42 @@ const ActionRegistration = () => {
         catch (e) {
             toast.error("Erro ao buscar latitude e longitude")
         }
+        console.log('=== coordenadas ', coordinates);
+        if (coordinates.length >= 2) {
+            let curActionId = -1;
 
-        try {
-            const { data, status } = await api.post(`/actions/${curOngId}`, {
-                latitude: currentPosition[0],
-                longitude: currentPosition[1],
-                radius: radius,
-                name: action.nome,
-                description: action.descricao,
-                dateTimeStart: action.dataInicio,
-                dateTimeEnd: action.dataFim
+            try {
+                const { data, status } = await api.post(`/actions/${curOngId}`, {
+                    latitude: coordinates[0],
+                    longitude: coordinates[1],
+                    radius: radius,
+                    name: action.nome,
+                    description: action.descricao,
+                    dateTimeStart: action.dataInicio,
+                    dateTimeEnd: action.dataFim
 
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
-                    },
-                }).catch((e) => {
-                    console.log(e)
-                })
+                },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                        },
+                    }).catch((e) => {
+                        console.log(e)
+                    })
 
-            if (status === 201) {
-                toast.success('Ação Cadastrada e Endereço encontrado!');
-                setIdAction(data.id);
-                setStatusAction(data.status);
-                setShowAddresses(true);
+                if (status === 201) {
+                    toast.success('Ação Cadastrada e Endereço encontrado!');
+                    setIdAction(data.id);
+                    curActionId = data.id;
+                    setStatusAction(data.status);
+                    setShowAddresses(true);
+                }
+            }
+            catch (e) {
+                toast.error("Erro ao Cadastrar Ação")
             }
 
-        }
-        catch (e) {
-            toast.error("Erro ao Cadastrar Ação")
+            getMarkers(curActionId);
         }
     };
 
@@ -473,12 +482,26 @@ const ActionRegistration = () => {
             dataIndex: 'date',
             key: 'date',
             ...getColumnSearchProps('date'),
-
         },
         {
             title: 'Há pessoas com transtorno',
             dataIndex: 'transtorno',
             key: 'transtorno',
+        },
+        {
+            title: "Já atendida",
+            dataIndex: 'alreadyDonated',
+            key: 'alreadyDonated',
+            defaultSortOrder: 'ascend',
+            sorter: {
+                compare: (a, b) => a.alreadyDonated === b.alreadyDonated ? 0 : a.alreadyDonated ? 1 : -1
+            },
+            render: (record) => (
+                <>
+                    { record && <b>Sim</b> }
+                    { !record && <b>Não</b> }
+                </>
+            )
         },
         {
             title: 'Ver Detalhes',
@@ -496,6 +519,7 @@ const ActionRegistration = () => {
     };
 
     const closeModal = () => {
+        setSelectedRecord(null);
         setIsModalVisible(false);
         setShowMapping(true);
         setIsRegistered(false);
@@ -534,6 +558,16 @@ const ActionRegistration = () => {
                     })
 
                 if (status === 201 || status === 200) {
+                    setLocationData(locationData.map((ld) => {
+                        if (ld.id === selectedRecord.id) {
+                            ld.alreadyDonated = true;
+                            ld.icon = new L.Icon({
+                                iconUrl: MarkerIconGray,
+                                iconSize: [30, 30]
+                            });
+                        }
+                        return ld;
+                    }))
                     setIsRegistered(true);
                     form.resetFields();
                 } else {
@@ -547,6 +581,7 @@ const ActionRegistration = () => {
             }
             setIsModalVisible(false);
             setIsFormVisible(false);
+            setSelectedRecord(null);
         } else {
             setIsFormVisible(true);
         }
@@ -559,6 +594,7 @@ const ActionRegistration = () => {
             setIsFormVisible(false);
         } else {
             setIsModalVisible(false);
+            setSelectedRecord(null);
         }
 
     };
@@ -571,6 +607,7 @@ const ActionRegistration = () => {
         setShowMapping(false);
         setShowAddresses(false);
         setIsModalVisible(false);
+        setSelectedRecord(null);
         setIsFormVisible(false);
         setIsRegistered(false);
         setIsFinished(false);
@@ -589,25 +626,28 @@ const ActionRegistration = () => {
         action.dataFim = ''
     }
 
-    const TableComponent = () => (
+    const handleActionStatus = async (newStatus) => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+            },
+        };
 
-        <Table
-            columns={columns}
-            expandable={{
-                expandedRowRender: (record) => (
-                    <p style={{ margin: 0 }}>
-                        {record.description}
-                    </p>
-                ),
-                rowExpandable: (record) => record.name === "",
-            }}
-            dataSource={locationData}
-            scroll={{
-                x: 150,
-            }}
-            pagination={{ pageSize: 3 }}
-        />
-    );
+        await api.patch(`/actions/${curOngId}/${idAction}?status=${newStatus}`, null, config )
+        .then((res) => {
+            if (newStatus === "DONE") {
+                toast.success("Ação finalizada com sucesso");
+                navigate('/dashboard/action');
+            } else if (newStatus === "IN_PROGRESS") {
+                toast.success("Ação iniciada com sucesso");
+                setStatusAction('IN_PROGRESS');
+            }
+            closeModal();
+        })
+        .catch((err) => {
+            toast.error(err.response.data.message);
+        });
+    }
 
     const DonationForm = ({ form }) => (
         <Form
@@ -655,23 +695,22 @@ const ActionRegistration = () => {
 
     const [form] = Form.useForm();
 
-    const getMarkers = async (lat, lng, radius) => {
-        console.log("[getMarkers] Lat: " + lat + ", long: " + lat + ", radius: " + radius)
+    const getMarkers = async (curActionId) => {
         if (!markersLoaded) {
             try {
-                const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
-
-                const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
+                const { data, status } = await api.get(`/actions/${curActionId}/mapping`, {
                     headers: {
                         Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                     },
-                })
+                });
 
-                if (status === 200) {
-                    const setData = new Set([...data, ...markers]);
+                if (status === 204) {
+                    toast.warn('Não há localizações cadastradas no raio especificado');
+
+                    setMarkersLoaded(true);
+                } else if (status === 200) {
+                    const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
-
-                    setMarkers(arrayData);
 
                     setLocationData(arrayData.map(marker => {
 
@@ -690,6 +729,16 @@ const ActionRegistration = () => {
                             ? date.toLocaleDateString('pt-BR')
                             : 'Sem Ação';
 
+                        const alreadyDonated = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
+                            ? marker.mappingActions.filter((ma) => { return ma.action.id === curActionId }).length > 0
+                            : false;
+
+                        const icon = new L.Icon({
+                            iconUrl: getIconByDays(daysDifference, alreadyDonated),
+                            iconSize: [30, 30]
+                        });
+
+
                         return {
                             id: marker.id,
                             enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
@@ -697,7 +746,10 @@ const ActionRegistration = () => {
                             criancas: marker.qtyChildren,
                             date: formattedDate,
                             transtorno: marker.hasDisorders ? 'Sim' : 'Não',
-                            descricao: marker.description
+                            descricao: marker.description,
+                            marker: marker,
+                            icon: icon,
+                            alreadyDonated: alreadyDonated
                         };
                     }));
 
@@ -705,15 +757,78 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível localizar os markers")
+                toast.error("Não foi possível carregar as localizações desta ação")
                 console.log("error: " + e.message)
             }
         }
     }
 
-    const getActions = async (lat, lng, radius) => {
-        console.log("[getActions] Lat: " + lat + ", long: " + lat + ", radius: " + radius)
-        if (!actionsLoaded) {
+    const getSearchMarkers = async (coordinates, radius) => {
+        console.log('======= coordenadas', coordinates);
+        if (coordinates.length >= 2) {
+            const lat = coordinates[0];
+            const lng = coordinates[1];
+
+            try {
+                const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+
+                const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${radius}`, {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                    },
+                });
+
+                if (status === 200) {
+                    const setData = new Set([...data]);
+                    const arrayData = Array.from(setData);
+
+                    setSearchMarkers(arrayData.map(marker => {
+
+                        const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
+                            ? marker.mappingActions.at(-1)?.action?.datetimeEnd
+                            : null;
+
+                        const date = lastAction ? new Date(lastAction) : null;
+                        const today = new Date();
+
+                        const daysDifference = date && !isNaN(date)
+                            ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
+                            : null;
+
+                        const formattedDate = daysDifference !== null && !isNaN(daysDifference)
+                            ? date.toLocaleDateString('pt-BR')
+                            : 'Sem Ação';
+
+                        const icon = new L.Icon({
+                            iconUrl: getIconByDays(daysDifference, false),
+                            iconSize: [30, 30]
+                        });
+
+                        return {
+                            id: marker.id,
+                            enderecos: `${marker.address.street}, ${marker.address.number}, ${marker.address.neighbourhood}`,
+                            adultos: marker.qtyAdults,
+                            criancas: marker.qtyChildren,
+                            date: formattedDate,
+                            transtorno: marker.hasDisorders ? 'Sim' : 'Não',
+                            descricao: marker.description,
+                            marker: marker,
+                            icon: icon
+                        };
+                    }));
+                }
+            }
+            catch (e) {
+                toast.error("Não foi possível carregar as localizações cadastradas")
+                console.log("error: " + e.message)
+            }
+        }
+    }
+
+    const getSearchActions = async (coordinates, radius) => {
+        if (coordinates.length >= 2) {
+            const lat = coordinates[0];
+            const lng = coordinates[1];
             try {
                 const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
@@ -724,12 +839,10 @@ const ActionRegistration = () => {
                 })
 
                 if (status === 200) {
-                    const setData = new Set([...data, ...actions]);
+                    const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
 
-                    setActions(arrayData);
-
-                    setActionsLoaded(true);
+                    setSearchActions(arrayData);
                 }
             }
             catch (e) {
@@ -763,17 +876,19 @@ const ActionRegistration = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     console.log("Posição do Navegador: " + position.coords.latitude + ", " + position.coords.longitude)
-                    setCurrentPosition([position.coords.latitude, position.coords.longitude])
+                    setGeolocation([position.coords.latitude, position.coords.longitude]);
+                    setCurrentPosition([position.coords.latitude, position.coords.longitude]);
                 },
                 (error) => console.log(error)
             )
 
         } else {
             toast.error("Geolocalização não suportada por este nagevador.")
+            setCurrentPosition([-23.557868, -46.661664]);
         }
 
         if (state) {
-            getMarkers(state.latitude, state.longitude, state.radius);
+            getMarkers(state.actionId);
         }
     }, [])
 
@@ -812,8 +927,9 @@ const ActionRegistration = () => {
         }
     };
 
-    const getIconByDays = (days) => {
-        if (days === null) return MarkerIconGray;
+    const getIconByDays = (days, alreadyDonated) => {
+        if (alreadyDonated) return MarkerIconGray;
+        if (days === null) return MarkerIconRed;
         if (days <= 1 && days < 4) return MarkerIconGreen;
         if (days >= 4 && days < 13) return MarkerIconLightGreen;
         if (days >= 13 && days < 17) return MarkerIconYellow;
@@ -824,8 +940,8 @@ const ActionRegistration = () => {
     function MapEventListener({ getMarkers }) {
         useMapEvent('moveend', (e) => {
             const center = e.target.getCenter();
-            getMarkers(center.lat, center.lng, 5);
-            getActions(center.lat, center.lng, 5);
+            getSearchMarkers([center.lat, center.lng], 5);
+            getSearchActions([center.lat, center.lng], 5);
         });
         return null;
     }
@@ -837,6 +953,7 @@ const ActionRegistration = () => {
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
+                                <svg onClick={() => {navigate('/dashboard/action')}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="#00006B" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" /></svg>
                                 <a>Registro de ação</a>
                             </div>
                         </div>
@@ -895,7 +1012,7 @@ const ActionRegistration = () => {
 
                                 <div className={styles["button-group"]}>
                                     <BlueButton txt="USAR LOCALIZAÇÃO ATUAL" onclick={() => handleGetLocation()} />
-                                    <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => { setShowMapping(true); getMarkers(...currentPosition, 5); getActions(...currentPosition, 5) }} />
+                                    <WhiteButton txt="PESQUISAR NO MAPA" onclick={() => { setShowMapping(true); getSearchMarkers(currentPosition, 5); getSearchActions(currentPosition, 5) }} />
                                 </div>
                                 <div className={styles["slider-group"]}>
                                     <p>Em um raio de (em km):</p>
@@ -964,45 +1081,29 @@ const ActionRegistration = () => {
                                         />
                                         <EventHandler setClickedPosition={setClickedPosition} setSearchQuery={setSearchQuery} />
 
-                                        <MapEventListener getMarkers={getMarkers} getActions={getActions} />
+                                        <MapEventListener getMarkers={getSearchMarkers} getActions={getSearchActions} />
 
                                         {clickedPosition && (
                                             <Marker position={clickedPosition} icon={customIcon} />
                                         )}
 
-                                        {currentPosition && (
-                                            <Marker position={currentPosition} icon={personIcon}>
+                                        {geolocation && (
+                                            <Marker position={geolocation} icon={personIcon}>
                                                 <Popup>Você está aqui</Popup>
                                             </Marker>
                                         )}
 
-                                        {markers.map((m, index) => {
-                                            const lastAction = Array.isArray(m.mappingActions) && m.mappingActions.length > 0
-                                                ? m.mappingActions.at(-1)?.action?.datetimeEnd
-                                                : null;
-
-                                            const date = lastAction ? new Date(lastAction) : null;
-                                            const today = new Date();
-
-                                            const daysDifference = date && !isNaN(date)
-                                                ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
-                                                : null;
-
-                                            const icon = new L.Icon({
-                                                iconUrl: getIconByDays(daysDifference),
-                                                iconSize: [30, 30]
-                                            });
-
+                                        {searchMarkers.map((m, index) => {
                                             return (
-                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
+                                                <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}>
                                                     <Popup className={styles["popup"]}>
-                                                        <PinInfosModal pin={m} />
+                                                        <PinInfosModal pin={m.marker} />
                                                     </Popup>
                                                 </Marker>
                                             );
                                         })}
 
-                                        {actions.map((m, index) => {
+                                        {searchActions.map((m, index) => {
 
                                             const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                                                                 <path fill="#000000" d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z" />
@@ -1048,50 +1149,57 @@ const ActionRegistration = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         />
-                                        {markers.map((m, index) => {
-                                            const lastAction = Array.isArray(m.mappingActions) && m.mappingActions.length > 0
-                                                ? m.mappingActions.at(-1)?.action?.datetimeEnd
-                                                : null;
-
-                                            const date = lastAction ? new Date(lastAction) : null;
-                                            const today = new Date();
-
-                                            const daysDifference = date && !isNaN(date)
-                                                ? Math.floor((today - date) / (1000 * 60 * 60 * 24))
-                                                : null;
-
-                                            const icon = new L.Icon({
-                                                iconUrl: getIconByDays(daysDifference),
-                                                iconSize: [30, 30]
-                                            });
-
+                                        {locationData.map((loc, index) => {
                                             return (
-                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
-                                                    <Popup className={styles["popup"]}>
-                                                        <PinInfosModal pin={m} />
-                                                    </Popup>
-                                                </Marker>
+                                                <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
+                                                    eventHandlers={{
+                                                        click: (e) => {
+                                                            showDetalhes(loc)
+                                                        },
+                                                    }} />
                                             );
                                         })}
                                     </MapContainer>
-                                    <div className={styles["div-time-action"]}>
-                                        <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
-                                        <div className={styles["indicator-bar"]}>
+                                    { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
+                                        <div className={styles["div-time-action"]}>
+                                            <div className={styles["label-top-time-action"]}>Tempo desde última ação</div>
+                                            <div className={styles["indicator-bar"]}>
+                                            </div>
+                                            <div className={styles["indicator-labels"]}>
+                                                <span>30 dias ou mais</span>
+                                                <span class="text-center">15 dias</span>
+                                                <span class="text-end">1 dia</span>
+                                            </div>
                                         </div>
-                                        <div className={styles["indicator-labels"]}>
-                                            <span>30 dias ou mais</span>
-                                            <span class="text-center">15 dias</span>
-                                            <span class="text-end">1 dia</span>
-                                        </div>
-                                    </div>
+                                    }
                                 </div>
                                 <div className={styles["div-tb-addresses"]}>
                                     <div className={styles["addresses"]}>
-                                        <TableComponent />
+                                        <Table
+                                            columns={columns}
+                                            expandable={{
+                                                expandedRowRender: (record) => (
+                                                    <p style={{ margin: 0 }}>
+                                                        {record.description}
+                                                    </p>
+                                                ),
+                                                rowExpandable: (record) => record.name === "",
+                                            }}
+                                            dataSource={locationData}
+                                            scroll={{
+                                                x: 150,
+                                            }}
+                                            pagination={{ pageSize: 3 }}
+                                        />
                                     </div>
                                     {statusAction === 'IN_PROGRESS' &&
                                         <div className={styles["div-btn-finalizar"]}>
-                                            <BlueButton txt="Finalizar Ação" onclick={() => finishAction()} />
+                                            <BlueButton txt="Finalizar Ação" onclick={() => handleActionStatus("DONE")} />
+                                        </div>
+                                    }
+                                    {statusAction === 'PENDING' &&
+                                        <div className={styles["div-btn-start"]}>
+                                            <BlueButton txt="Iniciar Ação" onclick={() => handleActionStatus("IN_PROGRESS")} />
                                         </div>
                                     }
                                 </div>
@@ -1103,14 +1211,14 @@ const ActionRegistration = () => {
 
             <Modal
                 title="Detalhes do Registro"
-                visible={isModalVisible}
+                open={isModalVisible}
                 onCancel={handleCancel}
                 width={700}
                 footer={[
                     <div style={{ textAlign: 'center' }}>
                         <Space size={100}>
                             <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCancel()} />
-                            {statusAction === "IN_PROGRESS" &&
+                            {statusAction === "IN_PROGRESS" && !selectedRecord?.alreadyDonated &&
                                 <BlueButton key="confirm" txt="Registrar Doação" onclick={() => handleOk()} />
                             }
                         </Space>
@@ -1118,27 +1226,29 @@ const ActionRegistration = () => {
                 ]}
                 centered
             >
-                {selectedRecord && (
-                    !isFormVisible ? (
-                        <>
-                            <p><strong>ID:</strong> {selectedRecord.id}</p>
-                            <p><strong>Endereço:</strong> {selectedRecord.enderecos}</p>
-                            <p><strong>Quantidade de Adultos:</strong> {selectedRecord.adultos}</p>
-                            <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord.criancas}</p>
-                            <p><strong>Há pessoas com transtorno:</strong> {selectedRecord.transtorno}</p>
-                            <p><strong>Última ação no local:</strong> {selectedRecord.date}</p>
-                            <p><strong>Descrição:</strong> {selectedRecord.descricao}</p>
-                        </>
-                    ) : (
-                        <DonationForm form={form} />
-                    )
+                {!isFormVisible ? (
+                    <>
+                        <p><strong>ID:</strong> {selectedRecord?.id}</p>
+                        <p><strong>Endereço:</strong> {selectedRecord?.enderecos}</p>
+                        <p><strong>Quantidade de Adultos:</strong> {selectedRecord?.adultos}</p>
+                        <p><strong>Quantidade de Crianças e Adolescentes:</strong> {selectedRecord?.criancas}</p>
+                        <p><strong>Há pessoas com transtorno:</strong> {selectedRecord?.transtorno}</p>
+                        <p><strong>Última ação no local:</strong> {selectedRecord?.date}</p>
+                        <p><strong>Descrição:</strong> {selectedRecord?.descricao}</p>
+                        {selectedRecord?.alreadyDonated &&
+                            <p className={styles["already-donated"]}>Doação já realizada</p>
+                        }
+                    </>
+                ) : (
+                    <DonationForm form={form} />
+                )
 
-                )}
+                }
             </Modal>
 
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Doação Registrada</div>}
-                visible={isRegistered}
+                open={isRegistered}
                 onCancel={closeModal}
                 centered
                 footer={[
@@ -1155,7 +1265,7 @@ const ActionRegistration = () => {
 
             <Modal
                 title={<div style={{ textAlign: 'center' }}>Deseja Finalizar Ação?</div>}
-                visible={isFinished}
+                open={isFinished}
                 onCancel={closeModal}
                 centered
                 footer={[
