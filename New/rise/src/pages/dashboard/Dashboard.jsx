@@ -22,6 +22,7 @@ import { Line } from "react-chartjs-2";
 import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
 import { formatDateTime } from "../../utils/globals";
 
+import { CheckCircleOutlined, CloseCircleOutlined, DatabaseOutlined, UserDeleteOutlined } from "@ant-design/icons"
 
 
 
@@ -60,19 +61,19 @@ const Dashboard = () => {
         console.log('Função handleExportCsv chamada');
         const dataInicio = dataFiltro.split('T')[0]; // Formata a data de início
         const dataFim = dataFiltro2.split('T')[0]; // Formata a data de fim
-    
+
         try {
             // Cria a URL com os parâmetros
             const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
-            
+
             const response = await api.get(url, {
                 responseType: 'blob', // Para download de arquivos
                 headers: { Authorization: authorization },
             });
-    
+
             // Adicionando console.log para ver a resposta
             console.log('Resposta do servidor:', response);
-    
+
             // Criar um link para o download do CSV
             const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -85,8 +86,8 @@ const Dashboard = () => {
             console.error('Erro ao exportar CSV', error);
         }
     };
-    
-    
+
+
 
     const [totalUsers, setTotalUsers] = useState(0);
 
@@ -213,8 +214,8 @@ const Dashboard = () => {
                                         <div className={styles["header"]}>
                                             <a>Locais atendidos mês a mês</a>
                                             <div className={styles["button-header"]}>
-                                            <BlueButton txt={"Exportar csv"} onclick={handleExportCsv} />
-                                        </div>
+                                                <BlueButton txt={"Exportar csv"} onclick={handleExportCsv} />
+                                            </div>
                                         </div>
                                         <div className={`${styles["aux-top-filters"]}`}>
                                             <div className={`${styles["top-filters"]}`}>
@@ -238,26 +239,27 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`${styles["chart-box"]}`}>
 
-                                <Line
-                                    className={styles.chart}
-                                    data={data}
-                                    options={{
-                                        responsive: true,
-                                        elements: {
-                                            line: {
-                                                tension: 0
-                                            },
-                                            point: {
-                                                radius: 2
-                                            },
-                                            maintainAspectRatio: false,
-                                            plugins: {
-                                                legend: {
-                                                    display: true,
-                                                    position: "bottom",
+                                    <Line
+                                        className={styles.chart}
+                                        data={data}
+                                        options={{
+                                            responsive: true,
+                                            elements: {
+                                                line: {
+                                                    tension: 0
+                                                },
+                                                point: {
+                                                    radius: 2
+                                                },
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    legend: {
+                                                        display: true,
+                                                        position: "bottom",
+                                                    }
                                                 }
                                             }
-                                        }}}
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -317,7 +319,7 @@ const Dashboard = () => {
                             <div className={styles["flexRow"]}>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#2968c8" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
+                                        <DatabaseOutlined style={{ color: "#2968c8", fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyTotal}</div>
@@ -326,7 +328,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
+                                        <CheckCircleOutlined style={{ color: "#e9f5fe", fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyServedPercent}%)</span></div>
@@ -335,7 +337,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#2968c8" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
+                                        <CloseCircleOutlined style={{ color: "#2968c8", fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyNotServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyNotServedPercent}%)</span></div>
@@ -344,7 +346,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e9f5fe" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM160 152c0-13.3 10.7-24 24-24h88c44.2 0 80 35.8 80 80c0 28-14.4 52.7-36.3 67l34.1 75.1c5.5 12.1 .1 26.3-11.9 31.8s-26.3 .1-31.8-11.9L268.9 288H208v72c0 13.3-10.7 24-24 24s-24-10.7-24-24V264 152zm48 88h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H208v64z" /></svg>
+                                        <UserDeleteOutlined style={{ color: "#e9f5fe", fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
