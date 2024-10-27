@@ -71,7 +71,6 @@ const ImportTxtModal = ({ visible, onClose }) => {
     };
 
     const handleClose = () => {
-        // Resetar estados ao fechar o modal
         setCurrentStep(0);
         setFile(null);
         setUploadResult("");
@@ -80,7 +79,7 @@ const ImportTxtModal = ({ visible, onClose }) => {
     };
 
     const handleDownload = async () => {
-        setDownloading(true); // Ativa a animação de carregamento
+        setDownloading(true);
         try {
             const token = sessionStorage.getItem("USER_TOKEN");
             const headers = {
@@ -94,12 +93,12 @@ const ImportTxtModal = ({ visible, onClose }) => {
             link.href = window.URL.createObjectURL(blob);
             link.download = "documento_de_referencia.pdf";
             link.click();
-            window.URL.revokeObjectURL(link.href); // Limpando URL de objeto após o download
+            window.URL.revokeObjectURL(link.href);
         } catch (error) {
             message.error("Erro ao baixar o documento de referência. Tente novamente mais tarde.");
             console.error(error);
         } finally {
-            setDownloading(false); // Desativa a animação de carregamento
+            setDownloading(false);
         }
     };
 

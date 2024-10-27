@@ -27,7 +27,7 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
     const handleFileChange = (info) => {
         if (info.file && info.file.originFileObj) {
             const selectedFile = info.file.originFileObj;
-    
+
             try {
                 const previewUrl = URL.createObjectURL(selectedFile);
                 setFileUrl(previewUrl);
@@ -40,7 +40,7 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
             message.error("Apenas arquivos de imagem são permitidos.");
         }
     };
-    
+
     const handleUpload = () => {
         if (!file) {
             message.error("Selecione uma imagem para enviar.");
@@ -48,11 +48,11 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
         }
         setLoading(true);
         const reader = new FileReader();
-    
+
         reader.onload = async () => {
             const fileData = reader.result.split(',')[1];
             let base64String = "";
-            
+
             if (file.type === "image/jpeg") {
                 base64String = `data:image/jpeg;base64,${fileData}`;
             } else if (file.type === "image/png") {
@@ -62,7 +62,7 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
                 setLoading(false);
                 return;
             }
-    
+
             try {
                 const token = sessionStorage.getItem('USER_TOKEN');
                 const headers = {
@@ -74,7 +74,7 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
                 }, { headers });
                 setUploadResult("Imagem alterada com sucesso!");
                 setIsError(false);
-    
+
                 onAvatarUpdate(fileUrl);
             } catch (error) {
                 setUploadResult("Erro ao enviar a imagem.");
@@ -83,15 +83,15 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
                 setLoading(false);
             }
         };
-    
+
         reader.onerror = () => {
             message.error("Erro ao ler o arquivo.");
             setLoading(false);
         };
-    
+
         reader.readAsDataURL(file);
     };
-    
+
     const handleClose = () => {
         setCurrentStep(0);
         setFile(null);
@@ -133,20 +133,22 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
                             <p style={{ marginBottom: 10 }}>
                                 Selecione uma nova imagem para o avatar.
                             </p>
-                            <Upload
-                                name="avatar"
-                                listType="picture-circle"
-                                beforeUpload={beforeUpload}
-                                onChange={handleFileChange}
-                                maxCount={1}
-                                showUploadList={false}
-                            >
-                                <div>
-                                    <UploadOutlined />
-                                    <div>Carregar</div>
-                                </div>
-                            </Upload>
-                            {fileUrl && <img src={fileUrl} alt="Preview" style={{ marginTop: 10, width: '100px', borderRadius: '50%' }} />}
+                            <div style={{ display: "flex", flexDirection: "row" }}>
+                                <Upload
+                                    name="avatar"
+                                    listType="picture-circle"
+                                    beforeUpload={beforeUpload}
+                                    onChange={handleFileChange}
+                                    maxCount={1}
+                                    showUploadList={false}
+                                >
+                                    <div>
+                                        <UploadOutlined />
+                                        <div>Carregar</div>
+                                    </div>
+                                </Upload>
+                                {fileUrl && <img src={fileUrl} alt="Preview" style={{ marginLeft: 10, width: '100px', height: '100px', borderRadius: '50%' }} />}
+                            </div>
                         </>
                     )}
                     {currentStep === 1 && (
