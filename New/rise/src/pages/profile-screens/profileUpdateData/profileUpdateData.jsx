@@ -6,6 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validateCEP } from "../../../utils/globals";
 import api from "../../../api";
+import AvatarComponent from "../../../components/dataDisplay/avatar/AvatarComponent";
 
 function ProfileUpdateData() {
   const [name, setName] = useState("");
@@ -90,7 +91,7 @@ function ProfileUpdateData() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
+
     if (!validateText(name)) {
       toast.error('Nome inválido');
       return;
@@ -101,15 +102,15 @@ function ProfileUpdateData() {
       return;
     }
 
-  
+
     const userDto = {
       name,
       email,
-      ...(cpf && { cpf }),  
+      ...(cpf && { cpf }),
       address: {
-        ...(cep && { cep }), 
-        ...(numeroEstabelecimento && { number: numeroEstabelecimento }), 
-        ...(complemento && { complement: complemento }) 
+        ...(cep && { cep }),
+        ...(numeroEstabelecimento && { number: numeroEstabelecimento }),
+        ...(complemento && { complement: complemento })
       }
     };
 
@@ -144,6 +145,16 @@ function ProfileUpdateData() {
           <h1 className={styles["header-1"]}>Editar Perfil</h1>
         </header>
         <form onSubmit={handleSubmit}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center'
+            }}
+          >
+            <h3>
+              <AvatarComponent size={150} />
+            </h3>
+          </div>
           <div className={styles["aux"]}>
             <div className={styles["input-group"]}>
               <LabelInput placeholder={"Nome Exemplo"} label={"Nome"} value={name} onInput={(e) => handleInputChange(e.target.value, setName)} />
