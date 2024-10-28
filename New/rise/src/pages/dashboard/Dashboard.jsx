@@ -479,7 +479,7 @@ const Dashboard = () => {
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
                                         <UserDeleteOutlined style={{ color: "#e9f5fe", fontSize: '26px' }} />
-                                    </div>
+                                        </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
                                         <div className="titleKPI">Não havia pessoas no local</div>

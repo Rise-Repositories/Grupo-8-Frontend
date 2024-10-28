@@ -17,6 +17,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
     const { logout } = useContext(AuthContext);
     const { ongList, setOngList, curOngId, setCurOngId, userRole, setUserRole } = useContext(OngContext);
     const [ongIndex, setOngIndex] = useState(0);
+    const [userName, setUserName] = useState(null);
 
     const handleNavigate = (path) => {
         navigate(path);
@@ -25,7 +26,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
 
     useEffect(() => {
         const fetchOngs = async () => {
-            try {
+            try {                
                 const token = sessionStorage.getItem('USER_TOKEN');
                 const headers = {
                     'Authorization': `Bearer ${token}`
@@ -51,6 +52,18 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 }
             } catch (error) {
                 console.error("Erro ao buscar ONGs:", error);
+            }
+            try {
+                const token = sessionStorage.getItem('USER_TOKEN');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+
+                const accountResponse = await api.get('/user/account', { headers });
+                const userName = accountResponse.data.name;
+                setUserName(userName);
+            } catch (error) {
+                console.error('Erro ao buscar os dados do usuário:', error);
             }
         };
 
@@ -82,7 +95,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                     <AvatarComponent size={150} editable={true}/>
                     </h3>
                     <div className={styles.instituteName}>
-                        {sessionStorage.getItem("CUR_ONG")}
+                        {userName}
                     </div>
                     <Dropdown
                         as={ButtonGroup}
