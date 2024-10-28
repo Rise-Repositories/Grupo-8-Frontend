@@ -10,7 +10,13 @@
     font-family: "Montserrat" !important;
 }
 
-.page-name a {
+.page-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.page-name h1 {
     color: #00006B;
     font-size: 24px;
 }
@@ -29,7 +35,7 @@
 
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 20px;
 }
 
 .top-info {
