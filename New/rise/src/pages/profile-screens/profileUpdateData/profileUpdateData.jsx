@@ -152,7 +152,7 @@ function ProfileUpdateData() {
             }}
           >
             <h3>
-              <AvatarComponent size={150} />
+              <AvatarComponent size={150} editable={true}/>
             </h3>
           </div>
           <div className={styles["aux"]}>
