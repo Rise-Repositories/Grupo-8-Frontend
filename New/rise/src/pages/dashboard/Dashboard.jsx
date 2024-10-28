@@ -3,7 +3,7 @@ import styles from "./Dashboard.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
 import { AuthContext } from "../login/AuthContext";
-import { Button, Spin } from "antd";
+import { Button, Spin, ConfigProvider } from "antd";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -56,28 +56,28 @@ const Dashboard = () => {
 
 
     const handleExportCsv = async () => {
-       
+
         console.log('Função handleExportCsv chamada');
-        const dataInicio = dataFiltro.split('T')[0]; 
+        const dataInicio = dataFiltro.split('T')[0];
         const dataFim = dataFiltro2.split('T')[0];
 
         try {
-           
+
             const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
 
             const response = await api.get(url, {
-                responseType: 'blob', 
+                responseType: 'blob',
                 headers: { Authorization: authorization },
             });
 
-           
+
             console.log('Resposta do servidor:', response);
 
-          
+
             const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = blobUrl;
-            link.setAttribute('download', 'mapping_graph.csv'); 
+            link.setAttribute('download', 'mapping_graph.csv');
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -118,6 +118,70 @@ const Dashboard = () => {
         }
     };
 
+    const handleExportXml = async () => {
+
+        console.log('Função handleExportXml chamada');
+        const dataInicio = dataFiltro.split('T')[0];
+        const dataFim = dataFiltro2.split('T')[0];
+
+        try {
+
+            const url = `/data/export-xml?startDate=${dataInicio}&endDate=${dataFim}`;
+
+            const response = await api.get(url, {
+                responseType: 'blob',
+                headers: { Authorization: authorization },
+            });
+
+
+            console.log('Resposta do servidor:', response);
+
+
+            const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.setAttribute('download', 'mapping_graph.xml');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao exportar XML', error);
+        }
+    };
+
+    const handleExportParquet = async () => {
+
+        console.log('Função handleExportParquet chamada');
+        const dataInicio = dataFiltro.split('T')[0];
+        const dataFim = dataFiltro2.split('T')[0];
+
+        try {
+
+            const url = `/data/export-parquet?startDate=${dataInicio}&endDate=${dataFim}`;
+
+            const response = await api.get(url, {
+                responseType: 'blob',
+                headers: { Authorization: authorization },
+            });
+
+
+            console.log('Resposta do servidor:', response);
+
+
+            const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.setAttribute('download', 'mapping_graph.parquet');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao exportar Parquet', error);
+        }
+    };
+
+  
+
     const [exporting, setExporting] = useState(false);
 
     const handleExport = (type) => {
@@ -128,6 +192,10 @@ const Dashboard = () => {
             handleExportCsv();
         } else if (type === "JSON") {
             handleExportJson();
+        } else if (type === "XML") {
+            handleExportXml();
+        } else if (type === "Parquet") {
+            handleExportParquet();
         }
         setTimeout(() => setExporting(false), 1000);
     };
@@ -306,15 +374,26 @@ const Dashboard = () => {
                                     />
                                 </div>
                                 <div className={styles["button-header"]}>
-                                    <h6>Exportar Dados em: </h6>
-                                    <Button.Group>
-                                        <Button onClick={() => handleExport("CSV")}>CSV</Button>
-                                        <Button onClick={() => handleExport("JSON")}>JSON</Button>
-                                        <Button onClick={() => handleExport("Parquet")}>Parquet</Button>
-                                        <Button onClick={() => handleExport("XML")}>XML</Button>
-                                    </Button.Group>
-                                    {exporting && <Spin />}
+                                    <h6>Exportar Dados em:</h6>
+                                    <ConfigProvider
+                                        theme={{
+                                            token: {
+                                                colorPrimary: "#2968C8",
+                                                borderRadius: 5,
+                                                fontFamily: "Montserrat" 
+                                            },
+                                        }}
+                                    >
+                                        <Button.Group>
+                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("CSV")}>CSV</Button>
+                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("JSON")}>JSON</Button>
+                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("Parquet")}>Parquet</Button>
+                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("XML")}>XML</Button>
+                                        </Button.Group>
+                                    </ConfigProvider>
+                                    {exporting && <Spin style={{ marginLeft: "8px" }} />}
                                 </div>
+
                             </div>
                             <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
                                 <div className={styles["page-name"]}>
