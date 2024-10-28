@@ -27,19 +27,23 @@ const UploadAvatarModal = ({ visible, onClose, userId, onAvatarUpdate }) => {
     const handleFileChange = (info) => {
         if (info.file && info.file.originFileObj) {
             const selectedFile = info.file.originFileObj;
-
-            try {
-                const previewUrl = URL.createObjectURL(selectedFile);
-                setFileUrl(previewUrl);
-                setFile(selectedFile);
-            } catch (error) {
-                console.error("Erro ao criar a URL de pré-visualização:", error);
-                message.error("Erro ao carregar a imagem. Por favor, tente novamente.");
+    
+            // Verifica se o tipo de arquivo é suportado (JPEG ou PNG)
+            if (selectedFile.type === "image/jpeg" || selectedFile.type === "image/png") {
+                try {
+                    const previewUrl = URL.createObjectURL(selectedFile);
+                    setFileUrl(previewUrl);
+                    setFile(selectedFile);
+                } catch (error) {
+                    console.error("Erro ao criar a URL de pré-visualização:", error);
+                    message.error("Erro ao carregar a imagem. Por favor, tente novamente.");
+                }
+            } else {
+                message.error("Apenas arquivos de imagem JPEG ou PNG são permitidos.");
             }
-        } else {
-            message.error("Apenas arquivos de imagem são permitidos.");
         }
     };
+    
 
     const handleUpload = () => {
         if (!file) {

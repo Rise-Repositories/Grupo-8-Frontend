@@ -451,12 +451,6 @@ const ManageVolunteers = () => {
                             <div className={styles["page-name"]}>
                                 <a>Gerenciar Voluntários</a>
                             </div>
-                            {/* <div className={styles["align-input"]}>
-                                <StandardInput placeholder={"Pesquise aqui"} />
-                            </div>
-                            <div className={styles["notifications"]}>
-                                <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: "#00006b" }} />
-                            </div> */}
                         </div>
 
                         <div className={`${styles["default-box"]}`}>
@@ -496,12 +490,14 @@ const ManageVolunteers = () => {
                         <Descriptions.Item label="E-mail">{selectedVolunteer?.email}</Descriptions.Item>
                         <Descriptions.Item label="Cargo">
                             {selectedVolunteer?.role}
-                            <Button
-                                type="link"
-                                onClick={() => handleEditRole(selectedVolunteer)}
-                            >
-                                Editar Cargo
-                            </Button>
+                            {selectedVolunteer?.role !== "OWNER" && (
+                                <Button
+                                    type="link"
+                                    onClick={() => handleEditRole(selectedVolunteer)}
+                                >
+                                    Editar Cargo
+                                </Button>
+                            )}
                         </Descriptions.Item>
                         <Descriptions.Item label="Endereço">
                             {selectedVolunteer?.address?.street}, {selectedVolunteer?.address?.number}, {selectedVolunteer?.address?.city}
@@ -519,15 +515,19 @@ const ManageVolunteers = () => {
                     centered
                     className={styles["custom-font"]}
                 >
-                    <Select
-                        placeholder="Selecione o novo cargo"
-                        style={{ width: "100%" }}
-                        value={selectedRole}
-                        onChange={(value) => setSelectedRole(value)}
-                    >
-                        <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                        <Select.Option value="ADMIN">Administrador</Select.Option>
-                    </Select>
+                    {selectedVolunteer?.role === "OWNER" ? (
+                        <p>O cargo do proprietário não pode ser editado.</p>
+                    ) : (
+                        <Select
+                            placeholder="Selecione o novo cargo"
+                            style={{ width: "100%" }}
+                            value={selectedRole}
+                            onChange={(value) => setSelectedRole(value)}
+                        >
+                            <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                            <Select.Option value="ADMIN">Administrador</Select.Option>
+                        </Select>
+                    )}
                 </Modal>
 
                 <Modal

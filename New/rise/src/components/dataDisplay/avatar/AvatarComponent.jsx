@@ -4,7 +4,7 @@ import { UserOutlined, EditOutlined } from '@ant-design/icons';
 import UploadAvatarModal from '../../modals/updateAvatarModal/UpdateAvatarModal';
 import api from '../../../api';
 
-const AvatarComponent = ({ size }) => {
+const AvatarComponent = ({ size, editable }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -22,7 +22,6 @@ const AvatarComponent = ({ size }) => {
     };
     
     useEffect(() => {
-
         const fetchUserAccount = async () => {
             try {
                 const token = sessionStorage.getItem('USER_TOKEN');
@@ -55,32 +54,33 @@ const AvatarComponent = ({ size }) => {
                     icon={!avatarUrl && <UserOutlined />}
                     size={size}
                     style={{ cursor: 'pointer' }}
-                    onClick={handleAvatarClick}
                 />
-                <EditOutlined
-                    style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        right: 10,
-                        backgroundColor: '#fff',
-                        borderRadius: '50%',
-                        padding: '4px',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                        transition: 'transform 0.3s, background-color 0.3s, box-shadow 0.3s'
-                    }}
-                    onClick={handleAvatarClick}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#e6f7ff';
-                        e.currentTarget.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.15)';
-                        e.currentTarget.style.transform = 'scale(1.2)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#fff';
-                        e.currentTarget.style.boxShadow = 'none';
-                        e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                />
+                {editable && (
+                    <EditOutlined
+                        style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 10,
+                            backgroundColor: '#fff',
+                            borderRadius: '50%',
+                            padding: '4px',
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            transition: 'transform 0.3s, background-color 0.3s, box-shadow 0.3s'
+                        }}
+                        onClick={handleAvatarClick}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#e6f7ff';
+                            e.currentTarget.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.15)';
+                            e.currentTarget.style.transform = 'scale(1.2)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#fff';
+                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                    />
+                )}
             </h3>
 
             <UploadAvatarModal

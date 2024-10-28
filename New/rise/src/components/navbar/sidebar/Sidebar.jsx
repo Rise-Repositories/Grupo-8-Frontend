@@ -79,7 +79,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
             <div className={styles.content}>
                 <div className={styles.upPart}>
                     <h3>
-                    <AvatarComponent size={150}/>
+                    <AvatarComponent size={150} editable={true}/>
                     </h3>
                     <div className={styles.instituteName}>
                         {sessionStorage.getItem("CUR_ONG")}
