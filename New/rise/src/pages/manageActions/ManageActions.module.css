@@ -1,41 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
-.container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
+.custom-font {
+    font-family: "Montserrat" !important;
 }
-
-.dash-title {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-.tableHeightScroll {
-    height: 60vh;
-    overflow: scroll;
-}
-
-.dash-map {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-
-    .map {
-        border-radius: 16px;
-        height: 60vh;
-    }
-}
-
 .page {
-    font-family: "Montserrat";
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    font-family: "Montserrat" !important;
 }
 
-.page-name a {
+.page-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.page-name h1 {
     color: #00006B;
     font-size: 24px;
 }
@@ -54,21 +35,14 @@
 
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 20px;
 }
 
 .top-info {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.top-filters {
-    display: flex;
     flex-direction: row;
-    align-items: baseline;
-    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .align-input {
@@ -102,12 +76,10 @@
 .table {
     width: 100%;
 }
-
 .table td {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-
 .default-list-line {
     border-bottom: 1px solid #2968C8;
 }
@@ -134,7 +106,7 @@
     background: white;
     padding: 20px;
     border-radius: 10px;
-
+    
     max-width: 25%;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
@@ -146,29 +118,63 @@
     margin-top: 20px;
 }
 
-.top-filters {
+.align-modal {
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+}
+
+.modal-email {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     width: 100%;
 }
 
-.button-container {
+.form-presentation {
+    font-size: 24px;
     display: flex;
-    gap: 10px; 
-    margin-left: auto; 
+    align-items: center;
+    gap: 5px;
 }
 
+.container-inputs-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-@media (max-width: 768px) {
-    .top-filters {
-        flex-direction: column; 
-        align-items: flex-start; 
-    }
+.steps-action {
+    text-align: right;
+    margin-top: 16px;
+}
 
-    .button-container {
-        margin-left: 0; 
-        margin-top: 10px; 
-    }
+.label-spacing {
+    margin-bottom: .5rem;
+    font-size: 16px;
+}
+
+.modal-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-button {
+    width: 100%;
+}
+
+.filter-box {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
 }
