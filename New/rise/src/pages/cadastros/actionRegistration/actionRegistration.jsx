@@ -73,7 +73,7 @@ const ActionRegistration = () => {
 
     const [searchMarkers, setSearchMarkers] = useState([]);
     const [searchActions, setSearchActions] = useState([]);
-    const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : null);
+    const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : [-23.557868, -46.661664]);
     const [geolocation, setGeolocation] = useState(null);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -764,8 +764,7 @@ const ActionRegistration = () => {
     }
 
     const getSearchMarkers = async (coordinates, radius) => {
-        console.log('======= coordenadas', coordinates);
-        if (coordinates.length >= 2) {
+        if (coordinates && coordinates.length >= 2) {
             const lat = coordinates[0];
             const lng = coordinates[1];
 
@@ -826,7 +825,7 @@ const ActionRegistration = () => {
     }
 
     const getSearchActions = async (coordinates, radius) => {
-        if (coordinates.length >= 2) {
+        if (coordinates && coordinates.length >= 2) {
             const lat = coordinates[0];
             const lng = coordinates[1];
             try {
