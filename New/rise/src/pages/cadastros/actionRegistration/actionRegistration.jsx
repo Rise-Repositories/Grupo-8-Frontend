@@ -76,6 +76,39 @@ const ActionRegistration = () => {
     const [currentPosition, setCurrentPosition] = useState(state ? [state.latitude, state.longitude] : [-23.557868, -46.661664]);
     const [geolocation, setGeolocation] = useState(null);
 
+    const [isSearchMarkerModalVisible, setIsSearchMarkerModalVisible] = useState(false);
+    const [isSearchActionModalVisible, setIsSearchActionModalVisible] = useState(false);
+    const [selectedSearchMarker, setSelectedSearchMarker] = useState(null);
+    const [selectedSearchAction, setSelectedSearchAction] = useState(null);
+
+    const handleCloseSearchMarkerModal = () => {
+        setSelectedSearchMarker(null);
+        setIsSearchMarkerModalVisible(false);
+    };
+
+    const handleCloseSearchActionModal = () => {
+        setSelectedSearchAction(null);
+        setIsSearchActionModalVisible(false);
+    };
+
+    
+    const showSearchMarkerModal = (marker) => {
+        setIsSearchMarkerModalVisible(true);
+        setSelectedSearchMarker(marker);
+    };
+    
+    const showSearchActionModal = (action) => {
+        setIsSearchActionModalVisible(true);
+        setSelectedSearchAction(action);
+    };
+
+    const statusTranslations = {
+        "PENDING": "Pendente",
+        "IN_PROGRESS": "Em Andamento",
+        "CANCELED": "Cancelada",
+        "DONE": "Finalizada",
+    };
+
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
         confirm();
@@ -951,7 +984,7 @@ const ActionRegistration = () => {
                 <div className={`col-md-12 ${styles["content"]}`}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
-                            <div className={styles["page-name"]}>
+                            <div className={`mx-auto mx-md-0 ${styles["page-name"]}`}>
                                 <svg onClick={() => {navigate('/dashboard/action')}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="#00006B" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" /></svg>
                                 <a>Registro de ação</a>
                             </div>
@@ -1094,11 +1127,12 @@ const ActionRegistration = () => {
 
                                         {searchMarkers.map((m, index) => {
                                             return (
-                                                <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}>
-                                                    <Popup className={styles["popup"]}>
-                                                        <PinInfosModal pin={m.marker} />
-                                                    </Popup>
-                                                </Marker>
+                                                <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}
+                                                    eventHandlers={{
+                                                        click: (e) => {
+                                                            showSearchMarkerModal(m.marker)
+                                                        },
+                                                    }} />
                                             );
                                         })}
 
@@ -1115,11 +1149,12 @@ const ActionRegistration = () => {
                                             });
 
                                             return (
-                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
-                                                    <Popup className={styles["popup"]}>
-                                                        <PinActionsModal action={m} />
-                                                    </Popup>
-                                                </Marker>
+                                                <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}
+                                                    eventHandlers={{
+                                                        click: (e) => {
+                                                            showSearchActionModal(m)
+                                                        },
+                                                    }} />
                                             );
                                         })}
                                     </MapContainer>
@@ -1282,6 +1317,58 @@ const ActionRegistration = () => {
                 ]}
                 width={300}
             >
+            </Modal>
+
+            <Modal
+                title="Detalhes do registro"
+                open={isSearchMarkerModalVisible}
+                onCancel={handleCloseSearchMarkerModal}
+                width={350}
+                footer={[
+                    <div style={{ textAlign: 'center' }}>
+                        <Space size={100}>
+                            <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCloseSearchMarkerModal()} />
+                        </Space>
+                    </div>
+                ]}
+                centered
+            >
+                <>
+                    <p><strong>ID:</strong> {selectedSearchMarker?.id}</p>
+                    <p><strong>Endereço:</strong> {selectedSearchMarker?.address?.street}, {selectedSearchMarker?.address?.number}</p>
+                    <p><strong>Adultos:</strong> {selectedSearchMarker?.qtyAdults}</p>
+                    <p><strong>Crianças e Adolescentes:</strong> {selectedSearchMarker?.qtyChildren}</p>
+                    <p><strong>Criado em:</strong> {new Date(selectedSearchMarker?.date).toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Última ação no local:</strong> {selectedSearchMarker?.mappingActions?.at(-1)?.action?.datetimeEnd 
+                        ? new Date(selectedSearchMarker?.mappingActions.at(-1).action.datetimeEnd).toLocaleDateString('pt-BR') 
+                        : 'Sem Ação'}</p>
+                    <p><strong>Descrição:</strong> {selectedSearchMarker?.description}</p>
+                </>
+            </Modal>
+
+            <Modal
+                title="Detalhes da ação"
+                open={isSearchActionModalVisible}
+                onCancel={handleCloseSearchActionModal}
+                width={350}
+                footer={[
+                    <div style={{ textAlign: 'center' }}>
+                        <Space size={100}>
+                            <WhiteButton key="cancel" txt="Voltar" onclick={() => handleCloseSearchActionModal()} />
+                        </Space>
+                    </div>
+                ]}
+                centered
+            >
+                <>
+                    <p><strong>Nome:</strong> {selectedSearchAction?.name}</p>
+                    <p><strong>ONG:</strong> {selectedSearchAction?.ong.name}</p>
+                    <p><strong>Status:</strong> {statusTranslations[selectedSearchAction?.status] || selectedSearchAction?.status || "Pendente"}</p>
+                    <p><strong>Data de Início:</strong> {new Date(selectedSearchAction?.datetimeStart).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    <p><strong>Data de Fim:</strong> {new Date(selectedSearchAction?.datetimeEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    <p><strong>Raio de alcance:</strong> {selectedSearchAction?.radius} km</p>
+                    <p><strong>Descrição:</strong> {selectedSearchAction?.description}</p>
+                </>
             </Modal>
 
         </>
