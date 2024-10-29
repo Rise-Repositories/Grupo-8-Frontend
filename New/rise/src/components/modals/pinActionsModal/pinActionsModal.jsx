@@ -34,7 +34,7 @@ const PinActionsModal = ({ action }) => {
                     <FaCalendar size={20} />
                     <p>Data de Ínício:</p>
                 </div>
-                <p>{new Date(action.datetimeStart).toLocaleDateString('pt-BR')}</p>
+                <p>{new Date(action.datetimeStart).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
             </div>
 
             <div className={`${styles["info-row"]}`}>
@@ -42,8 +42,9 @@ const PinActionsModal = ({ action }) => {
                     <FaCalendar size={20} />
                     <p>Data Fim:</p>
                 </div>
-                <p>{new Date(action.datetimeEnd).toLocaleDateString('pt-BR')}</p>
+                <p>{new Date(action.datetimeEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
             </div>
+
 
             <div className={styles["info-row"]}>
                 <div className={styles["info-row"]}>

@@ -202,7 +202,7 @@ const ActionRegistration = () => {
     const personIcon = new L.Icon({
         iconUrl: Person,
         iconSize: [30, 30],
-        iconAnchor: [15, 30]
+        iconAnchor: [15, 15]
     });
 
     const extractCepFromAddress = (address) => {
