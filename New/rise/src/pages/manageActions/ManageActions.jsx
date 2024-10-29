@@ -40,6 +40,7 @@ const ManageActions = () => {
     };
 
     const openModal = (action) => {
+        console.log('ação ', action);
         setSelectedAction(action);
         setIsModalOpen(true);
     };
@@ -206,7 +207,7 @@ const ManageActions = () => {
                 <div className={`${styles["content"]}`}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
-                            <div className={styles["page-name"]}>
+                            <div className={`mx-auto mx-md-0 ${styles["page-name"]}`}>
                                 <h1>Gerenciar Ações</h1>
                             </div>
                         </div>
@@ -270,8 +271,8 @@ const ManageActions = () => {
                 >
                     <Descriptions column={1}>
                         <Descriptions.Item label="Nome">{selectedAction?.name}</Descriptions.Item>
-                        <Descriptions.Item label="Data de início">{selectedAction?.inicio}</Descriptions.Item>
-                        <Descriptions.Item label="Data de fim">{selectedAction?.fim}</Descriptions.Item>
+                        <Descriptions.Item label="Data de início">{new Date(selectedAction?.inicio).toLocaleDateString('pt-BR')}</Descriptions.Item>
+                        <Descriptions.Item label="Data de fim">{new Date(selectedAction?.fim).toLocaleDateString('pt-BR')}</Descriptions.Item>
                         <Descriptions.Item label="Quantidade de mapeamentos">{selectedAction?.qtdeMapeamentos}</Descriptions.Item>
                     </Descriptions>
                 </Modal>
