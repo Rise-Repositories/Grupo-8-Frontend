@@ -9,17 +9,15 @@ import api from "../../api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from "./AuthContext";
-import { OngContext } from "../../components/context/ongContext/OngContext"
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
 
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
+    const [email, setEmail] = useState("")
+    const [senha, setSenha] = useState("")
     const { login } = useContext(AuthContext);
-    const { setOngList, setCurOngId, setUserRole } = useContext(OngContext);
     const navigate = useNavigate();
 
     const handleInputChange = (event, setStateFunction) => {
@@ -61,21 +59,7 @@ const Login = () => {
         const Authorization = 'Bearer ' + token;
         api.get('/user/account', {headers: { Authorization }})
         .then(res => {
-            let ongsAceitas = res?.data?.voluntary?.filter((v) => {
-                return v.ong.status === 'ACCEPTED';
-            });
-            if (ongsAceitas?.length > 0) {
-                setOngList(ongsAceitas.map((v, key) => {
-                    if (key === 0) {
-                        setCurOngId(v.ong.id);
-                        setUserRole(v.role);
-                    }
-                    return {
-                        id: v.ong.id,
-                        name: v.ong.name,
-                        role: v.role
-                    };
-                }));
+            if (res.data.voluntary.length > 0) {
                 navigate('../dashboard/main');
             } else {
                 navigate('/home');

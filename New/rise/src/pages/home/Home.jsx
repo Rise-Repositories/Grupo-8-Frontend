@@ -47,7 +47,7 @@ const Home = () => {
         try{
             const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const {data, status} = await api.get(`/mapping/by-user/by-coordinates?coordinates=${coord}&radius=${10}`, {
+            const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${10}`, {
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 },

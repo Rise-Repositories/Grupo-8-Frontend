@@ -12,16 +12,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Stack from "../../utils/stack"
 import { AuthContext } from "../login/AuthContext";
-import { OngContext } from "../../components/context/ongContext/OngContext";
-import { useNavigate } from "react-router-dom";
 
 
 const InstituteList = () => {
 
     const { authToken } = useContext(AuthContext);
-    const { userRole } = useContext(OngContext);
-
-    const navigate = useNavigate();
     const Authorization = 'Bearer ' + authToken;
 
     const [institutes, setInstitutes] = useState([]);
@@ -52,12 +47,6 @@ const InstituteList = () => {
                 console.error('Erro ao buscar dados:', error);
             });
     }, []);
-
-    useEffect(() => {
-        if (userRole !== 'OWNER' && userRole !== 'ADMIN') {
-            navigate('/dashboard/main');
-        }
-    }, [userRole]);
 
     const updateInstituteStatus = (id, status, addToStack = true) => {
         api.patch(`ong/${id}/status`, { status }, {

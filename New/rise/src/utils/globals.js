@@ -17,16 +17,6 @@ export function formatDateTime(dataString) {
     return `${ano}-${mes}-${dia}T${horas}:${minutos}:${segundos}`;
 }
 
-export function printDateTime(dataString) {
-    const data = new Date(dataString);
-    const ano = data.getFullYear();
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    const horas = data.getHours().toString().padStart(2, '0');
-    const minutos = data.getMinutes().toString().padStart(2, '0');
-    return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
-}
-
 export function validateText(text) {
     return text.trim() ? true : false;
 }

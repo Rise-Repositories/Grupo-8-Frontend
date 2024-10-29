@@ -90,9 +90,18 @@ function ProfileUpdateData() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     if (!validateText(name)) {
       toast.error('Nome inválido');
+      return;
+    }
+
+    if (!validateCPF(cpf)) {
+      toast.error('CPF inválido');
+      return;
+    }
+
+    if (!validateCEP(cep)) {
+      toast.error("CEP inválido");
       return;
     }
 
@@ -101,23 +110,24 @@ function ProfileUpdateData() {
       return;
     }
 
-  
     const userDto = {
       name,
       email,
-      ...(cpf && { cpf }),  
+      cpf,
       address: {
-        ...(cep && { cep }), 
-        ...(numeroEstabelecimento && { number: numeroEstabelecimento }), 
-        ...(complemento && { complement: complemento }) 
+        cep,
+        number: numeroEstabelecimento,
+        complement: complemento
       }
     };
 
-    console.log(userDto);
+    console.log(userDto)
 
     try {
       const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
       const response = await api.put(`/user/${userId}`, userDto, { headers });
+
+      console.log(response)
 
       if (response.status === 200) {
         toast.success("Usuário atualizado com sucesso!");

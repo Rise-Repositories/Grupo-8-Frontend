@@ -7,36 +7,26 @@ const PinInfosModal = ({ pin }) => {
         <div className={styles["info-area"]}>
             <div className={`${styles["info-row"]} ${styles["between"]}`}>
                 <div className={styles["info-row"]}>
-                    <FaMale size={20} />
+                    <FaMale size={20}/>
                     <p>{pin.qtyAdults} Adultos</p>
                 </div>
                 <div className={styles["info-row"]}>
-                    <FaChild size={20} />
+                    <FaChild size={20}/>
                     <p>{pin.qtyChildren} Criancas</p>
                 </div>
             </div>
 
             <div className={`${styles["info-row"]}`}>
                 <div className={styles["info-row"]}>
-                    <FaCalendar size={20} />
+                    <FaCalendar size={20}/>
                     <p>Criado Em:</p>
                 </div>
-                <p>{new Date(pin.date).toLocaleDateString('pt-BR')}</p>
-            </div>
-
-            <div className={`${styles["info-row"]}`}>
-                <div className={styles["info-row"]}>
-                    <FaCalendar size={20} />
-                    <p>Última ação:</p>
-                </div>
-                <p>{pin.mappingActions?.at(-1)?.action?.datetimeEnd 
-        ? new Date(pin.mappingActions.at(-1).action.datetimeEnd).toLocaleDateString('pt-BR') 
-        : 'Sem Ação'}</p>
+                <p>{pin.date}</p>
             </div>
 
             <div className={styles["info-column"]}>
                 <div className={styles["info-row"]}>
-                    <FaMapMarker size={20} />
+                    <FaMapMarker size={20}/>
                     <p>Localizacao</p>
                 </div>
                 <p>{pin.address.street}, {pin.address.number}</p>
@@ -46,7 +36,7 @@ const PinInfosModal = ({ pin }) => {
                 pin.description &&
                 <div className={styles["info-column"]}>
                     <div className={styles["info-row"]}>
-                        <FaQuestionCircle size={20} />
+                        <FaQuestionCircle size={20}/>
                         <p>Descricao</p>
                     </div>
                     <p>{pin.description}</p>

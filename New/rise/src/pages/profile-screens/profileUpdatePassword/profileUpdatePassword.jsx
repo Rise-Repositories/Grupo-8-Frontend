@@ -9,7 +9,6 @@ import api from "../../../api";
 function ProfileUpdatePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   const handleInputChange = (value, setStateFunction) => {
@@ -19,7 +18,6 @@ function ProfileUpdatePassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  
     if (!currentPassword) {
       toast.error('Senha atual é obrigatória');
       return;
@@ -30,32 +28,16 @@ function ProfileUpdatePassword() {
       return;
     }
 
-    if (newPassword !== confirmNewPassword) {
-      toast.error('A nova senha e a confirmação não coincidem');
-      return;
-    }
-
     try {
-      const headers = { 
-        'Authorization': `Bearer ${userToken}`, 
-        "Content-Type": "application/json" 
-      };
+      const headers = { 'Authorization': `Bearer ${userToken}`, "Content-Type": "application/json" };
+      const response = await api.put('/user/change-password', { currentPassword, newPassword }, { headers });
 
-  
-      const body = { 
-        curPassword: currentPassword,
-        newPassword: newPassword 
-      };
-
-    
-      const response = await api.patch(`/user/password`, body, { headers });
-
-     
-      if (response.status === 204) {
+      if (response.status === 200) {
         toast.success("Senha atualizada com sucesso!");
         setCurrentPassword("");
         setNewPassword("");
-        setConfirmNewPassword("");
+      } else if (response.status === 400) {
+        toast.error("Senha atual incorreta.");
       } else {
         toast.error("Erro ao atualizar a senha.");
       }
@@ -92,15 +74,6 @@ function ProfileUpdatePassword() {
                 type="password"
                 value={newPassword}
                 onInput={(e) => handleInputChange(e.target.value, setNewPassword)}
-              />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput
-                placeholder={"Confirme a Nova Senha"}
-                label={"Confirme a Nova Senha"}
-                type="password"
-                value={confirmNewPassword}
-                onInput={(e) => handleInputChange(e.target.value, setConfirmNewPassword)}
               />
             </div>
             <button type="submit" className={styles["update-button"]}>Atualizar Senha</button>

@@ -12,13 +12,13 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import LabelInput from "../../components/inputs/labelInput/LabelInput";
 import { validateText, validateCPF, validateEmail, validateCEP, validatePassword } from "../../utils/globals";
-import { OngContext } from "../../components/context/ongContext/OngContext";
 
 
 const ManageVolunteers = () => {
     const { authToken } = useContext(AuthContext);
+    const [ongId] = useOutletContext();
     const token = sessionStorage.getItem('USER_TOKEN');
-    const { curOngId, userRole } = useContext(OngContext);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAssociateModalOpen, setIsAssociateModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -61,8 +61,8 @@ const ManageVolunteers = () => {
                     }
                 };
 
-                if (curOngId) {
-                    const response = await api.get(`/voluntary/${curOngId}`, config);
+                if (ongId) {
+                    const response = await api.get(`/voluntary/${ongId}`, config);
                     setVolunteers(response.data);
                 }
             } catch (error) {
@@ -71,13 +71,7 @@ const ManageVolunteers = () => {
         };
 
         fetchVolunteers();
-    }, [curOngId]);
-
-    useEffect(() => {
-        if (userRole !== 'OWNER' && userRole !== 'ADMIN') {
-            navigate('/dashboard/main');
-        }
-    }, [userRole]);
+    }, [ongId]);
 
     const fillAddress = (event) => {
         if (validateCEP(event.target.value)) {
@@ -183,7 +177,7 @@ const ManageVolunteers = () => {
                     role: selectedRole,
                 };
 
-                const response = await api.post(`/voluntary/${curOngId}/${userToAssociate.id}`, data, config);
+                const response = await api.post(`/voluntary/${ongId}/${userToAssociate.id}`, data, config);
 
                 if (response.status === 201) {
                     toast.success('Usuário associado com sucesso!');
@@ -258,7 +252,7 @@ const ManageVolunteers = () => {
             user: objetoAdicionado
         };
 
-        api.post(`/voluntary/${curOngId}`, voluntaryRequestDto, {
+        api.post(`/voluntary/${ongId}`, voluntaryRequestDto, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -384,8 +378,8 @@ const ManageVolunteers = () => {
                     'Authorization': `Bearer ${token}`
                 }
             }
-            if (curOngId) {
-                const response = await api.get(`/voluntary/${curOngId}`, config);
+            if (ongId) {
+                const response = await api.get(`/voluntary/${ongId}`, config);
                 setVolunteers(response.data);
             }
         } catch (error) {
