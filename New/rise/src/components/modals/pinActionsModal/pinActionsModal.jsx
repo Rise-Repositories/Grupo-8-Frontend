@@ -5,7 +5,7 @@ import { FaInfoCircle, FaMapMarker, FaCalendar, FaQuestionCircle } from 'react-i
 const PinActionsModal = ({ action }) => {
     const statusTranslations = {
         "PENDING": "Pendente",
-        "IN PROGRESS": "Em Andamento",
+        "IN_PROGRESS": "Em Andamento",
         "CANCELED": "Cancelada",
         "DONE": "Finalizada",
     };
