@@ -11,9 +11,9 @@ export function formatDateTime(dataString) {
     const ano = data.getFullYear();
     const mes = (data.getMonth() + 1).toString().padStart(2, '0');
     const dia = data.getDate().toString().padStart(2, '0');
-    const horas = data.getHours();
-    const minutos = data.getMinutes();
-    const segundos = data.getSeconds();
+    const horas = data.getHours().toString().padStart(2, '0');
+    const minutos = data.getMinutes().toString().padStart(2, '0');
+    const segundos = data.getSeconds().toString().padStart(2, '0');
     return `${ano}-${mes}-${dia}T${horas}:${minutos}:${segundos}`;
 }
 

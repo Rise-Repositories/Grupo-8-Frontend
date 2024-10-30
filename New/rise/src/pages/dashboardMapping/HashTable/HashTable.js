@@ -17,7 +17,7 @@ class HashTable {
 
     // Calcula a prioridade com base no tempo desde o último atendimento
     hash(lastServed) {
-        if (!lastServed) return Number.MAX_VALUE; // Nunca atendido tem a maior prioridade
+        if (!lastServed) return Number.MIN_VALUE; // Nunca atendido tem a maior prioridade
         const lastServedDate = new Date(lastServed);
         const currentDate = new Date();
         const diffTime = currentDate - lastServedDate;
