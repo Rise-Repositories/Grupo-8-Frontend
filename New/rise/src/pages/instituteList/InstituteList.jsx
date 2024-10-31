@@ -110,6 +110,9 @@ const InstituteList = () => {
             title: 'CNPJ',
             dataIndex: 'cnpj',
             key: 'cnpj',
+            render: (text) => {
+                return text.slice(0,2) + '.' + text.slice(2, 5) + '.' + text.slice(5, 8) + '/' + text.slice(8, 12) + '-' + text.slice(12);
+            }
         },
         {
             title: 'Nome do representante',

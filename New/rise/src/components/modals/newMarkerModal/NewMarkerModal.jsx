@@ -40,7 +40,7 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                 }
             })
 
-            if(status === 200){
+            if(status === 200 || status === 201){
                 toast.success("Mapeamento criado com sucesso")
             }
 

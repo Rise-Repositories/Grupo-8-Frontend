@@ -810,7 +810,7 @@ const ActionRegistration = () => {
                     },
                 });
 
-                if (status === 200) {
+                if (status === 200 || status === 204) {
                     const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
 
@@ -870,7 +870,7 @@ const ActionRegistration = () => {
                     },
                 })
 
-                if (status === 200) {
+                if (status === 200 || status === 204) {
                     const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
 

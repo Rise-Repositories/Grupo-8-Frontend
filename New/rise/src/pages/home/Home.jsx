@@ -10,15 +10,17 @@ import NavbarMobile from "../../components/navbar/navbarMobile/NavbarMobile";
 
 import StandartInput from "../../components/inputs/standardInput/StandardInput";
 import api from "../../api";
-import { Icon } from "leaflet";
+import L, { Icon } from "leaflet";
 
 import MarkerIcon from "../../utils/imgs/marker.png";
 import PinInfosModal from "../../components/modals/pinInfosModal/pinInfosModal";
+import Person from "../../utils/imgs/person.png";
 
 const Home = () => {
     const [markers, setMarkers] = useState([])
 
     const [currentPosition, setCurrentPosition] = useState();
+    const [geolocation, setGeolocation] = useState();
     const [search, setSearch] = useState();
     const [serachResults, setSearchResults] = useState();
     const [openNewMapping, setOpenNewMapping] = useState(false);
@@ -32,11 +34,13 @@ const Home = () => {
                 if(position.coords){
                     // setCurrentPosition([-23.52343833033088, -46.52506611668173])
                     setCurrentPosition([position.coords.latitude, position.coords.longitude]);
+                    setGeolocation([position.coords.latitude, position.coords.longitude]);
                     getMarkers(position.coords.latitude, position.coords.longitude)
                     
                 }
                 else{
                     setCurrentPosition([-23.557868, -46.661664]);
+                    setGeolocation([-23.557868, -46.661664]);
                     getMarkers(-23.557868, -46.661664);
                 }
             },
@@ -170,6 +174,12 @@ const Home = () => {
         iconSize: [30,30]
     })
 
+    const personIcon = new L.Icon({
+        iconUrl: Person,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
     return (
         <div>
             <NavbarMobile />
@@ -215,6 +225,11 @@ const Home = () => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
+                        {geolocation && (
+                            <Marker position={geolocation} icon={personIcon}>
+                                <Popup>Você está aqui</Popup>
+                            </Marker>
+                        )}
                         {
                             markers.map((m, index) => (
                                 <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
