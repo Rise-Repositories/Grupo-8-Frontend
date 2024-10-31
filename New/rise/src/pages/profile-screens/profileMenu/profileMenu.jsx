@@ -42,7 +42,8 @@ const UserProfile = () => {
         const { data } = response;
         console.log(data);
         // Processamento dos dados de mapeamento e ações
-
+        const userName = response.data.name;
+        setUserName(userName);
         setUserMappings(data.mapping);
         setLoading(false);
       } catch (error) {
