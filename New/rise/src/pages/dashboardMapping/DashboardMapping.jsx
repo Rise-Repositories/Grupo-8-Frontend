@@ -136,14 +136,14 @@ const DashboardMapping = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {dadosMapeamento && dadosMapeamento.unattended.map((dado, index) => (
+                                        {/* {dadosMapeamento && dadosMapeamento.unattended.map((dado, index) => (
                                             <tr key={index}>
                                                 <td>{dado.address || 'Endereço desconhecido'}</td>
                                                 <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
                                                 <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
                                                 <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
                                             </tr>
-                                        ))}
+                                        ))} */}
                                         {dadosMapeamento && dadosMapeamento.prioritized.map((dado, index) => (
                                             <tr key={index}>
                                                 <td>{dado.address || 'Endereço desconhecido'}</td>
