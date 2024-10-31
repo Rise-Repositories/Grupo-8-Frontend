@@ -30,13 +30,14 @@ const Home = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 if(position.coords){
-                    setCurrentPosition([-23.52343833033088, -46.52506611668173])
-                    //setCurrentPosition([position.coords.latitude, position.coords.longitude]);
-                    getMarkers(-23.52343833033088, -46.52506611668173)
+                    // setCurrentPosition([-23.52343833033088, -46.52506611668173])
+                    setCurrentPosition([position.coords.latitude, position.coords.longitude]);
+                    getMarkers(position.coords.latitude, position.coords.longitude)
                     
                 }
                 else{
-                    setCurrentPosition([-23.5505, -46.6333]);
+                    setCurrentPosition([-23.557868, -46.661664]);
+                    getMarkers(-23.557868, -46.661664);
                 }
             },
             (error) => console.log(error)
@@ -47,13 +48,13 @@ const Home = () => {
         try{
             const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const {data, status} = await api.get(`/mapping/by-user/by-coordinates?coordinates=${coord}&radius=${10}`, {
+            const {data, status} = await api.get(`/mapping/user/by-coordinates?coordinates=${coord}&radius=${10}`, {
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 },
             })
 
-            if(status === 200){
+            if(status === 200 || status === 204){
                 const setData = new Set([...data, ...markers])
                 const arrayData = Array.from(setData)
                 setMarkers(arrayData)
