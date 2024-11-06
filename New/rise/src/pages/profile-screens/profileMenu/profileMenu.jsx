@@ -89,14 +89,14 @@ const UserProfile = () => {
 
       <div className={styles["profile-links"]}>
         <p className={styles["text"]}>Olá {userName}</p>
-        <a className={styles["link"]} onClick={() => navigate("/updateData")}> Editar Perfil</a>
-        <a className={styles["link"]} onClick={() => navigate("/updatePassword")}> Alterar Senha</a>
+        <a className={styles["link"]} onClick={() => navigate("/updateData")} style={{ cursor: 'pointer' }}> Editar Perfil</a>
+        <a className={styles["link"]} onClick={() => navigate("/updatePassword")} style={{ cursor: 'pointer' }}> Alterar Senha</a>
       </div> <br /><br /><br />
 
       <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />
 
       {userMappings.map((i) =>
-        <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)} />
+        <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)}/>
       )}
     </div>
   );
