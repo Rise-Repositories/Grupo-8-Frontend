@@ -369,6 +369,17 @@ const Dashboard = () => {
                                                         position: "bottom",
                                                     }
                                                 }
+                                            },
+                                            scales: {
+                                                y: {
+                                                    title: {
+                                                        text: 'Quantidade de Pessoas',
+                                                        display: true,
+                                                        font: {
+                                                            weight: 700
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }}
                                     />
