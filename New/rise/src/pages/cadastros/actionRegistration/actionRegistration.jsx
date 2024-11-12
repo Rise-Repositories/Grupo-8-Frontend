@@ -699,7 +699,31 @@ const ActionRegistration = () => {
             </Form.Item>
 
             <Form.Item
-                label="Descrição (O que foi doado, sugestão de doações para próxima ação)"
+                name="hygiene"
+                valuePropName="checked"
+                className="form-checkbox"
+            >
+                <Checkbox>Hygiene Kit</Checkbox>
+            </Form.Item>
+
+            <Form.Item
+                name="clothing"
+                valuePropName="checked"
+                className="form-checkbox"
+            >
+                <Checkbox>Cobertor/Roupas</Checkbox>
+            </Form.Item>
+
+            <Form.Item
+                name="food"
+                valuePropName="checked"
+                className="form-checkbox"
+            >
+                <Checkbox>Comida</Checkbox>
+            </Form.Item>
+
+            <Form.Item
+                label="Descrição (Descreva o que foi doado, sugestão de doações para próxima ação)"
                 name="description"
                 rules={[{ required: true, message: 'Por favor, insira uma descrição!' }]}
             >
