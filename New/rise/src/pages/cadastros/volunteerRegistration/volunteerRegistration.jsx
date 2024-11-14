@@ -50,7 +50,7 @@ const handleConfirmPasswordBlur = (event, firstPassword) => {
 }
 
 const handleCEPBlur = (event) => {
-    if(!validateCEP(event.target.value)) {
+    if (!validateCEP(event.target.value)) {
         toast.error('CEP inválido');
     }
 }
@@ -71,6 +71,11 @@ const VolunteerRegistration = () => {
     const [numeroEstabelecimento, setNumeroEstabelecimento] = useState("");
     const [complemento, setComplemento] = useState("");
 
+    const [termosAceitos, setTermosAceitos] = useState(false);
+
+    const handleCheckboxChange = (event) => {
+        setTermosAceitos(event.target.checked);
+    };
     const handleInputChange = (value, setStateFunction) => {
         setStateFunction(value);
     }
@@ -114,6 +119,12 @@ const VolunteerRegistration = () => {
             return;
         }
 
+
+        if (!termosAceitos) {
+            toast.error('Aceite os termos de uso para continuar.');
+            return;
+        }
+
         const objetoAdicionado = {
             name: nome,
             email,
@@ -145,73 +156,87 @@ const VolunteerRegistration = () => {
             fetch(`https://viacep.com.br/ws/${event.target.value}/json`, {
                 method: 'GET'
             })
-            .then(fetchRes => {
-                let corpoRes = fetchRes.json().then((corpoRes) => {
-                    console.log(corpoRes);
-                    if (corpoRes.erro) {
+                .then(fetchRes => {
+                    let corpoRes = fetchRes.json().then((corpoRes) => {
+                        console.log(corpoRes);
+                        if (corpoRes.erro) {
+                            toast.error('CEP inválido');
+                        } else {
+                            setEstado(corpoRes.uf)
+                            setCidade(corpoRes.localidade);
+                            setLogradouro(corpoRes.logradouro)
+                        }
+                    }).catch(err => {
                         toast.error('CEP inválido');
-                    } else {
-                        setEstado(corpoRes.uf)
-                        setCidade(corpoRes.localidade);
-                        setLogradouro(corpoRes.logradouro)
-                    }
-                }).catch(err => {
-                    toast.error('CEP inválido');
+                    });
                 });
-            });
         }
     }
 
     return (
         <>
-        <NavBar />
-        <div className={styles["body-content"]}>
-            <div className={`${styles["header"]}`}>
-                <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
-                </div>
+            <NavBar />
+            <div className={styles["body-content"]}>
+                <div className={`${styles["header"]}`}>
+                    <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
+                    </div>
 
-                <div className={`${styles["right-form"]} col-12 col-md-6`}>
-                    <div className={`${styles["form"]}`}>
-                        <div>
-                            <div className={`${styles["form-presentation"]}`}>
-                                <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>Cadastro de Usuário</label>
+                    <div className={`${styles["right-form"]} col-12 col-md-6`}>
+                        <div className={`${styles["form"]}`}>
+                            <div>
+                                <div className={`${styles["form-presentation"]}`}>
+                                    <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
+                                    <label>Cadastro de Usuário</label>
+                                </div>
+                                <label className={`${styles["standard-text"]}`}>Informe seus dados</label>
                             </div>
-                            <label className={`${styles["standard-text"]}`}>Informe seus dados</label>
+
+                            <div className={`${styles["container-inputs-form"]}`}>
+                                <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleNameBlur(e)} />
+                                <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)} />
+                                <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
+                                <div className='row'>
+                                    <div className='col-8 col-md-8'>
+                                        <LabelInput placeholder={cidade} label={"Cidade"} disabled={true} />
+                                    </div>
+                                    <div className='col-4 col-md-4'>
+                                        <LabelInput placeholder={estado} label={"Estado"} disabled={true} />
+                                    </div>
+                                </div>
+                                <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true} />
+                                <div className={'row'}>
+                                    <div className='col-4 col-md-4'>
+                                        <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number" />
+                                    </div>
+                                    <div className='col-8 col-md-8'>
+                                        <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
+                                    </div>
+                                </div>
+                                <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)} />
+                                <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e.target.value, setSenha)} type="password" onBlur={(e) => handlePasswordBlur(e)} />
+                                <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} type="password" onBlur={(e) => handleConfirmPasswordBlur(e, senha)} />
+                                <div className={`${styles['checkbox-container']}`}>
+                                    <div className="form-group form-check">
+                                        <input type="checkbox" className="form-check-input" id="termosDeUsoOk" checked={termosAceitos} onChange={handleCheckboxChange}></input>
+                                        <label className="form-check-label" htmlFor="termosDeUsoOk"><p>Eu concordo com os </p></label>
+                                        <a
+                                            href="#termos"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="termos-link"
+                                        >
+                                            Termos de Uso
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <BlueButton txt={"Cadastrar"} onclick={handleSave} />
+
                         </div>
-
-                        <div className={`${styles["container-inputs-form"]}`}>
-                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleNameBlur(e)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0,14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)} />
-                            <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => {handleCEPBlur(e); fillAddress(e)}}/>
-                            <div className='row'>
-                                <div className='col-8 col-md-8'>
-                                    <LabelInput placeholder={cidade} label={"Cidade"} disabled={true}/>
-                                </div>
-                                <div className='col-4 col-md-4'>
-                                    <LabelInput placeholder={estado} label={"Estado"} disabled={true}/>
-                                </div>
-                            </div>
-                            <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true}/>
-                            <div className={'row'}>
-                                <div className='col-4 col-md-4'>
-                                    <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number"/>
-                                </div>
-                                <div className='col-8 col-md-8'>
-                                    <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)}/>
-                                </div>
-                            </div>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)} />
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e.target.value, setSenha)} type="password" onBlur={(e) => handlePasswordBlur(e)} />
-                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} type="password" onBlur={(e) => handleConfirmPasswordBlur(e, senha)} />
-                        </div>
-
-                        <BlueButton txt={"Cadastrar"} onclick={handleSave} />
-
                     </div>
                 </div>
             </div>
-        </div>
         </>
     );
 };
