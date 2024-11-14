@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd';
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import 'antd/dist/reset.css';
@@ -81,6 +81,8 @@ const ActionRegistration = () => {
     const [selectedSearchMarker, setSelectedSearchMarker] = useState(null);
     const [selectedSearchAction, setSelectedSearchAction] = useState(null);
 
+    const[actionTagIds, setActionTagIds] = useState([]);
+
     const handleCloseSearchMarkerModal = () => {
         setSelectedSearchMarker(null);
         setIsSearchMarkerModalVisible(false);
@@ -113,13 +115,31 @@ const ActionRegistration = () => {
         setSearchText(selectedKeys[0]);
         confirm();
         setSearchedColumn(dataIndex);
-
     };
 
     const handleReset = (clearFilters) => {
         clearFilters();
         setSearchText('');
     };
+
+    const handleChangeActionTags = (values) => {
+        setActionTagIds(values);
+    }
+
+    const optionsActionTags = [
+        { label: 'Comida', value: 1 },
+        { label: 'Items de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ];
+
+    const filterSearchMarker = (marker) => {
+        if (actionTagIds.length === 0) {
+            return true;
+        } else {
+            return marker.tags.filter(mt => actionTagIds.includes(mt.id)).length > 0;
+        }
+    }
 
     const handleGetLocation = () => {
         toast.info("Carregando Informações")
@@ -699,30 +719,6 @@ const ActionRegistration = () => {
             </Form.Item>
 
             <Form.Item
-                name="hygiene"
-                valuePropName="checked"
-                className="form-checkbox"
-            >
-                <Checkbox>Hygiene Kit</Checkbox>
-            </Form.Item>
-
-            <Form.Item
-                name="clothing"
-                valuePropName="checked"
-                className="form-checkbox"
-            >
-                <Checkbox>Cobertor/Roupas</Checkbox>
-            </Form.Item>
-
-            <Form.Item
-                name="food"
-                valuePropName="checked"
-                className="form-checkbox"
-            >
-                <Checkbox>Comida</Checkbox>
-            </Form.Item>
-
-            <Form.Item
                 label="Descrição (Descreva o que foi doado, sugestão de doações para próxima ação)"
                 name="description"
                 rules={[{ required: true, message: 'Por favor, insira uma descrição!' }]}
@@ -1124,6 +1120,17 @@ const ActionRegistration = () => {
                                         </a>
                                         <label>Ações pendentes e em progresso</label>
                                     </div>
+                                    <div className={styles["select-container"]}>
+                                        <label>Filtre os endereços pela necessidade:</label>
+                                            <Select
+                                                mode="multiple"
+                                                allowClear
+                                                style={{ width: '100%' }}
+                                                defaultValue={[]}
+                                                onChange={handleChangeActionTags}
+                                                options={optionsActionTags}
+                                                />
+                                    </div>
                                 </div>
 
                                 <div className={styles["map"]}>
@@ -1150,14 +1157,16 @@ const ActionRegistration = () => {
                                         )}
 
                                         {searchMarkers.map((m, index) => {
-                                            return (
-                                                <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}
+                                            if (filterSearchMarker(m.marker)) {
+                                                return (
+                                                    <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}
                                                     eventHandlers={{
                                                         click: (e) => {
                                                             showSearchMarkerModal(m.marker)
                                                         },
                                                     }} />
-                                            );
+                                                );
+                                            }
                                         })}
 
                                         {searchActions.map((m, index) => {
@@ -1367,6 +1376,7 @@ const ActionRegistration = () => {
                         ? new Date(selectedSearchMarker?.mappingActions.at(-1).action.datetimeEnd).toLocaleDateString('pt-BR') 
                         : 'Sem Ação'}</p>
                     <p><strong>Descrição:</strong> {selectedSearchMarker?.description}</p>
+                    <p><strong>Necessidades:</strong> {selectedSearchMarker?.tags.map(tag => tag.name).join(', ')}</p>
                 </>
             </Modal>
 
