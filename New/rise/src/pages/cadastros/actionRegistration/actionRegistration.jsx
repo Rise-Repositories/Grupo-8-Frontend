@@ -36,7 +36,6 @@ const ActionRegistration = () => {
 
     const navigate = useNavigate();
     const state = useLocation().state?.curAction;
-    console.log('=== state ', state);
     const [markersLoaded, setMarkersLoaded] = useState(false);
 
     const [radius, setRadius] = useState(state ? state.radius : 3);
@@ -52,6 +51,7 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
+    const [filteredLocationData, setFilteredLocationData] = useState([]);
     const [idAction, setIdAction] = useState(state ? state.actionId : null);
     const [statusAction, setStatusAction] = useState(state ? state.status : null);
     const { curOngId } = useContext(OngContext);
@@ -127,6 +127,24 @@ const ActionRegistration = () => {
         setActionTagIds(values);
     }
 
+    const handlePatchActionTags = async (values) => {
+        setActionTagIds(values);
+        const { data, status } = await api.patch(`/actions/${idAction}/tags`,
+            values,
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).catch((e) => {
+                console.log(e);
+            })
+
+        if (status === 200) {
+            console.log(data);
+            setFilteredLocationData(filterLocationDataArray(locationData, values));
+        }
+    }
+
     const optionsActionTags = [
         { label: 'Comida', value: 1 },
         { label: 'Itens de Higiene', value: 2 },
@@ -140,7 +158,25 @@ const ActionRegistration = () => {
         } else {
             return marker.tags.filter(mt => actionTagIds.includes(mt.id)).length > 0;
         }
-    }
+    };
+
+    const filterLocationData = (loc) => {
+        if (loc.alreadyDonated || actionTagIds.length === 0) {
+            return true;
+        } else {
+            return loc.tags.filter(mt => actionTagIds.includes(mt.id)).length > 0;
+        }
+    };
+
+    const filterLocationDataArray = (locArray, values) => {
+        return locArray.filter(loc => {
+            if (loc.alreadyDonated || values.length === 0) {
+                return true;
+            } else {
+                return loc.tags.filter(mt => values.includes(mt.id)).length > 0;
+            }
+        });
+    };
 
     const handleGetLocation = () => {
         toast.info("Carregando Informações")
@@ -612,7 +648,7 @@ const ActionRegistration = () => {
                     })
 
                 if (status === 201 || status === 200) {
-                    setLocationData(locationData.map((ld) => {
+                    let newLocationData = locationData.map((ld) => {
                         if (ld.id === selectedRecord.id) {
                             ld.alreadyDonated = true;
                             ld.icon = new L.Icon({
@@ -621,7 +657,9 @@ const ActionRegistration = () => {
                             });
                         }
                         return ld;
-                    }))
+                    })
+                    setLocationData(newLocationData);
+                    setFilteredLocationData(filterLocationDataArray(newLocationData, actionTagIds));
                     setIsRegistered(true);
                     form.resetFields();
                 } else {
@@ -766,7 +804,7 @@ const ActionRegistration = () => {
                     const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
 
-                    setLocationData(arrayData.map(marker => {
+                    let newLocationData = arrayData.map(marker => {
 
                         const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
                             ? marker.mappingActions.at(-1)?.action?.datetimeEnd
@@ -803,9 +841,13 @@ const ActionRegistration = () => {
                             descricao: marker.description,
                             marker: marker,
                             icon: icon,
-                            alreadyDonated: alreadyDonated
+                            alreadyDonated: alreadyDonated,
+                            tags: marker.tags
                         };
-                    }));
+                    })
+
+                    setLocationData(newLocationData);
+                    setFilteredLocationData(filterLocationDataArray(newLocationData, actionTagIds));
 
                     setMarkersLoaded(true);
                 }
@@ -1231,14 +1273,22 @@ const ActionRegistration = () => {
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
                                 <div className={styles["select-container"]}>
-                                    <label>Itens sendo doados:</label>
+                                    <label>
+                                        { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
+                                            <>Itens sendo doados:</>
+                                        }
+                                        { (statusAction !== "PENDING" && statusAction !== "IN_PROGRESS") &&
+                                            <>Itens que foram doados:</>
+                                        }
+                                    </label>
                                     <Select
                                         mode="multiple"
                                         allowClear
                                         style={{ width: '100%' }}
                                         defaultValue={[]}
                                         value={actionTagIds}
-                                        onChange={handleChangeActionTags}
+                                        disabled={(statusAction !== "PENDING" && statusAction !== "IN_PROGRESS")}
+                                        onChange={handlePatchActionTags}
                                         options={optionsActionTags}
                                         />
                                 </div>
@@ -1254,14 +1304,18 @@ const ActionRegistration = () => {
                                             </Marker>
                                         )}
                                         {locationData.map((loc, index) => {
-                                            return (
-                                                <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
-                                                    eventHandlers={{
-                                                        click: (e) => {
-                                                            showDetalhes(loc)
-                                                        },
-                                                    }} />
-                                            );
+                                            if (filterLocationData(loc)) {
+                                                return (
+                                                    <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
+                                                        eventHandlers={{
+                                                            click: (e) => {
+                                                                showDetalhes(loc)
+                                                            },
+                                                        }} />
+                                                );
+                                            } else {
+                                                return <></>
+                                            }
                                         })}
                                     </MapContainer>
                                     { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
@@ -1289,7 +1343,7 @@ const ActionRegistration = () => {
                                                 ),
                                                 rowExpandable: (record) => record.name === "",
                                             }}
-                                            dataSource={locationData}
+                                            dataSource={filteredLocationData}
                                             scroll={{
                                                 x: 150,
                                             }}
@@ -1339,6 +1393,7 @@ const ActionRegistration = () => {
                         <p><strong>Há pessoas com transtorno:</strong> {selectedRecord?.transtorno}</p>
                         <p><strong>Última ação no local:</strong> {selectedRecord?.date}</p>
                         <p><strong>Descrição:</strong> {selectedRecord?.descricao}</p>
+                        <p><strong>Necessidades:</strong> {selectedRecord?.tags.map(tag => tag.name).join(', ')}</p>
                         {selectedRecord?.alreadyDonated &&
                             <p className={styles["already-donated"]}>Doação já realizada</p>
                         }
