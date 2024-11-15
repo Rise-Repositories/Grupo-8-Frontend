@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Steps, Button, Upload, message, Spin, ConfigProvider } from "antd";
-import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import api from "../../../api";
 
 const { Step } = Steps;
@@ -11,6 +11,7 @@ const ImportTxtModal = ({ visible, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [uploadResult, setUploadResult] = useState("");
     const [isError, setIsError] = useState(false);
+    const [downloading, setDownloading] = useState(false);
 
     const handleNext = () => {
         if (currentStep === 0) {
@@ -28,11 +29,9 @@ const ImportTxtModal = ({ visible, onClose }) => {
             message.error("Por favor, selecione um arquivo antes de enviar.");
             return;
         }
-
         setLoading(true);
         setUploadResult("");
         setIsError(false);
-
         const reader = new FileReader();
         reader.onload = () => {
             const fileContent = reader.result;
@@ -55,12 +54,10 @@ const ImportTxtModal = ({ visible, onClose }) => {
                     setLoading(false);
                 });
         };
-
         reader.onerror = () => {
             message.error("Erro ao ler o arquivo.");
             setLoading(false);
         };
-
         reader.readAsText(file);
     };
 
@@ -74,7 +71,6 @@ const ImportTxtModal = ({ visible, onClose }) => {
     };
 
     const handleClose = () => {
-        // Resetar estados ao fechar o modal
         setCurrentStep(0);
         setFile(null);
         setUploadResult("");
@@ -82,12 +78,36 @@ const ImportTxtModal = ({ visible, onClose }) => {
         onClose();
     };
 
+    const handleDownload = async () => {
+        setDownloading(true);
+        try {
+            const token = sessionStorage.getItem("USER_TOKEN");
+            const headers = {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/pdf",
+            };
+            const response = await api.get(`/user/file/-1`, { headers, responseType: 'arraybuffer' });
+
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "documento_de_referencia.pdf";
+            link.click();
+            window.URL.revokeObjectURL(link.href);
+        } catch (error) {
+            message.error("Erro ao baixar o documento de referência. Tente novamente mais tarde.");
+            console.error(error);
+        } finally {
+            setDownloading(false);
+        }
+    };
+
     return (
         <ConfigProvider
             theme={{
                 token: {
                     colorPrimary: "#2968C8",
-                    borderRadius: 5, 
+                    borderRadius: 5,
                 },
             }}
         >
@@ -107,8 +127,8 @@ const ImportTxtModal = ({ visible, onClose }) => {
                             <p style={{ marginBottom: 10 }}>
                                 Para importar dados de mapeamento, confira o documento de referência e envie um arquivo com os parâmetros indicados conforme o indicado.
                             </p>
-                            <Button type="primary" href="/path/to/layout.docx" target="_blank" style={{ marginBottom: 10, textDecoration: "none" }}>
-                                Documento de referência
+                            <Button type="primary" onClick={handleDownload} style={{ marginBottom: 10, textDecoration: "none" }}>
+                                Documento de referência {downloading && <LoadingOutlined style={{ marginLeft: 8 }} />}
                             </Button>
                             <Upload.Dragger
                                 name="file"
@@ -123,7 +143,6 @@ const ImportTxtModal = ({ visible, onClose }) => {
                             </Upload.Dragger>
                         </>
                     )}
-
                     {currentStep === 1 && (
                         <div style={{ textAlign: "center" }}>
                             {loading ? (

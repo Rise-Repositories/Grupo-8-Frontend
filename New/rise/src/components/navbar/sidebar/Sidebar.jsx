@@ -10,13 +10,14 @@ import { Option } from 'antd/es/mentions';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-
+import AvatarComponent from '../../dataDisplay/avatar/AvatarComponent';
 
 const Sidebar = ({ handleOngId, toggleSidebar }) => {
     const navigate = useNavigate();
     const { logout } = useContext(AuthContext);
     const { ongList, setOngList, curOngId, setCurOngId, userRole, setUserRole } = useContext(OngContext);
-    const [ ongIndex, setOngIndex ] = useState(0);
+    const [ongIndex, setOngIndex] = useState(0);
+    const [userName, setUserName] = useState(null);
 
     const handleNavigate = (path) => {
         navigate(path);
@@ -25,7 +26,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
 
     useEffect(() => {
         const fetchOngs = async () => {
-            try {
+            try {                
                 const token = sessionStorage.getItem('USER_TOKEN');
                 const headers = {
                     'Authorization': `Bearer ${token}`
@@ -52,6 +53,18 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
             } catch (error) {
                 console.error("Erro ao buscar ONGs:", error);
             }
+            try {
+                const token = sessionStorage.getItem('USER_TOKEN');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+
+                const accountResponse = await api.get('/user/account', { headers });
+                const userName = accountResponse.data.name;
+                setUserName(userName);
+            } catch (error) {
+                console.error('Erro ao buscar os dados do usuário:', error);
+            }
         };
 
         fetchOngs();
@@ -74,22 +87,19 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
         disabled: true
     };
 
-
     return (
         <>
             <div className={styles.content}>
                 <div className={styles.upPart}>
                     <h3>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width={"100px"} height={"100px"}>
-                            <path fill="#ffffff" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
-                        </svg>
+                        <AvatarComponent size={100} editable={true}/>
                     </h3>
                     <div className={styles.instituteName}>
-                        {sessionStorage.getItem("CUR_ONG")}
+                        {userName}
                     </div>
                     <Dropdown
                         as={ButtonGroup}
-                        onSelect={(e) => {handleSelectChange(e)}}
+                        onSelect={(e) => { handleSelectChange(e) }}
                     >
                         <Dropdown.Toggle className={styles["ong-dropdown"]}>{ongList[ongIndex].name}</Dropdown.Toggle>
                         <Dropdown.Menu className={styles["ong-dropdown-menu"]}>
@@ -124,21 +134,21 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                             <span>Registro de Ação</span>
                         </a>
                     </li>
-                    { (userRole === 'OWNER' || userRole === 'ADMIN') &&
-                    <>
-                        <li className={styles.links}>
-                            <a className={styles.linkContent} onClick={() => handleNavigate('/dashboard/manage-volunteers')}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
-                                <span>Gerenciar voluntários</span>
-                            </a>
-                        </li>
-                        <li className={styles.links} onClick={() => handleNavigate('/dashboard/institute-list')}>
-                            <a className={styles.linkContent}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M480 48c0-26.5-21.5-48-48-48H336c-26.5 0-48 21.5-48 48V96H224V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V96H112V24c0-13.3-10.7-24-24-24S64 10.7 64 24V96H48C21.5 96 0 117.5 0 144v96V464c0 26.5 21.5 48 48 48H304h32 96H592c26.5 0 48-21.5 48-48V240c0-26.5-21.5-48-48-48H480V48zm96 320v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM240 416H208c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zM128 400c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM560 256c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32zM256 176v32c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM112 160c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32zM256 304c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM112 320H80c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zm304-48v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM400 64c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V80c0-8.8 7.2-16 16-16h32zm16 112v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16z" /></svg>
-                                <span>Lista de instituições</span>
-                            </a>
-                        </li>
-                    </>
+                    {(userRole === 'OWNER' || userRole === 'ADMIN') &&
+                        <>
+                            <li className={styles.links}>
+                                <a className={styles.linkContent} onClick={() => handleNavigate('/dashboard/manage-volunteers')}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
+                                    <span>Gerenciar voluntários</span>
+                                </a>
+                            </li>
+                            <li className={styles.links} onClick={() => handleNavigate('/dashboard/institute-list')}>
+                                <a className={styles.linkContent}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="#ffffff" d="M480 48c0-26.5-21.5-48-48-48H336c-26.5 0-48 21.5-48 48V96H224V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V96H112V24c0-13.3-10.7-24-24-24S64 10.7 64 24V96H48C21.5 96 0 117.5 0 144v96V464c0 26.5 21.5 48 48 48H304h32 96H592c26.5 0 48-21.5 48-48V240c0-26.5-21.5-48-48-48H480V48zm96 320v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM240 416H208c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zM128 400c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V368c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM560 256c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H528c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32zM256 176v32c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM112 160c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32zM256 304c0 8.8-7.2 16-16 16H208c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zM112 320H80c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16zm304-48v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V272c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16zM400 64c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V80c0-8.8 7.2-16 16-16h32zm16 112v32c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16z" /></svg>
+                                    <span>Lista de instituições</span>
+                                </a>
+                            </li>
+                        </>
                     }
                     <li className={styles.links} onClick={() => { handleNavigate('/home'); }}>
                         <a className={styles.linkContent}>

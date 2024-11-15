@@ -5,6 +5,8 @@ import riselogo from '../../../utils/imgs/rise-logo.png';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { OngContext } from '../../context/ongContext/OngContext';
+import Avatar from 'antd/es/avatar/avatar';
+import AvatarComponent from '../../dataDisplay/avatar/AvatarComponent';
 
 const NavbarMobile = () => {
     const navigate = useNavigate();
@@ -30,17 +32,15 @@ const NavbarMobile = () => {
                 <FaBars size={25} color="#2968C8"/>
             </button>
             <div className={style["container"]}>
-                <div className={`${style["row"]} ${style["justify-end"]}`}>
-                    <button className={`${style["button-navbar"]} ${style["min-width"]}`} onClick={() => handleNavigate('/user')}>
-                        <FaUser size={25} color="#2968C8"/>
-                    </button>
+                <div className={`${style["row"]} ${style["justify-end"]}`} onClick={() => handleNavigate('/user')}>
+                    <AvatarComponent size={30} editable={false}/>
                 </div>
                 <div className={style["column"]}>
                     <button className={style["button-navbar"]} onClick={() => handleNavigate('/')}>
                         <FaHeart size={25} color="#2968C8"/>
                         <p>Acesso Institucional</p>
                     </button>
-                    { ongList.length > 0 &&
+                    { (ongList && ongList.length > 0) &&
                         <button className={style["button-navbar"]} onClick={() => handleNavigate('/dashboard/main')}>
                             <FaChartBar size={25} color="#2968C8"/>
                             <p>Dashboard</p>

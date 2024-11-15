@@ -18,8 +18,7 @@ const DashboardMapping = () => {
 
     const {ongList, curOngId} = useContext(OngContext);
 
-    let dataAtual = new Date();
-    const [dataFiltro, setDataFiltro] = useState(formatDate(dataAtual));
+    const [dataFiltro, setDataFiltro] = useState(formatDateTime(new Date()));
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
     const [hashTableTotal, setHashTableTotal] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -71,7 +70,7 @@ const DashboardMapping = () => {
             console.log('Dados da API:', res.data);
             organizeMappings(res.data);
         });
-    }, [Authorization, dataFiltro]); 
+    }, [Authorization]); 
 
     useEffect(() => {
         if (hashTableTotal) {
@@ -123,7 +122,7 @@ const DashboardMapping = () => {
 
                         <div className={styles['dash-map']}>
                             <div className={`col-12 col-md-5 ${styles['map']}`}>
-                                <Heatmap />
+                                <Heatmap semAtendimentoDesde={dataFiltro}/>
                             </div>
 
                             <div className={`col-12 col-md-7 mt-3 mt-md-0 ps-md-4 ${styles['tableHeightScroll']}`}>
@@ -137,14 +136,14 @@ const DashboardMapping = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {dadosMapeamento && dadosMapeamento.unattended.map((dado, index) => (
+                                        {/* {dadosMapeamento && dadosMapeamento.unattended.map((dado, index) => (
                                             <tr key={index}>
                                                 <td>{dado.address || 'Endereço desconhecido'}</td>
                                                 <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
                                                 <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
                                                 <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
                                             </tr>
-                                        ))}
+                                        ))} */}
                                         {dadosMapeamento && dadosMapeamento.prioritized.map((dado, index) => (
                                             <tr key={index}>
                                                 <td>{dado.address || 'Endereço desconhecido'}</td>

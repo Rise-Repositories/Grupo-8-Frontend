@@ -11,11 +11,27 @@ const UserProfile = () => {
   const [userMappings, setUserMappings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userName, setUserName] = useState(null);
   const navigate = useNavigate();
   // Obtenção do token do usuário do sessionStorage
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   useEffect(() => {
+    const fetchOngs = async () => {
+      try {
+        const token = sessionStorage.getItem('USER_TOKEN');
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        const accountResponse = await api.get('/user/account', { headers });
+        const userName = accountResponse.data.name;
+        setUserName(userName);
+      } catch (error) {
+        console.error('Erro ao buscar os dados do usuário:', error);
+      }
+    }
+
     const fetchUserData = async () => {
       try {
         const headers = {
@@ -26,7 +42,8 @@ const UserProfile = () => {
         const { data } = response;
         console.log(data);
         // Processamento dos dados de mapeamento e ações
-
+        const userName = response.data.name;
+        setUserName(userName);
         setUserMappings(data.mapping);
         setLoading(false);
       } catch (error) {
@@ -71,15 +88,15 @@ const UserProfile = () => {
       </header>
 
       <div className={styles["profile-links"]}>
-        <p className={styles["text"]}>Olá Fernanda</p>
-        <a className={styles["link"]} onClick={() => navigate("/updateData")}> Editar Perfil</a>
-        <a className={styles["link"]} onClick={() => navigate("/updatePassword")}> Alterar Senha</a>
+        <p className={styles["text"]}>Olá {userName}</p>
+        <a className={styles["link"]} onClick={() => navigate("/updateData")} style={{ cursor: 'pointer' }}> Editar Perfil</a>
+        <a className={styles["link"]} onClick={() => navigate("/updatePassword")} style={{ cursor: 'pointer' }}> Alterar Senha</a>
       </div> <br /><br /><br />
 
       <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />
 
       {userMappings.map((i) =>
-        <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)} />
+        <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)}/>
       )}
     </div>
   );
