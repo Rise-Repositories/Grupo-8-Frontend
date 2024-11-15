@@ -93,6 +93,14 @@ const DashboardMapping = () => {
         setHashTableTotal(hashTable);
     };
 
+    const formatarData = (data) => {
+        return new Date(data).toLocaleDateString('pt-BR', {
+            year: 'numeric',  // Mudamos para 'numeric' para obter o ano completo
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\//g, ' / '); // Adiciona espaços entre as barras
+    };
+
     return (
         <div className={styles.page}>
             <div className={styles.content}>
@@ -112,7 +120,7 @@ const DashboardMapping = () => {
                             </div>
                             <div className={`${styles["top-filters"]}`}>
                                 <span>Locais sem atendimento desde:</span>
-                                <CalendarFilter dataFiltro={dataFiltro} setDataFiltro={setDataFiltro} />
+                                <CalendarFilter dataFiltro={formatarData(dataFiltro)} setDataFiltro={setDataFiltro} />
                                 <div className={`${styles["button-container"]}`}>
                                     <BlueButton txt={"Importar dados"} onclick={showModal} />
                                     <BlueButton txt={"Exportar dados"} onclick={handleExport} />

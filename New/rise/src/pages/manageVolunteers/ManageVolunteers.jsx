@@ -393,6 +393,17 @@ const ManageVolunteers = () => {
         }
     };
 
+    const parseRoleName = (role) => {
+        if (role === 'OWNER') {
+            return 'Dono';
+        } else if (role === 'ADMIN') {
+            return 'Administrador';
+        } else if (role === 'VOLUNTARY') {
+            return 'Voluntário';
+        } else {
+            return '';
+        }
+    }
 
     const columns = [
         {
@@ -409,6 +420,7 @@ const ManageVolunteers = () => {
             title: <span style={{ fontFamily: 'Montserrat' }}>Cargo</span>,
             dataIndex: 'role',
             key: 'role',
+            render: (text) => parseRoleName(text)
         },
         {
             title: <span style={{ fontFamily: 'Montserrat' }}>Endereço</span>,
@@ -489,7 +501,7 @@ const ManageVolunteers = () => {
                         <Descriptions.Item label="Nome">{selectedVolunteer?.name}</Descriptions.Item>
                         <Descriptions.Item label="E-mail">{selectedVolunteer?.email}</Descriptions.Item>
                         <Descriptions.Item label="Cargo">
-                            {selectedVolunteer?.role}
+                            {parseRoleName(selectedVolunteer?.role)}
                             {selectedVolunteer?.role !== "OWNER" && (
                                 <Button
                                     type="link"
