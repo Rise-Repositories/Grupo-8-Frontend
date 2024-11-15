@@ -82,13 +82,17 @@ const ManageActions = () => {
         }
 
         setTableData(filteredTable.map((action, index) => ({
-                key: index,
-                name: action.name,
-                inicio: action.datetimeStart,
-                fim: action.datetimeEnd,
-                qtdeMapeamentos: action.mappingAction.length,
-                status: action.status,
-                actionId: action.id
+            key: index,
+            name: action.name,
+            inicio: new Date(action.datetimeStart),
+            fim: new Date(action.datetimeEnd),
+            qtdeMapeamentos: action.mappingAction.length,
+            status: action.status,
+            actionId: action.id,
+            latitude: action.latitude,
+            longitude: action.longitude,
+            radius: action.radius,
+            tags: action.tags
             })
         ));
     }
@@ -128,7 +132,8 @@ const ManageActions = () => {
                         actionId: action.id,
                         latitude: action.latitude,
                         longitude: action.longitude,
-                        radius: action.radius
+                        radius: action.radius,
+                        tags: action.tags
                     })
                 ));
             }

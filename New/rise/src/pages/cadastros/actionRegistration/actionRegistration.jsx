@@ -36,6 +36,7 @@ const ActionRegistration = () => {
 
     const navigate = useNavigate();
     const state = useLocation().state?.curAction;
+    console.log('=== state ', state);
     const [markersLoaded, setMarkersLoaded] = useState(false);
 
     const [radius, setRadius] = useState(state ? state.radius : 3);
@@ -81,7 +82,7 @@ const ActionRegistration = () => {
     const [selectedSearchMarker, setSelectedSearchMarker] = useState(null);
     const [selectedSearchAction, setSelectedSearchAction] = useState(null);
 
-    const[actionTagIds, setActionTagIds] = useState([]);
+    const[actionTagIds, setActionTagIds] = useState(state ? state.tags.map(tag => {return tag.id}) : []);
 
     const handleCloseSearchMarkerModal = () => {
         setSelectedSearchMarker(null);
@@ -128,7 +129,7 @@ const ActionRegistration = () => {
 
     const optionsActionTags = [
         { label: 'Comida', value: 1 },
-        { label: 'Items de Higiene', value: 2 },
+        { label: 'Itens de Higiene', value: 2 },
         { label: 'Roupas/Cobertores', value: 3 },
         { label: 'Outros', value: 4 }
     ];
@@ -391,8 +392,8 @@ const ActionRegistration = () => {
                     name: action.nome,
                     description: action.descricao,
                     dateTimeStart: action.dataInicio,
-                    dateTimeEnd: action.dataFim
-
+                    dateTimeEnd: action.dataFim,
+                    tags: actionTagIds
                 },
                     {
                         headers: {
@@ -1086,15 +1087,31 @@ const ActionRegistration = () => {
                                     <div className='col-md-11'>
                                         <LabelInput label={"Nome da Ação:"} placeholder={"Digite o nome"} value={action.nome} onChange={(e) => setAction({ ...action, nome: e.target.value })} />
                                     </div>
-                                    <div className='col-md-11'>
+                                    <div className='col-md-12'>
                                         <LabelInput label={"Descrição:"} placeholder={"Digite a descrição"} value={action.descricao} onChange={(e) => setAction({ ...action, descricao: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={`col-md-12 d-flex flex-column ${styles["input-group"]}`}>
+                                    <label className='col-md-12'>
+                                        Itens que serão doados:
+                                    </label>
+                                    <div className='col-md-12'>
+                                        <Select
+                                            mode="multiple"
+                                            allowClear
+                                            style={{ width: '100%' }}
+                                            defaultValue={[]}
+                                            value={actionTagIds}
+                                            onChange={handleChangeActionTags}
+                                            options={optionsActionTags}
+                                            />
                                     </div>
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
                                         <LabelInput label={"Data Início:"} placeholder={"Digite a Data Início"} value={action.dataInicio} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataInicio: e.target.value })} />
                                     </div>
-                                    <div className='col-md-11'>
+                                    <div className='col-md-12'>
                                         <LabelInput label={"Data Fim:"} placeholder={"Digite a Data Fim"} value={action.dataFim} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataFim: e.target.value })} />
                                     </div>
                                 </div>
@@ -1127,6 +1144,7 @@ const ActionRegistration = () => {
                                                 allowClear
                                                 style={{ width: '100%' }}
                                                 defaultValue={[]}
+                                                value={actionTagIds}
                                                 onChange={handleChangeActionTags}
                                                 options={optionsActionTags}
                                                 />
@@ -1166,6 +1184,8 @@ const ActionRegistration = () => {
                                                         },
                                                     }} />
                                                 );
+                                            } else {
+                                                return (<></>)
                                             }
                                         })}
 
@@ -1210,6 +1230,18 @@ const ActionRegistration = () => {
 
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
+                                <div className={styles["select-container"]}>
+                                    <label>Itens sendo doados:</label>
+                                    <Select
+                                        mode="multiple"
+                                        allowClear
+                                        style={{ width: '100%' }}
+                                        defaultValue={[]}
+                                        value={actionTagIds}
+                                        onChange={handleChangeActionTags}
+                                        options={optionsActionTags}
+                                        />
+                                </div>
                                 <div className={styles["map-addresses"]}>
                                     <MapContainer center={currentPosition} zoom={13} scrollWheelZoom={true} className={styles["interact-map"]}>
                                         <TileLayer
