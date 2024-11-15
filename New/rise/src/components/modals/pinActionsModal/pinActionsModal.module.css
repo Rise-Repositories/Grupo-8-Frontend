@@ -1,0 +1,29 @@
+.info-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  width: auto;
+  height: 100%;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 5px
+}
+.info-column{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.w-full{
+  width: 100%;
+}
+.between{
+  justify-content: space-between;
+}
+
+.info-area p{
+  margin: 0;
+}

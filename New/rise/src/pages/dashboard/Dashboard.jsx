@@ -54,6 +54,40 @@ const Dashboard = () => {
         qtyNoPeoplePercent: 0
     });
 
+
+    const handleExportCsv = async () => {
+        // Formata as datas de início e fim
+        console.log('Função handleExportCsv chamada');
+        const dataInicio = dataFiltro.split('T')[0]; // Formata a data de início
+        const dataFim = dataFiltro2.split('T')[0]; // Formata a data de fim
+    
+        try {
+            // Cria a URL com os parâmetros
+            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
+            
+            const response = await api.get(url, {
+                responseType: 'blob', // Para download de arquivos
+                headers: { Authorization: authorization },
+            });
+    
+            // Adicionando console.log para ver a resposta
+            console.log('Resposta do servidor:', response);
+    
+            // Criar um link para o download do CSV
+            const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.setAttribute('download', 'mapping_graph.csv'); // Nome do arquivo
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Erro ao exportar CSV', error);
+        }
+    };
+    
+    
+
     const [totalUsers, setTotalUsers] = useState(0);
 
     const [graphData, setGraphData] = useState([]);
@@ -124,10 +158,10 @@ const Dashboard = () => {
         labels: graphData.map((data) => getMonthName(data.month)),
         datasets: [
             {
-                label: "Sem Pessoas",
+                label: "Total",
                 backgroundColor: "#A700FF",
                 borderColor: "#A700FF",
-                data: graphData.map((data) => data.no_People),
+                data: graphData.map((data) => data.total),
             },
             {
                 label: "Não Atendidos",
@@ -176,7 +210,12 @@ const Dashboard = () => {
                             <div className={`col-12 col-md-7 ${styles["default-box"]}`}>
                                 <div className={styles["top-info"]}>
                                     <div className={styles["page-name"]}>
-                                        <a>Locais atendidos mês a mês</a>
+                                        <div className={styles["header"]}>
+                                            <a>Locais atendidos mês a mês</a>
+                                            <div className={styles["button-header"]}>
+                                            <BlueButton txt={"Exportar csv"} onclick={handleExportCsv} />
+                                        </div>
+                                        </div>
                                         <div className={`${styles["aux-top-filters"]}`}>
                                             <div className={`${styles["top-filters"]}`}>
                                                 De:
@@ -198,18 +237,18 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                                 <div className={`${styles["chart-box"]}`}>
-                                    <Line
-                                        className={styles.chart}
-                                        data={data}
-                                        options={{
-                                            responsive: true,
-                                            elements: {
-                                                line: {
-                                                    tension: 0.5
-                                                },
-                                                point: {
-                                                    radius: 2
-                                                },
+
+                                <Line
+                                    className={styles.chart}
+                                    data={data}
+                                    options={{
+                                        responsive: true,
+                                        elements: {
+                                            line: {
+                                                tension: 0
+                                            },
+                                            point: {
+                                                radius: 2
                                             },
                                             maintainAspectRatio: false,
                                             plugins: {
@@ -218,7 +257,7 @@ const Dashboard = () => {
                                                     position: "bottom",
                                                 }
                                             }
-                                        }}
+                                        }}}
                                     />
                                 </div>
                             </div>
