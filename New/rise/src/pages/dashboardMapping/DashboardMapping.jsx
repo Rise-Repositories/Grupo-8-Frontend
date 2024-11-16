@@ -10,7 +10,7 @@ import HashTable from "./HashTable/HashTable";
 import ImportTxtModal from "../../components/modals/importTxtModal/importTxtModal";
 import { formatDateTime } from "../../utils/globals";
 import { OngContext } from "../../components/context/ongContext/OngContext";
-
+import { Select } from "antd";
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
@@ -22,6 +22,7 @@ const DashboardMapping = () => {
     const [dadosMapeamento, setDadosMapeamento] = useState(null);
     const [hashTableTotal, setHashTableTotal] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [actionTagIds, setActionTagIds] = useState([]);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -29,6 +30,25 @@ const DashboardMapping = () => {
 
     const handleModalClose = () => {
         setIsModalVisible(false);
+    };
+
+    const handleChangeActionTags = (values) => {
+        setActionTagIds(values);
+    };
+
+    const optionsActionTags = [
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ];
+
+    const filterTableData = (data) => {
+        if (actionTagIds.length === 0) {
+            return true;
+        } else {
+            return data.tags.filter(dt => actionTagIds.includes(dt.id)).length > 0;
+        }
     };
 
     const handleExport = () => {
@@ -126,11 +146,23 @@ const DashboardMapping = () => {
                                     <BlueButton txt={"Exportar dados"} onclick={handleExport} />
                                 </div>
                             </div>
+                            <div className={`${styles["select-top-filters"]}`}>
+                                <span>Filtrar por necessidade:</span>
+                                <Select
+                                    mode="multiple"
+                                    allowClear
+                                    style={{ width: '100%' }}
+                                    defaultValue={[]}
+                                    value={actionTagIds}
+                                    onChange={handleChangeActionTags}
+                                    options={optionsActionTags}
+                                    />
+                            </div>
                         </div>
 
                         <div className={styles['dash-map']}>
                             <div className={`col-12 col-md-5 ${styles['map']}`}>
-                                <Heatmap semAtendimentoDesde={dataFiltro}/>
+                                <Heatmap semAtendimentoDesde={dataFiltro} actionTagIds={actionTagIds}/>
                             </div>
 
                             <div className={`col-12 col-md-7 mt-3 mt-md-0 ps-md-4 ${styles['tableHeightScroll']}`}>
@@ -152,14 +184,16 @@ const DashboardMapping = () => {
                                                 <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
                                             </tr>
                                         ))} */}
-                                        {dadosMapeamento && dadosMapeamento.prioritized.map((dado, index) => (
-                                            <tr key={index}>
-                                                <td>{dado.address || 'Endereço desconhecido'}</td>
-                                                <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
-                                                <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
-                                                <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
-                                            </tr>
-                                        ))}
+                                        {dadosMapeamento && dadosMapeamento.prioritized.map((dado, index) => {
+                                            if (filterTableData(dado)) {
+                                                return <tr key={index}>
+                                                    <td>{dado.address || 'Endereço desconhecido'}</td>
+                                                    <td>{formatDate(dado.date) || 'Data desconhecida'}</td>
+                                                    <td>{dado.lastServed ? 'Sim' : 'Não'}</td>
+                                                    <td>{dado.lastServed ? formatDate(dado.lastServed) : 'Nunca'}</td>
+                                                </tr>
+                                            }
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

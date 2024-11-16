@@ -140,7 +140,6 @@ const ActionRegistration = () => {
             })
 
         if (status === 200) {
-            console.log(data);
             setFilteredLocationData(filterLocationDataArray(locationData, values));
         }
     }
@@ -1226,8 +1225,6 @@ const ActionRegistration = () => {
                                                         },
                                                     }} />
                                                 );
-                                            } else {
-                                                return (<></>)
                                             }
                                         })}
 
@@ -1313,8 +1310,6 @@ const ActionRegistration = () => {
                                                             },
                                                         }} />
                                                 );
-                                            } else {
-                                                return <></>
                                             }
                                         })}
                                     </MapContainer>

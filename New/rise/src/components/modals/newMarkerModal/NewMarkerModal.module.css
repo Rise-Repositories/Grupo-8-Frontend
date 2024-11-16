@@ -35,21 +35,18 @@
   justify-content: center;
   font-size:larger
 }
-.Row-checkbox-first{
-  display: flex; 
-  flex-direction: row;
-  gap: 110px;
+
+.Row-checkbox-flex {
   display: flex;
-  justify-content: center;
-  padding-left: 45px;
+  flex-wrap: wrap;
+  gap: 16px; 
+  justify-content: center; 
+  align-items: center; 
+  text-align: center;
+  padding-left: 10%;
 }
-.Row-checkbox-second{
-  display: flex; 
-  flex-direction: row;
-  gap: 20px;
-  display: flex;
-  justify-content: center;
-  padding-right: 30px;
+.Row-checkbox-flex > * {
+  width: calc(50% - 8px); 
 }
 
 .Label{

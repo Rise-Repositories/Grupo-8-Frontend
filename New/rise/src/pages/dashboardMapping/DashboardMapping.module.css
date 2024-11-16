@@ -71,6 +71,19 @@
     gap: 16px;
 }
 
+.select-top-filters {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    width: 100%;
+
+    span {
+        text-wrap: nowrap;
+    }
+}
+
 .align-input {
     width: 25%;
 }
