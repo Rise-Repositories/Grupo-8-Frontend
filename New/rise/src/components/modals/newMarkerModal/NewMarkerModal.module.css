@@ -30,6 +30,28 @@
   gap: 10px;
 }
 
+.Row-title{
+  display: flex;
+  justify-content: center;
+  font-size:larger
+}
+.Row-checkbox-first{
+  display: flex; 
+  flex-direction: row;
+  gap: 110px;
+  display: flex;
+  justify-content: center;
+  padding-left: 45px;
+}
+.Row-checkbox-second{
+  display: flex; 
+  flex-direction: row;
+  gap: 20px;
+  display: flex;
+  justify-content: center;
+  padding-right: 30px;
+}
+
 .Label{
   font-size: 1.2rem;
   margin-bottom: 2px;
