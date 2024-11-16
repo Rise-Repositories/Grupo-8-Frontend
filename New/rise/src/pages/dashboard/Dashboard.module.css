@@ -173,6 +173,10 @@
     gap: 40px;
 }
 
+.select-top-filters{
+    margin-top:8px;
+}
+
 .header {
     display: flex;
     justify-content: space-between;

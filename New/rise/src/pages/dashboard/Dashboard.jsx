@@ -3,7 +3,7 @@ import styles from "./Dashboard.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
 import { AuthContext } from "../login/AuthContext";
-import { Button, Spin, ConfigProvider } from "antd";
+import { Button, Spin, ConfigProvider, Select } from "antd";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -37,6 +37,7 @@ const Dashboard = () => {
     const [dataFiltro, setDataFiltro] = useState(formatDateTime(dataInicial));
     const [dataFiltro2, setDataFiltro2] = useState(formatDateTime(dataAtual));
 
+    const[actionTagIds, setActionTagIds] = useState([]);
 
     const [accountData, setAccountData] = useState({
         zero: 0,
@@ -65,7 +66,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -94,7 +95,7 @@ const Dashboard = () => {
         const dataFim = dataFiltro2.split('T')[0];
 
         try {
-            const url = `/data/export-json?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-json?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'json',
@@ -127,7 +128,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-xml?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-xml?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -158,7 +159,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-parquet?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-parquet?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -215,8 +216,8 @@ const Dashboard = () => {
 
             const [responseAccountData, responseKpis, responseGraphData, userCount] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
-                api.get(`/data/kpi?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { params, headers }),
-                api.get(`/data/mapping/graph?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { headers }),
+                api.get(`/data/kpi?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}&tagIds=${actionTagIds}`, { params, headers }),
+                api.get(`/data/mapping/graph?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}&tagIds=${actionTagIds}`, { headers }),
                 api.get('/user/total-count', { headers })
             ]);
 
@@ -250,7 +251,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchData(afterDate);
-    }, [dataFiltro, dataFiltro2]);
+    }, [dataFiltro, dataFiltro2, actionTagIds]);
 
     const handleDateChange = (e) => {
         const date = e.target.value;
@@ -291,15 +292,16 @@ const Dashboard = () => {
         ],
     };
 
+    const handleChangeActionTags = (values) => {
+        setActionTagIds(values);
+    }
 
-    // Função para formatar a data como dd / mm / yyyy (com espaço entre as barras)
-    const formatarData = (data) => {
-        return new Date(data).toLocaleDateString('pt-BR', {
-            year: 'numeric',  // Mudamos para 'numeric' para obter o ano completo
-            month: '2-digit',
-            day: '2-digit'
-        }).replace(/\//g, ' / '); // Adiciona espaços entre as barras
-    };
+    const optionsActionTags = [
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ];
 
 
     return (
@@ -331,20 +333,30 @@ const Dashboard = () => {
                                         <div className={`${styles["aux-top-filters"]}`}>
                                             <div className={`${styles["top-filters"]}`}>
                                                 De:
-                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
                                                 <CalendarFilter
-                                                    dataFiltro={formatarData(dataFiltro)}
+                                                    dataFiltro={dataFiltro}
                                                     setDataFiltro={setDataFiltro}
                                                 />
                                             </div>
                                             <div className={`${styles["top-filters"]}`}>
                                                 Até:
-                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
                                                 <CalendarFilter
-                                                    dataFiltro={formatarData(dataFiltro2)}
+                                                    dataFiltro={dataFiltro2}
                                                     setDataFiltro={setDataFiltro2}
                                                 />
                                             </div>
+                                        </div>
+                                        <div className={`${styles["select-top-filters"]}`}>
+                                            Filtrar por necessidade:
+                                            <Select
+                                                mode="multiple"
+                                                allowClear
+                                                style={{ width: '100%' }}
+                                                defaultValue={[]}
+                                                value={actionTagIds}
+                                                onChange={handleChangeActionTags}
+                                                options={optionsActionTags}
+                                                />
                                         </div>
                                     </div>
                                 </div>
