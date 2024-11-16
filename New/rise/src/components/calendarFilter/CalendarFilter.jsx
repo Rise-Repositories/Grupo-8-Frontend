@@ -24,9 +24,17 @@ const CalendarFilter = ({dataFiltro, setDataFiltro}) => {
         setIsCalendarOpen(false);
     };
 
+    const formatarData = (data) => {
+        return new Date(data).toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\//g, ' / ');
+    };
+
     return (
         <>
-            <WhiteButton txt={dataFiltro.split('T')[0]} onclick={() => setIsCalendarOpen(true)} />
+            <WhiteButton txt={formatarData(dataFiltro)} onclick={() => setIsCalendarOpen(true)} />
             <Modal
                 open={isCalendarOpen}
                 onCancel={() => closeCalendario()}
