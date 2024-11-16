@@ -2,6 +2,7 @@ import styles from "./NewMarkerModal.module.css"
 import LabelInput from "../../inputs/labelInput/LabelInput";
 import RedButton from "../../buttons/redButton/RedButton";
 import BlueButton from "../../buttons/blueButton/BlueButton";
+import Checkbox from "../../inputs/checkboxInput/CheckboxInput";
 import api from "../../../api";
 import {toast} from "react-toastify"
 import { useState } from "react";
@@ -14,7 +15,16 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
     const [reference, setReference] = useState("");
     const [qtyAdults, setQtyAdults] = useState("");
     const [qtyChildren, setQtyChildren] = useState("");
-    const [description, setDescription] = useState("")
+    const [description, setDescription] = useState("");
+    const [tags, setTags] = useState([]);
+
+    const handleTagChange = (label) => {
+        setTags((prevTags) =>
+            prevTags.includes(label)
+                ? prevTags.filter((tag) => tag !== label)
+                : [...prevTags, label]
+        );
+    };
 
     const handleCreateMarker = async () => {
         const payload = {
@@ -29,7 +39,8 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                 cep: cep,
                 number: number,
                 complement: complement
-            }
+            },
+            tag: tags
         }
 
         try{
@@ -72,6 +83,17 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                     <div className={styles["Row"]}>
                         <LabelInput label="Adultos" placeholder="Quantidade Adultos" onInput={(e) => setQtyAdults(e.target.value)}/>
                         <LabelInput label="Crianças" placeholder="Quantidade Crianças" onInput={(e) => setQtyChildren(e.target.value)}/>
+                    </div>
+                    <div className={styles["Row-title"]}>
+                        <a>Tipo de ação:</a>
+                    </div>
+                    <div className={styles["Row-checkbox-first"]}>
+                        <Checkbox label="Comida" checked={tags.includes("Comida")} onChange={() => handleTagChange("Comida")} />
+                        <Checkbox label="Itens de Higiene" checked={tags.includes("Itens de Higiene")} onChange={() => handleTagChange("Itens de Higiene")} />
+                    </div>
+                    <div className={styles["Row-checkbox-second"]}>
+                        <Checkbox label="Roupas/Cobertores" checked={tags.includes("Roupas/Cobertores")} onChange={() => handleTagChange("Roupas/Cobertores")} />
+                        <Checkbox label="Outros" checked={tags.includes("Outros")} onChange={() => handleTagChange("Outros")} />
                     </div>
                     <div>
                         <p className={styles["textarea-label"]}>Descriçao</p>
