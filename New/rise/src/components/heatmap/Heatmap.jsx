@@ -42,7 +42,7 @@ function HeatmapData(props) {
     }, [props]);
 }
 
-const Heatmap = ({semAtendimentoDesde}) => {
+const Heatmap = ({semAtendimentoDesde, actionTagIds}) => {
 
     const { authToken } = useContext(AuthContext);
     const Authorization = 'Bearer ' + authToken;
@@ -66,20 +66,17 @@ const Heatmap = ({semAtendimentoDesde}) => {
         defaultDate.setMonth(defaultDate.getMonth() - 1);
 
         const requestConfig = {
-            headers: { Authorization },
-            params: {
-                radiusToGroup: 100.0,
-                olderThan: semAtendimentoDesde ? semAtendimentoDesde : defaultDate.toISOString().split('.')[0]
-            }
+            headers: { Authorization }
         };
 
-        api.get('/data/heatmap', requestConfig).then((res) => {
+        api.get(`/data/heatmap?radiusToGroup=100.0&olderThan=${semAtendimentoDesde ? semAtendimentoDesde : defaultDate.toISOString().split('.')[0]}&tagIds=${actionTagIds}`,
+            requestConfig).then((res) => {
             setPontosMapaCalor(res.data);
 
         }).catch((err) => {
             toast.error('Erro ao carregar dados do mapa de calor');
         });
-    }, [semAtendimentoDesde]);
+    }, [semAtendimentoDesde, actionTagIds]);
 
     return (
         <>
