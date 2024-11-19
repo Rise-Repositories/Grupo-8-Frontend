@@ -21,8 +21,7 @@
     font-size: 24px;
 }
 
-.content {
-    height: 100vh;
+.content {  
     background-color: #EFF2F4;
     display: flex;
     justify-content: center;
@@ -30,6 +29,7 @@
 }
 
 .container {
+    margin-top: 10px;
     width: 95%;
     height: 95%;
 

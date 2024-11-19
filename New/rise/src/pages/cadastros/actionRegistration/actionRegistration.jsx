@@ -1043,7 +1043,7 @@ const ActionRegistration = () => {
     return (
         <>
             <div className={styles.page}>
-                <div className={`col-md-12 ${styles["content"]}`}>
+                <div className={styles.content}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
                             <div className={`mx-auto mx-md-0 ${styles["page-name"]}`}>

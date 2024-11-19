@@ -457,202 +457,204 @@ const ManageVolunteers = () => {
                     },
                 }}
             >
-                <div className={`${styles["content"]}`}>
-                    <div className={styles.container}>
-                        <div className={styles["top-info"]}>
-                            <div className={styles["page-name"]}>
-                                <a>Gerenciar Voluntários</a>
-                            </div>
-                        </div>
-
-                        <div className={`${styles["default-box"]}`}>
+                <div className={styles.page}>
+                    <div className={styles.content}>
+                        <div className={styles.container}>
                             <div className={styles["top-info"]}>
                                 <div className={styles["page-name"]}>
-                                    <a>Voluntários associados</a>
+                                    <a>Gerenciar Voluntários</a>
                                 </div>
-                                <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} onclick={openAssociateModal} />
                             </div>
 
-                            <div className={styles["table-container"]}>
-                                <Col>
-                                    <Table
-                                        columns={columns}
-                                        dataSource={data}
-                                        scrollToFirstRowOnChange={true}
-                                        scroll={{ x: '100%' }}
-                                        pagination={{ pageSize: 10 }}
-                                        className={styles["custom-font"]}
-                                    />
-                                </Col>
+                            <div className={`${styles["default-box"]}`}>
+                                <div className={styles["top-info"]}>
+                                    <div className={styles["page-name"]}>
+                                        <a>Voluntários associados</a>
+                                    </div>
+                                    <BlueButton txt={"ASSOCIAR NOVO VOLUNTÁRIO"} onclick={openAssociateModal} />
+                                </div>
+
+                                <div className={styles["table-container"]}>
+                                    <Col>
+                                        <Table
+                                            columns={columns}
+                                            dataSource={data}
+                                            scrollToFirstRowOnChange={true}
+                                            scroll={{ x: '100%' }}
+                                            pagination={{ pageSize: 10 }}
+                                            className={styles["custom-font"]}
+                                        />
+                                    </Col>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div >
-
-                <Modal
-                    title="Informações do Voluntário"
-                    open={isModalOpen}
-                    onOk={closeModal}
-                    onCancel={closeModal}
-                    centered
-                    className={styles["custom-font"]}
-                >
-                    <Descriptions column={1}>
-                        <Descriptions.Item label="Nome">{selectedVolunteer?.name}</Descriptions.Item>
-                        <Descriptions.Item label="E-mail">{selectedVolunteer?.email}</Descriptions.Item>
-                        <Descriptions.Item label="Cargo">
-                            {parseRoleName(selectedVolunteer?.role)}
-                            {selectedVolunteer?.role !== "OWNER" && (
-                                <Button
-                                    type="link"
-                                    onClick={() => handleEditRole(selectedVolunteer)}
-                                >
-                                    Editar Cargo
-                                </Button>
-                            )}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Endereço">
-                            {selectedVolunteer?.address?.street}, {selectedVolunteer?.address?.number}, {selectedVolunteer?.address?.city}
-                        </Descriptions.Item>
-                    </Descriptions>
-                </Modal>
-
-                <Modal
-                    title="Editar Cargo do Voluntário"
-                    open={isEditRoleModalOpen}
-                    onCancel={() => setIsEditRoleModalOpen(false)}
-                    onOk={handleSaveRole}
-                    okText="Salvar"
-                    cancelText="Cancelar"
-                    centered
-                    className={styles["custom-font"]}
-                >
-                    {selectedVolunteer?.role === "OWNER" ? (
-                        <p>O cargo do proprietário não pode ser editado.</p>
-                    ) : (
-                        <Select
-                            placeholder="Selecione o novo cargo"
-                            style={{ width: "100%" }}
-                            value={selectedRole}
-                            onChange={(value) => setSelectedRole(value)}
-                        >
-                            <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                            <Select.Option value="ADMIN">Administrador</Select.Option>
-                        </Select>
-                    )}
-                </Modal>
-
-                <Modal
-                    title="Associar Novo Voluntário"
-                    open={isAssociateModalOpen}
-                    onCancel={closeAssociateModal}
-                    okText={"Continuar"}
-                    cancelText={"Voltar"}
-                    centered
-                    className={styles["custom-font"]}
-                    onOk={handleContinue}
-                >
-                    <div className={styles.modalContent}>
-                        <LabelInput
-                            label="Email do voluntário"
-                            placeholder="Digite o e-mail"
-                            onInput={(e) => setNewVolunteerEmail(e.target.value)}
-                        />
-                    </div>
-                </Modal>
-
-                <Modal
-                    title="Confirmação de Associação"
-                    open={isConfirmModalOpen}
-                    onCancel={() => setIsConfirmModalOpen(false)}
-                    onOk={() => handleConfirmAssociation(true)}
-                    okText="Continuar"
-                    cancelText="Cancelar"
-                    centered
-                    className={styles["custom-font"]}
-                >
-                    <p>Esse usuário já está cadastrado. Caso deseje associá-lo a sua ONG, selecione o cargo que ele ocupará abaixo e então clique em continuar, caso contrário clique em cancelar.</p>
-                    <div className={styles.modalContent}>
-                        <Select
-                            placeholder="Selecione o cargo"
-                            style={{ width: "100%" }}
-                            onChange={(value) => setSelectedRole(value)}
-                        >
-                            <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                            <Select.Option value="ADMIN">Administrador</Select.Option>
-                        </Select>
-                    </div>
-                </Modal>
-
-                <Modal
-                    open={isCreateUserModalOpen}
-                    onCancel={() => setIsCreateUserModalOpen(false)}
-                    footer={null}
-                    centered
-                >
-                    <div className={`${styles["form"]}`}
-                        style={{
-                            height: '60vh',
-                            overflowY: 'auto',
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                        }}
-                    >
-                        <div>
-                            <div className={`${styles["form-presentation"]}`}>
-                                <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>Cadastro de Usuário</label>
-                            </div>
-                            <label className={`${styles["standard-text"]}`}>Informe seus dados</label>
-                        </div >
-
-                        <div className={`${styles["container-inputs-form"]}`}>
-
-                            <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleNameBlur(e)} />
-                            <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)} />
-                            <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
-
-                            <div className='row'>
-                                <div className='col-md-8'>
-                                    <LabelInput placeholder={cidade} label={"Cidade"} disabled={true} />
-                                </div>
-                                <div className='col-md-4'>
-                                    <LabelInput placeholder={estado} label={"Estado"} disabled={true} />
-                                </div>
-                            </div>
-
-                            <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true} />
-
-                            <div className={'row'}>
-                                <div className='col-md-4'>
-                                    <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number" />
-                                </div>
-                                <div className='col-md-8'>
-                                    <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
-                                </div>
-                            </div>
-
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)} />
-                            <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e.target.value, setSenha)} type="password" onBlur={(e) => handlePasswordBlur(e)} />
-                            <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} type="password" onBlur={(e) => handleConfirmPasswordBlur(e, senha)} />
-
-                            <div>
-                                <label className={styles["label-spacing"]}>Informe o cargo do novo usuário</label>
-                                <Select
-                                    placeholder="Selecione o cargo"
-                                    style={{ width: "100%" }}
-                                    onChange={(value) => setSelectedRole(value)}
-                                >
-                                    <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
-                                    <Select.Option value="ADMIN">Administrador</Select.Option>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <BlueButton txt={"Cadastrar"} onclick={handleSave} />
-
                     </div >
-                </Modal >
+
+                    <Modal
+                        title="Informações do Voluntário"
+                        open={isModalOpen}
+                        onOk={closeModal}
+                        onCancel={closeModal}
+                        centered
+                        className={styles["custom-font"]}
+                    >
+                        <Descriptions column={1}>
+                            <Descriptions.Item label="Nome">{selectedVolunteer?.name}</Descriptions.Item>
+                            <Descriptions.Item label="E-mail">{selectedVolunteer?.email}</Descriptions.Item>
+                            <Descriptions.Item label="Cargo">
+                                {parseRoleName(selectedVolunteer?.role)}
+                                {selectedVolunteer?.role !== "OWNER" && (
+                                    <Button
+                                        type="link"
+                                        onClick={() => handleEditRole(selectedVolunteer)}
+                                    >
+                                        Editar Cargo
+                                    </Button>
+                                )}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Endereço">
+                                {selectedVolunteer?.address?.street}, {selectedVolunteer?.address?.number}, {selectedVolunteer?.address?.city}
+                            </Descriptions.Item>
+                        </Descriptions>
+                    </Modal>
+
+                    <Modal
+                        title="Editar Cargo do Voluntário"
+                        open={isEditRoleModalOpen}
+                        onCancel={() => setIsEditRoleModalOpen(false)}
+                        onOk={handleSaveRole}
+                        okText="Salvar"
+                        cancelText="Cancelar"
+                        centered
+                        className={styles["custom-font"]}
+                    >
+                        {selectedVolunteer?.role === "OWNER" ? (
+                            <p>O cargo do proprietário não pode ser editado.</p>
+                        ) : (
+                            <Select
+                                placeholder="Selecione o novo cargo"
+                                style={{ width: "100%" }}
+                                value={selectedRole}
+                                onChange={(value) => setSelectedRole(value)}
+                            >
+                                <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                                <Select.Option value="ADMIN">Administrador</Select.Option>
+                            </Select>
+                        )}
+                    </Modal>
+
+                    <Modal
+                        title="Associar Novo Voluntário"
+                        open={isAssociateModalOpen}
+                        onCancel={closeAssociateModal}
+                        okText={"Continuar"}
+                        cancelText={"Voltar"}
+                        centered
+                        className={styles["custom-font"]}
+                        onOk={handleContinue}
+                    >
+                        <div className={styles.modalContent}>
+                            <LabelInput
+                                label="Email do voluntário"
+                                placeholder="Digite o e-mail"
+                                onInput={(e) => setNewVolunteerEmail(e.target.value)}
+                            />
+                        </div>
+                    </Modal>
+
+                    <Modal
+                        title="Confirmação de Associação"
+                        open={isConfirmModalOpen}
+                        onCancel={() => setIsConfirmModalOpen(false)}
+                        onOk={() => handleConfirmAssociation(true)}
+                        okText="Continuar"
+                        cancelText="Cancelar"
+                        centered
+                        className={styles["custom-font"]}
+                    >
+                        <p>Esse usuário já está cadastrado. Caso deseje associá-lo a sua ONG, selecione o cargo que ele ocupará abaixo e então clique em continuar, caso contrário clique em cancelar.</p>
+                        <div className={styles.modalContent}>
+                            <Select
+                                placeholder="Selecione o cargo"
+                                style={{ width: "100%" }}
+                                onChange={(value) => setSelectedRole(value)}
+                            >
+                                <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                                <Select.Option value="ADMIN">Administrador</Select.Option>
+                            </Select>
+                        </div>
+                    </Modal>
+
+                    <Modal
+                        open={isCreateUserModalOpen}
+                        onCancel={() => setIsCreateUserModalOpen(false)}
+                        footer={null}
+                        centered
+                    >
+                        <div className={`${styles["form"]}`}
+                            style={{
+                                height: '60vh',
+                                overflowY: 'auto',
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                        >
+                            <div>
+                                <div className={`${styles["form-presentation"]}`}>
+                                    <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
+                                    <label>Cadastro de Usuário</label>
+                                </div>
+                                <label className={`${styles["standard-text"]}`}>Informe seus dados</label>
+                            </div >
+
+                            <div className={`${styles["container-inputs-form"]}`}>
+
+                                <LabelInput placeholder={"Digite seu nome"} label={"Nome"} onInput={(e) => handleInputChange(e.target.value, setNome)} onBlur={(e) => handleNameBlur(e)} />
+                                <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={(e) => handleCPFBlur(e)} />
+                                <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
+
+                                <div className='row'>
+                                    <div className='col-md-8'>
+                                        <LabelInput placeholder={cidade} label={"Cidade"} disabled={true} />
+                                    </div>
+                                    <div className='col-md-4'>
+                                        <LabelInput placeholder={estado} label={"Estado"} disabled={true} />
+                                    </div>
+                                </div>
+
+                                <LabelInput placeholder={logradouro} label={"Logradouro"} disabled={true} />
+
+                                <div className={'row'}>
+                                    <div className='col-md-4'>
+                                        <LabelInput placeholder={"000"} label={"Número"} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} type="number" />
+                                    </div>
+                                    <div className='col-md-8'>
+                                        <LabelInput placeholder={"Apto 00"} label={"Complemento"} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
+                                    </div>
+                                </div>
+
+                                <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e.target.value, setEmail)} onBlur={(e) => handleEmailBlur(e)} />
+                                <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e.target.value, setSenha)} type="password" onBlur={(e) => handlePasswordBlur(e)} />
+                                <LabelInput placeholder={"Digite a confirmação de senha"} label={"Confirmação de senha"} onInput={(e) => handleInputChange(e.target.value, setConfirmarSenha)} type="password" onBlur={(e) => handleConfirmPasswordBlur(e, senha)} />
+
+                                <div>
+                                    <label className={styles["label-spacing"]}>Informe o cargo do novo usuário</label>
+                                    <Select
+                                        placeholder="Selecione o cargo"
+                                        style={{ width: "100%" }}
+                                        onChange={(value) => setSelectedRole(value)}
+                                    >
+                                        <Select.Option value="VOLUNTARY">Voluntário</Select.Option>
+                                        <Select.Option value="ADMIN">Administrador</Select.Option>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <BlueButton txt={"Cadastrar"} onclick={handleSave} />
+
+                        </div >
+                    </Modal >
+                </div >
 
             </ConfigProvider>
         </>
