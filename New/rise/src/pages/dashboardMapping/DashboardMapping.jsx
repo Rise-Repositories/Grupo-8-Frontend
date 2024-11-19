@@ -11,6 +11,7 @@ import ImportTxtModal from "../../components/modals/importTxtModal/importTxtModa
 import { formatDateTime } from "../../utils/globals";
 import { OngContext } from "../../components/context/ongContext/OngContext";
 import { Select } from "antd";
+import { toast } from "react-toastify";
 
 const DashboardMapping = () => {
     const { authToken } = useContext(AuthContext);
@@ -24,6 +25,13 @@ const DashboardMapping = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [actionTagIds, setActionTagIds] = useState([]);
 
+    const [optionsActionTags, setOptionsActionsTags] = useState([
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ]);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -35,13 +43,6 @@ const DashboardMapping = () => {
     const handleChangeActionTags = (values) => {
         setActionTagIds(values);
     };
-
-    const optionsActionTags = [
-        { label: 'Comida', value: 1 },
-        { label: 'Itens de Higiene', value: 2 },
-        { label: 'Roupas/Cobertores', value: 3 },
-        { label: 'Outros', value: 4 }
-    ];
 
     const filterTableData = (data) => {
         if (actionTagIds.length === 0) {
@@ -76,6 +77,24 @@ const DashboardMapping = () => {
                 console.error('Erro ao exportar o arquivo:', error);
             });
     };
+
+    useEffect(() => {
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+    }, [])
 
     useEffect(() => {
         let defaultDate = new Date();

@@ -81,6 +81,12 @@ const ActionRegistration = () => {
     const [isSearchActionModalVisible, setIsSearchActionModalVisible] = useState(false);
     const [selectedSearchMarker, setSelectedSearchMarker] = useState(null);
     const [selectedSearchAction, setSelectedSearchAction] = useState(null);
+    const [optionsActionTags, setOptionsActionsTags] = useState([
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ]);
 
     const[actionTagIds, setActionTagIds] = useState(state ? state.tags.map(tag => {return tag.id}) : []);
 
@@ -143,13 +149,6 @@ const ActionRegistration = () => {
             setFilteredLocationData(filterLocationDataArray(locationData, values));
         }
     }
-
-    const optionsActionTags = [
-        { label: 'Comida', value: 1 },
-        { label: 'Itens de Higiene', value: 2 },
-        { label: 'Roupas/Cobertores', value: 3 },
-        { label: 'Outros', value: 4 }
-    ];
 
     const filterSearchMarker = (marker) => {
         if (actionTagIds.length === 0) {
@@ -966,6 +965,23 @@ const ActionRegistration = () => {
     };
 
     useEffect(() => {
+
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
