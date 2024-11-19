@@ -7,12 +7,11 @@
 .header {
     display: flex;
     flex-direction: row;
-    justify-content: end;
-    width: 100%;
-    margin-top:10vh;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100vh;
     background-color: #E9F5FE;
 }
-
 .big-image {
     width: 50%;
     height: 100vh;
