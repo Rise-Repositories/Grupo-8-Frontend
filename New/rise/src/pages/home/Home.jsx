@@ -165,8 +165,6 @@ const Home = () => {
                 handleModalNewMapping();
             }
         }
-        console.log('data, ',data);
-        console.log('data, ',status);
     }
 
     const icon = new Icon({
