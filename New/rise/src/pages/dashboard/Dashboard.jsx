@@ -4,6 +4,7 @@ import api from "../../api";
 import Modal from 'react-modal';
 import { AuthContext } from "../login/AuthContext";
 import { Button, Spin, ConfigProvider, Select } from "antd";
+import { toast } from "react-toastify";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -56,6 +57,12 @@ const Dashboard = () => {
         qtyNoPeoplePercent: 0
     });
 
+    const [optionsActionTags, setOptionsActionsTags] = useState([
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ]);
 
     const handleExportCsv = async () => {
 
@@ -253,6 +260,24 @@ const Dashboard = () => {
         fetchData(afterDate);
     }, [dataFiltro, dataFiltro2, actionTagIds]);
 
+    useEffect(() => {
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+    }, [])
+
     const handleDateChange = (e) => {
         const date = e.target.value;
         const monthNumber = date.split('-')[1];
@@ -295,14 +320,6 @@ const Dashboard = () => {
     const handleChangeActionTags = (values) => {
         setActionTagIds(values);
     }
-
-    const optionsActionTags = [
-        { label: 'Comida', value: 1 },
-        { label: 'Itens de Higiene', value: 2 },
-        { label: 'Roupas/Cobertores', value: 3 },
-        { label: 'Outros', value: 4 }
-    ];
-
 
     return (
         <>

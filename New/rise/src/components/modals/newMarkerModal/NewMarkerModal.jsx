@@ -5,7 +5,7 @@ import BlueButton from "../../buttons/blueButton/BlueButton";
 import Checkbox from "../../inputs/checkboxInput/CheckboxInput";
 import api from "../../../api";
 import { toast } from "react-toastify"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
@@ -17,13 +17,30 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
     const [qtyChildren, setQtyChildren] = useState("");
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState([]);
-
-    const optionsActionTags = [
+    const [optionsActionTags, setOptionsActionsTags] = useState([
         { label: 'Comida', value: 1 },
         { label: 'Itens de Higiene', value: 2 },
-        { label: 'Roupas/ Cobertores', value: 3 },
+        { label: 'Roupas/Cobertores', value: 3 },
         { label: 'Outros', value: 4 }
-    ];
+    ]);
+
+    useEffect(() => {
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+    }, [])
 
     const handleTagChange = (id) => {
         setTags((prevTags) =>
@@ -96,7 +113,7 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                         <LabelInput label="Crianças" placeholder="Quantidade Crianças" onInput={(e) => setQtyChildren(e.target.value)} />
                     </div>
                     <div className={styles["Row-title"]}>
-                        <a>Tipo de ação:</a>
+                        <a>Necessidade <span className={styles["Row-subtitle"]}>(Selecione pelo menos uma)</span>:</a>
                     </div>
                     <div className={styles["Row-checkbox-flex"]}>
                         {optionsActionTags.map((option) => (

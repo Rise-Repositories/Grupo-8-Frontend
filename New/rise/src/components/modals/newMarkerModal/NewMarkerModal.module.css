@@ -33,7 +33,11 @@
 .Row-title{
   display: flex;
   justify-content: center;
-  font-size:larger
+  font-size:larger;
+}
+
+.Row-subtitle {
+  font-size: smaller;
 }
 
 .Row-checkbox-flex {
