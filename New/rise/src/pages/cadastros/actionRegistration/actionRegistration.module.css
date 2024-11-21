@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
     font-family: "Montserrat";
 }
 

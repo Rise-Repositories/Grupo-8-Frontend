@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select } from 'antd';
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select, ConfigProvider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import 'antd/dist/reset.css';
@@ -1057,6 +1057,13 @@ const ActionRegistration = () => {
     }
 
     return (
+        <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: 'Montserrat',
+            },
+        }}
+        >
         <>
             <div className={styles.page}>
                 <div className={styles.content}>
@@ -1502,8 +1509,8 @@ const ActionRegistration = () => {
                     <p><strong>Descrição:</strong> {selectedSearchAction?.description}</p>
                 </>
             </Modal>
-
         </>
+        </ConfigProvider>
     );
 };
 
