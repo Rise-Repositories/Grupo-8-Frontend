@@ -70,3 +70,11 @@
     gap: 20px;
     white-space: pre;
   }
+
+  .modalTermosDeUso{
+    display: flex;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    height: 80vh;
+    overflow: scroll;
+  }
