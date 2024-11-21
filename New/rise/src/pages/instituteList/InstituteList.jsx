@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./InstituteList.module.css";
 import api from "../../api";
 
-import { Modal, Table, Space, Col, Row } from "antd";
+import { Modal, Table, Space, Col, Row, ConfigProvider } from "antd";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
 import BlueButton from "../../components/buttons/blueButton/BlueButton";
 import GreenButton from "../../components/buttons/greenButton/GreenButton";
@@ -163,6 +163,13 @@ const InstituteList = () => {
     }));
 
     return (
+        <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: 'Montserrat',
+            },
+        }}
+        >
         <><Col>
             <Col>
                 <Col className={styles.content}>
@@ -217,6 +224,7 @@ const InstituteList = () => {
             </Modal>
             </Col>
         </>
+        </ConfigProvider>
     );
 };
 
