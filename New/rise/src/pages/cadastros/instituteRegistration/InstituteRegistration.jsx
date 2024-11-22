@@ -163,10 +163,10 @@ const InstituteRegistration = () => {
             if (error.response) {
                 if (error.response.status === 409) {
                 } else {
-                    toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");
+                    toast.error("Ocorreu um erro ao salvar os dados. Tente novamente mais tarde.");
                 }
             } else {
-                toast.error("Erro ao se conectar com o servidor, por favor, tente novamente.");
+                toast.error("Erro ao se conectar com o servidor. Tente novamente mais tarde.");
             }
         });
     }
