@@ -11,6 +11,7 @@ import api from "../../../api";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validateCEP, validatePassword } from "../../../utils/globals";
 import { useNavigate } from "react-router-dom";
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd';
 
 const handleNameBlur = (event) => {
     if (!validateText(event.target.value)) {
@@ -79,6 +80,26 @@ const VolunteerRegistration = () => {
     const handleInputChange = (value, setStateFunction) => {
         setStateFunction(value);
     }
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        if (isFormVisible) {
+            setIsModalVisible(true);
+            setIsFormVisible(false);
+        } else {
+            setIsModalVisible(false);
+            setSelectedRecord(null);
+        }
+
+    };
 
     const handleSave = () => {
 
@@ -219,14 +240,12 @@ const VolunteerRegistration = () => {
                                     <div className="form-group form-check">
                                         <input type="checkbox" className="form-check-input" id="termosDeUsoOk" checked={termosAceitos} onChange={handleCheckboxChange}></input>
                                         <label className="form-check-label" htmlFor="termosDeUsoOk"><p>Eu concordo com os </p></label>
-                                        <a
-                                            href="#termos"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="termos-link"
+                                        <button
+                                            className={`${styles['termosLink']}`}
+                                            onClick={() => { setIsModalOpen(true); }}
                                         >
                                             Termos de Uso
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -237,6 +256,79 @@ const VolunteerRegistration = () => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                title=" Termos de Uso e Política de Privacidade"
+                open={isModalOpen}
+                onOk={closeModal}
+                onCancel={closeModal}
+                centered
+                className={styles["custom-font"]}
+                footer={[
+                    <div style={{ textAlign: 'center' }}>
+                        <Space size={100}>
+
+                        </Space>
+                    </div>
+                ]}
+            >
+                <div className={styles["modalTermosDeUso"]}>
+                    Bem-vindo ao Me Ajua (“Site”). Ao acessar e usar este Site, você concorda em cumprir e estar vinculado aos Termos de Uso e Política de Privacidade descritos a seguir. Se você não concorda com algum desses termos, por favor, não utilize o Site.
+                    <br /><br />
+                    1. Coleta e Uso de Dados Pessoais: <br />
+
+                    O Site pode coletar dados pessoais como nome, e-mail, telefone e outros dados necessários para cadastro e uso dos serviços oferecidos. Esta coleta será sempre baseada em seu consentimento, exceto nos casos em que a LGPD autorize o tratamento de dados sem consentimento, como para cumprir obrigações legais ou contratuais.
+                    <br /><br />
+                    2. Finalidade do Tratamento de Dados: <br />
+
+                    Os dados pessoais coletados serão utilizados para:
+
+                    Processar e administrar seu cadastro;
+
+                    Melhorar e personalizar a experiência do usuário;
+
+                    Enviar comunicações, notificações e informações relevantes sobre o uso do Site, sempre que autorizado por você;
+
+                    Analisar e melhorar nossos serviços.
+                    <br /><br />
+
+                    3. Compartilhamento de Dados Pessoais <br />
+
+                    Seus dados pessoais não serão vendidos, alugados ou compartilhados com terceiros para fins comerciais. Somente compartilhamos dados pessoais com parceiros e prestadores de serviços confiáveis, na medida em que seja necessário para a execução de funcionalidades do Site e conforme autorizado pela LGPD.
+                    <br /><br />
+                    4. Direitos do Titular de Dados <br />
+
+                    Conforme a LGPD, você tem o direito de:
+
+                    Acessar os dados que temos sobre você;
+
+                    Corrigir dados incompletos, inexatos ou desatualizados;
+
+                    Revogar o consentimento e solicitar a eliminação de dados pessoais previamente consentidos, exceto quando a manutenção dos dados for necessária para cumprimento de obrigações legais.
+                    <br /><br />
+                    5. Segurança dos Dados <br />
+
+                    Adotamos medidas técnicas e organizacionais para proteger os dados pessoais contra acessos não autorizados, perdas, alterações e uso inadequado. No entanto, nenhum sistema é 100% seguro, e não podemos garantir a segurança absoluta das informações.
+                    <br /><br />
+                    6. Cookies <br />
+
+                    Utilizamos cookies e tecnologias similares para melhorar sua experiência de navegação. Você pode gerenciar suas preferências de cookies nas configurações do seu navegador.
+                    <br /><br />
+                    7. Alterações nos Termos de Uso e Política de Privacidade <br />
+
+                    Podemos atualizar nossos Termos de Uso e Política de Privacidade periodicamente. As alterações serão comunicadas no Site, e é recomendável que você revise estes termos regularmente.
+                    <br /><br />
+                    8. Contato e Dúvidas <br />
+
+                    Caso tenha alguma dúvida sobre este Termo de Uso ou sobre o tratamento dos seus dados pessoais, entre em contato através do e-mail: [E-MAIL DE CONTATO].
+                    <br /><br />
+                    9. Legislação e Foro <br />
+
+                    Estes Termos de Uso são regidos pelas leis brasileiras. Qualquer disputa que surja será resolvida no foro da comarca de São Paulo, SP, exceto se houver disposição legal em contrário.
+
+                </div>
+            </Modal>
+
         </>
     );
 };

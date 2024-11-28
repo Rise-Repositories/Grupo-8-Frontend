@@ -327,7 +327,7 @@ const InstituteRegistration = () => {
                                         <input type="checkbox" className="form-check-input" id="termosDeUsoOk" checked={termosAceitos} onChange={handleCheckboxChange}></input>
                                         <label className="form-check-label" htmlFor="termosDeUsoOk"><p>Eu concordo com os </p></label>
                                         <button 
-                                            className="termos-link"
+                                            className={`${styles['termosLink']}`}
                                             onClick={() => { setIsModalOpen(true); }}
                                         >
                                             Termos de Uso

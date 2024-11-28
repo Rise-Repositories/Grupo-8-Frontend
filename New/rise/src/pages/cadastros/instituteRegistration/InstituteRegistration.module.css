@@ -78,3 +78,9 @@
     height: 80vh;
     overflow: scroll;
   }
+
+  .termosLink{
+    border: 0;
+    color: blue;
+    background-color: #E9F5FE;
+  }
