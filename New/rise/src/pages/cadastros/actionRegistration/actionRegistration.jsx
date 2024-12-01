@@ -725,7 +725,7 @@ const ActionRegistration = () => {
             },
         };
 
-        await api.patch(`/actions/${curOngId}/${idAction}?status=aa${newStatus}`, null, config )
+        await api.patch(`/actions/${curOngId}/${idAction}?status=${newStatus}`, null, config )
         .then((res) => {
             if (newStatus === "DONE") {
                 toast.success("Ação finalizada com sucesso");
