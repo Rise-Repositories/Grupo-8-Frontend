@@ -28,7 +28,7 @@ const ChangePassword = () => {
             })
             .catch((erroOcorrido) => {
                 console.log(erroOcorrido)
-                toast.error("A senha nao pode ser alterada")
+                toast.error("Ocorreu um erro ao alterar a senha. Tente novamente mais tarde.")
             })
     }
 

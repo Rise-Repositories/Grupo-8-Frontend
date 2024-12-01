@@ -253,6 +253,7 @@ const Dashboard = () => {
 
         } catch (error) {
             console.error('Erro ao buscar dados', error);
+            toast.error('Ocorreu um erro ao buscar os dados da dashboard. Tente novamente mais tarde.')
         }
     };
 

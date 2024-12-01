@@ -168,7 +168,7 @@ const VolunteerRegistration = () => {
             navigate("/");
         }).catch((err) => {
             console.log(err);
-            toast.error("Ocorreu um erro ao salvar os dados, por favor, tente novamente.");
+            toast.error("Ocorreu um erro ao salvar os dados. Tente novamente mais tarde.");
         })
     }
 

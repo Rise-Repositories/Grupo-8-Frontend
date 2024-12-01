@@ -160,7 +160,7 @@ const DashboardMapping = () => {
                                 </div>
                                 <div className={`${styles["top-filters"]}`}>
                                     <span>Locais sem atendimento desde:</span>
-                                    <CalendarFilter dataFiltro={formatarData(dataFiltro)} setDataFiltro={setDataFiltro} />
+                                    <CalendarFilter dataFiltro={dataFiltro} setDataFiltro={setDataFiltro} />
                                     <div className={`${styles["button-container"]}`}>
                                         <BlueButton txt={"Importar dados"} onclick={showModal} />
                                         <BlueButton txt={"Exportar dados"} onclick={handleExport} />
