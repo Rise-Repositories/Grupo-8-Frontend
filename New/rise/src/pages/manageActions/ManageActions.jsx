@@ -111,31 +111,34 @@ const ManageActions = () => {
             }
             if (curOngId) {
                 const response = await api.get(`/actions/ong/${curOngId}`, config);
-                setActions(response.data);
 
                 let filteredTable = [];
-                if (statusFilter === 'ALL') {
-                    filteredTable = response.data;
-                } else {
-                    filteredTable = response.data.filter((action) => {
-                        return action.status === statusFilter;
-                    });
-                }
 
-                setTableData(filteredTable.map((action, index) => ({
-                        key: index,
-                        name: action.name,
-                        inicio: new Date(action.datetimeStart),
-                        fim: new Date(action.datetimeEnd),
-                        qtdeMapeamentos: action.mappingAction.length,
-                        status: action.status,
-                        actionId: action.id,
-                        latitude: action.latitude,
-                        longitude: action.longitude,
-                        radius: action.radius,
-                        tags: action.tags
-                    })
-                ));
+                if (response.status === 200) {
+                    setActions(response.data);
+                    if (statusFilter === 'ALL') {
+                        filteredTable = response.data;
+                    } else {
+                        filteredTable = response.data.filter((action) => {
+                            return action.status === statusFilter;
+                        });
+                    }
+
+                    setTableData(filteredTable.map((action, index) => ({
+                            key: index,
+                            name: action.name,
+                            inicio: new Date(action.datetimeStart),
+                            fim: new Date(action.datetimeEnd),
+                            qtdeMapeamentos: action.mappingAction.length,
+                            status: action.status,
+                            actionId: action.id,
+                            latitude: action.latitude,
+                            longitude: action.longitude,
+                            radius: action.radius,
+                            tags: action.tags
+                        })
+                    ));
+                }
             }
         } catch (error) {
             toast.error('Erro ao buscar ações, tente novamente.');

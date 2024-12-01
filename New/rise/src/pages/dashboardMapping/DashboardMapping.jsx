@@ -106,8 +106,9 @@ const DashboardMapping = () => {
                 beforeDate: dataFiltro ? dataFiltro.split('T')[0] : defaultDate.toISOString().split('T')[0],
             },
         }).then((res) => {
-            console.log('Dados da API:', res.data);
-            organizeMappings(res.data);
+            if (res.data) {
+                organizeMappings(res.data);
+            }
         });
     }, [Authorization]);
 
