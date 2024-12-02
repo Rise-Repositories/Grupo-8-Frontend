@@ -40,7 +40,7 @@ const RecoverPassword = () => {
                     <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
                     </div>
 
-                    <div className={`${styles["right-form"]}`}>
+                    <div className={`${styles["right-form"]} col-12 col-md-6`}>
                         <div className={`${styles["form"]}`}>
                             <div>
                                 <div className={`${styles["form-presentation"]}`}>
