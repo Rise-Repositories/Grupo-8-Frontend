@@ -1,9 +1,11 @@
-.container{
+.container {
+    will-change: transform;
+
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0; /* Mantém a posição lógica no fluxo */
     z-index: 1001;
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -12,8 +14,15 @@
     max-width: 300px;
     padding: 10px 0;
     background: #fff;
-    border-right:  1px solid #2968C8;
+    border-right: 1px solid #2968C8;
+    transform: translateX(-100%);
+    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+
+.container.active {
+    transform: translateX(0);
+}
+
 .column{
     display: flex;
     flex-direction: column;
@@ -38,6 +47,10 @@
     background: none;
     width: 100%;
 }
+.button-navbar:hover{
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease-in;
+    transform: scale(1.1);
+}
 .button-navbar p{
     font-size: 1rem;
     color: #2968C8;
@@ -59,5 +72,9 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 1002
+    z-index: 1002;
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease-in;
+}
+.toggle:hover{
+    transform: scale(1.2);
 }

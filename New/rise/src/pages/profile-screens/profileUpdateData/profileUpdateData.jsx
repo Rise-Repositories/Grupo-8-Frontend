@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validateCEP } from "../../../utils/globals";
 import api from "../../../api";
 import AvatarComponent from "../../../components/dataDisplay/avatar/AvatarComponent";
+import BlueButton from "../../../components/buttons/blueButton/BlueButton";
 
 function ProfileUpdateData() {
   const [name, setName] = useState("");
@@ -88,10 +89,7 @@ function ProfileUpdateData() {
     setStateFunction(value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-
+  const handleSubmit = async () => {
     if (!validateText(name)) {
       toast.error('Nome inválido');
       return;
@@ -101,7 +99,6 @@ function ProfileUpdateData() {
       toast.error('E-mail inválido');
       return;
     }
-
 
     const userDto = {
       name,
@@ -135,8 +132,9 @@ function ProfileUpdateData() {
     }
   };
 
+
   return (
-    <div className={"col-12 col-md-5 mx-md-auto"}>
+    <div className={"col-12 col-md-12 mx-md-auto"}>
       <div className={styles["container"]}>
         <header className={styles["profile-header"]}>
           <button className={styles["back-button"]} onClick={() => window.history.back()}>
@@ -144,48 +142,62 @@ function ProfileUpdateData() {
           </button>
           <h1 className={styles["header-1"]}>Editar Perfil</h1>
         </header>
-        <form onSubmit={handleSubmit}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center'
-            }}
-          >
-            <h3>
-              <AvatarComponent size={150} editable={true}/>
-            </h3>
-          </div>
-          <div className={styles["aux"]}>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Nome Exemplo"} label={"Nome"} value={name} onInput={(e) => handleInputChange(e.target.value, setName)} />
+        <div className={"col-12 col-md-8 mx-md-auto"}>
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <h3>
+                <AvatarComponent size={150} editable={true} />
+              </h3>
             </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"exemplo@gmail.com"} label={"E-mail"} value={email} onInput={(e) => handleInputChange(e.target.value, setEmail)} />
+            <div className="row g-3">
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="Nome Exemplo" label="Nome" value={name} onInput={(e) => handleInputChange(e.target.value, setName)} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="exemplo@gmail.com" label="E-mail" value={email} onInput={(e) => handleInputChange(e.target.value, setEmail)} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="Digite seu CPF" label="CPF" value={cpf} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={handleCPFBlur} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="Digite seu CEP" label="CEP" value={cep} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder={cidade || "Cidade"} label="Cidade" value={cidade} disabled={true} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder={estado || "Estado"} label="Estado" value={estado} disabled={true} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder={logradouro || "Logradouro"} label="Logradouro" value={logradouro} disabled={true} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="000" label="Número" value={numeroEstabelecimento} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
+              </div>
+              <div className="col-12 col-md-4">
+                <LabelInput placeholder="Apto 00" label="Complemento" value={complemento} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
+              </div>
+              <div className="col-12">
+                <hr style={{ borderTop: '2px solid #A9A9A9' }} />
+              </div>
+              <div className="col-12 col-md-12  d-flex justify-content-end">
+                <BlueButton
+                  className={styles["update-button"]}
+                  txt={"Atualizar"}
+                  onclick={handleSubmit}
+                />
+              </div>
             </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Digite seu CPF"} label={"CPF"} value={cpf} onInput={(e) => handleInputChange(e.target.value.substring(0, 14), setCpf)} mask="999.999.999-99" onBlur={handleCPFBlur} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Digite seu CEP"} label={"CEP"} value={cep} onInput={(e) => handleInputChange(e.target.value.substring(0, 9), setCep)} mask="99999-999" onBlur={(e) => { handleCEPBlur(e); fillAddress(e) }} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={cidade || "Cidade"} label={"Cidade"} value={cidade} disabled={true} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={estado || "Estado"} label={"Estado"} value={estado} disabled={true} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={logradouro || "Logradouro"} label={"Logradouro"} value={logradouro} disabled={true} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"000"} label={"Número"} value={numeroEstabelecimento} onInput={(e) => handleInputChange(e.target.value, setNumeroEstabelecimento)} />
-            </div>
-            <div className={styles["input-group"]}>
-              <LabelInput placeholder={"Apto 00"} label={"Complemento"} value={complemento} onInput={(e) => handleInputChange(e.target.value, setComplemento)} />
-            </div>
-            <button type="submit" className={styles["update-button"]}>Atualizar</button>
-          </div>
-        </form>
+          </form>
+        </div>
+
+
+
       </div>
     </div>
   );

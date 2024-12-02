@@ -117,18 +117,19 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                     <div className={styles["Row-title"]}>
                         <a>Necessidade <span className={styles["Row-subtitle"]}>(Selecione pelo menos uma)</span>:</a>
                     </div>
-                    <div className={styles["Row-checkbox-flex"]}>
+                    <div className={`row col-12`}>
                         {optionsActionTags.map((option) => (
-                            <Checkbox
-                                key={option.value}
-                                label={option.label}
-                                checked={tags.includes(option.value)}
-                                onChange={() => handleTagChange(option.value)}
-                            />
+                            <div className="col-12 col-md-6" key={option.value}>
+                                <Checkbox
+                                    label={option.label}
+                                    checked={tags.includes(option.value)}
+                                    onChange={() => handleTagChange(option.value)}
+                                />
+                            </div>
                         ))}
                     </div>
                     <div>
-                        <p className={styles["textarea-label"]}>Descriçao</p>
+                        <p className={styles["textarea-label"]}>Descrição</p>
                         <textarea onInput={(e) => setDescription(e.target.value)} className={styles["textarea"]} placeholder="Observações"></textarea>
                     </div>
                 </form>

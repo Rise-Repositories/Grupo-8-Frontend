@@ -58,6 +58,9 @@
 .low-form {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     gap: 20px;
+}
+
+.forgot-password-link {
+    color: var(--bs-body-color);
 }

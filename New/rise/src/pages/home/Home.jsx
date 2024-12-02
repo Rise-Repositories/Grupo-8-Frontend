@@ -1,20 +1,22 @@
 import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet";
 import styles from "./Home.module.css";
 import { useEffect, useRef, useState } from "react";
-import { FaSearch, FaMapPin } from "react-icons/fa";
 import NewMarkerModal from "../../components/modals/newMarkerModal/NewMarkerModal";
 import ExistingMarkerModal from "../../components/modals/existingMarkerModal/ExistingMarkerModal";
 import axios from "axios";
 import { toast } from "react-toastify";
 import NavbarMobile from "../../components/navbar/navbarMobile/NavbarMobile";
 
-import StandartInput from "../../components/inputs/standardInput/StandardInput";
 import api from "../../api";
 import L, { Icon } from "leaflet";
 
 import MarkerIcon from "../../utils/imgs/marker.png";
 import PinInfosModal from "../../components/modals/pinInfosModal/pinInfosModal";
 import Person from "../../utils/imgs/person.png";
+import LabelInput from "../../components/inputs/labelInput/LabelInput";
+import { EnvironmentOutlined, LoadingOutlined, SearchOutlined } from "@ant-design/icons";
+import RedButton from "../../components/buttons/redButton/RedButton";
+
 
 const Home = () => {
     const [markers, setMarkers] = useState([])
@@ -22,23 +24,25 @@ const Home = () => {
     const [currentPosition, setCurrentPosition] = useState();
     const [geolocation, setGeolocation] = useState();
     const [search, setSearch] = useState();
-    const [serachResults, setSearchResults] = useState();
+    const [searchResults, setSearchResults] = useState();
     const [openNewMapping, setOpenNewMapping] = useState(false);
     const [openExistingMapping, setOpenExistingMapping] = useState(false);
     const [infos, setInfos] = useState()
+    const [isLoading, setIsLoading] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
+
     const mapRef = useRef();
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                if(position.coords){
-                    // setCurrentPosition([-23.52343833033088, -46.52506611668173])
+                if (position.coords) {
                     setCurrentPosition([position.coords.latitude, position.coords.longitude]);
                     setGeolocation([position.coords.latitude, position.coords.longitude]);
                     getMarkers(position.coords.latitude, position.coords.longitude)
-                    
+
                 }
-                else{
+                else {
                     setCurrentPosition([-23.557868, -46.661664]);
                     setGeolocation([-23.557868, -46.661664]);
                     getMarkers(-23.557868, -46.661664);
@@ -46,85 +50,95 @@ const Home = () => {
             },
             (error) => console.log(error)
         )
-    },[])
+    },)
 
     const getMarkers = async (lat, lng) => {
-        try{
-            const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        try {
+            const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
 
-            const {data, status} = await api.get(`/mapping/user/by-coordinates?coordinates=${coord}&radius=${10}`, {
+            const { data, status } = await api.get(`/mapping/user/by-coordinates?coordinates=${coord}&radius=${10}`, {
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 },
             })
 
-            if(status === 200 || status === 204){
+            if (status === 200 || status === 204) {
                 const setData = new Set([...data, ...markers])
                 const arrayData = Array.from(setData)
                 setMarkers(arrayData)
             }
         }
-        catch(e){
+        catch (e) {
             toast.error("Erro ao buscar os pins")
         }
     }
     const handleSearch = async () => {
-        try{
-            const {data, status} = await axios.get(`https://nominatim.openstreetmap.org/search?q=${search}&format=json&limit=5&addressdetails=1`)
-
-            if(status === 200){
-                const results = data.map((item) => {
-                    return {
-                        lat: item.lat,
-                        lon: item.lon,
-                        display_name: `${item.address.road}, ${item.address.suburb} - ${item.address.postcode}`
-                    }
-                })
-
+        setIsLoading(true);
+        try {
+            const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${search}&format=json&limit=5&addressdetails=1`);
+            if (status === 200) {
+                const results = data.map((item) => ({
+                    lat: item.lat,
+                    lon: item.lon,
+                    display_name: `${item.address.road}, ${item.address.suburb} - ${item.address.postcode}`
+                }));
                 setSearchResults(results);
             }
+        } catch (e) {
+            toast.error("Erro ao buscar endereco");
+        } finally {
+            setIsLoading(false);
         }
-        catch(e){
-            toast.error("Erro ao buscar endereco")
-        }
-    }
+    };
+
+    const handleCloseSearchResults = () => {
+        setIsClosing(true);
+
+        setTimeout(() => {
+            setSearchResults(null);
+            setIsClosing(false); 
+        }, 500); 
+    };
+
+
+
     const handleSelectPlace = (e) => {
         setSearchResults(null);
-        if(mapRef.current){
+        if (mapRef.current) {
             mapRef.current.setView([e.lat, e.lon], 20);
         }
     }
     const EventHandler = () => {
         const map = useMapEvent({
             click: async () => {
-                const {lat, lng} = map.getCenter();
+                const { lat, lng } = map.getCenter();
 
-                const {data, status} = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
+                const { data, status } = await axios.get(`https://nominatim.openstreetmap.org/search?q=${lat},${lng}&format=json&limit=5&addressdetails=1`)
 
-                const {address} = data[0]
+                const { address } = data[0]
 
-                if(address.country !== "Brasil"){
+                if (address.country !== "Brasil") {
                     toast.error("Localização fora do Brasil")
                     return
                 }
 
-                if(status !== 200){
+                if (status !== 200) {
                     toast.error("Erro ao buscar endereco")
                     return
                 }
 
-                checkLocation(lat,lng, address);
+                checkLocation(lat, lng, address);
             },
             moveend: () => {
                 console.log(currentPosition)
-                if(!currentPosition) return
+                if (!currentPosition) return
                 const newPosition = map.getCenter()
-                const distance = map.distance(newPosition,{
+                const distance = map.distance(newPosition, {
                     lat: currentPosition[0],
                     lng: currentPosition[1]
                 })
                 console.log(distance)
-                if(distance > 10000){
+                if (distance > 10000) {
                     setCurrentPosition([newPosition.lat, newPosition.lng])
                     getMarkers(newPosition.lat, newPosition.lng)
                 }
@@ -141,8 +155,8 @@ const Home = () => {
     }
 
     const checkLocation = async (lat, lng, address) => {
-        const coord = lat && lng ?`${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
-        const {data, status} = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
+        const coord = lat && lng ? `${lat},${lng}` : `${currentPosition[0]},${currentPosition[1]}`
+        const { data, status } = await api.get(`/mapping/by-coordinates?coordinates=${coord}&radius=${0.05}`, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
             },
@@ -169,7 +183,7 @@ const Home = () => {
 
     const icon = new Icon({
         iconUrl: MarkerIcon,
-        iconSize: [30,30]
+        iconSize: [30, 30]
     })
 
     const personIcon = new L.Icon({
@@ -182,31 +196,44 @@ const Home = () => {
         <div>
             <NavbarMobile />
             <div className={styles["middle-pin"]}>
-                <FaMapPin size={30} color="#b91c1c"/>
+                <EnvironmentOutlined style={{ fontSize: '30px', color: '#d34c4c' }} />
             </div>
             <div className={styles["search-area"]}>
                 {
-                    serachResults &&
-                    <div className={styles["search-results"]}>
-                        {
-                            serachResults.map((item, index) => {
-                                return (
-                                    <div key={index} className={styles["search-result"]} onClick={() => handleSelectPlace(item)}>
-                                        {item.display_name}
-                                    </div>
-                                )
-                            })
-                        }
-                        <button className={styles["close-button"]} onClick={() => setSearchResults(null)}>Cancelar</button>
-                    </div>
+                    searchResults && (
+                        <div className={`${styles["search-results"]} ${isClosing ? styles.hide : ''}`}>
+                            {searchResults.map((item, index) => (
+                                <div key={index} className={styles["search-result"]} onClick={() => handleSelectPlace(item)}>
+                                    {item.display_name}
+                                </div>
+                            ))}
+                            <div className="col-12 col-md-11">
+                                <RedButton
+                                    className={styles["close-button"]}
+                                    onclick={handleCloseSearchResults}
+                                    txt="Cancelar"
+                                />
+                            </div>
+                        </div>
+                    )
                 }
-                <div className={styles["search-row"]}>
-                    <button className={styles["search-button"]} onClick={() => handleSearch()}>
-                        <FaSearch size={20} color={"#000"} />
-                    </button>
-                    <StandartInput customStyle={styles["search-input"]} placeholder={"Pesquisar"} onInput={(e) => setSearch(e.target.value)}/>
-                    <div clasname></div>
+
+                <div className={`row ${styles["col-md-12 d-flex flex-row"]}`}>
+                    <div className="col-10 col-md-11">
+                        <LabelInput placeholder={"Pesquisar"} onInput={(e) => setSearch(e.target.value)} />
+                    </div>
+                    <div className={`col-2 col-md-1 d-flex align-items-center justify-content-center ${styles["search-box"]}`}>
+                        <button className={styles["search-button"]} onClick={() => handleSearch()}>
+                            {isLoading ? (
+                                <LoadingOutlined style={{ fontSize: '16px', color: '#f5f5f5' }} />
+                            ) : (
+                                <SearchOutlined style={{ fontSize: '16px', color: '#f5f5f5' }} />
+                            )}
+                        </button>
+
+                    </div>
                 </div>
+
             </div>
             {
                 currentPosition && markers ?
@@ -232,22 +259,22 @@ const Home = () => {
                             markers.map((m, index) => (
                                 <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
                                     <Popup className={styles["popup"]}>
-                                        <PinInfosModal pin={m}/>
+                                        <PinInfosModal pin={m} />
                                     </Popup>
                                 </Marker>
                             ))
                         }
                     </MapContainer>
-                : null
+                    : null
             }
             {
                 openNewMapping &&
-                    <NewMarkerModal getMarkers={getMarkers} handleClose={handleModalNewMapping} infos={infos}/>
+                <NewMarkerModal getMarkers={getMarkers} handleClose={handleModalNewMapping} infos={infos} />
 
             }
             {
                 openExistingMapping &&
-                    <ExistingMarkerModal getMarkers={getMarkers} handleClose={handleModalExistingMapping} handleNewMapping={handleModalNewMapping} infos={infos}/>
+                <ExistingMarkerModal getMarkers={getMarkers} handleClose={handleModalExistingMapping} handleNewMapping={handleModalNewMapping} infos={infos} />
 
             }
         </div>

@@ -107,10 +107,6 @@ const Login = () => {
                             <LabelInput placeholder={"Digite sua senha"} label={"Senha"} onInput={(e) => handleInputChange(e, setSenha)} type="password" onKeyPress={(e) => loginOnEnter(e)}/>
 
                             <div className={`${styles['low-form']}`}>
-                                <div className="form-group form-check">
-                                    <input type="checkbox" className="form-check-input" id="lembrarCheck"></input>
-                                    <label className="form-check-label" htmlFor="lembrarCheck">Lembre de mim</label>
-                                </div>
                                 <a href="/recover-password" className="forgot-password-link">Esqueci minha senha</a>
                             </div>
                         </div>
