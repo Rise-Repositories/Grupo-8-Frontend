@@ -38,7 +38,6 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                     };
                 }));
             }).catch(error => {
-                toast.error('Não foi possível buscar os filtros de necessidade.');
             });
     }, [])
 
@@ -77,10 +76,12 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 }
-            })
+            }).carch((err) => {
+                toast.error('Erro ao criar o mapeamento. Tente novamente mais tarde.');
+            });
 
             if (status === 200 || status === 201) {
-                toast.success("Mapeamento criado com sucesso")
+                toast.success('Mapeamento criado com sucesso');
             }
 
             await getMarkers()
@@ -89,8 +90,9 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
         catch (e) {
             if (e.response.status === 400) {
                 toast.error("Preencha corretamente os campos")
+            } else {
+                toast.error("Erro ao criar o mapeamento")
             }
-            toast.error("Erro ao criar o mapeamento")
         }
     }
 

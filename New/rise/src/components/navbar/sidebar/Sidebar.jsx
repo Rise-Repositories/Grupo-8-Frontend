@@ -11,6 +11,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import AvatarComponent from '../../dataDisplay/avatar/AvatarComponent';
+import { toast } from 'react-toastify';
 
 const Sidebar = ({ handleOngId, toggleSidebar }) => {
     const navigate = useNavigate();
@@ -52,6 +53,8 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 }
             } catch (error) {
                 console.error("Erro ao buscar ONGs:", error);
+                toast.error('Houve um erro ao buscar suas ONGs. Tente novamente mais tarde.');
+                navigate('/home');
             }
             try {
                 const token = sessionStorage.getItem('USER_TOKEN');
@@ -64,6 +67,9 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 setUserName(userName);
             } catch (error) {
                 console.error('Erro ao buscar os dados do usuário:', error);
+                toast.error('Ocorreu um erro ao buscar os seus dados. Tente novamente mais tarde.')
+                logout();
+                handleNavigate('/'); 
             }
         };
 
@@ -165,7 +171,7 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
                 </ul>
 
                 <div className={styles["logos"]}>
-                    <img src={riseLogo} alt="Rise Logo" onClick={() => handleNavigate('/user')} />
+                    <img src={riseLogo} alt="Rise Logo" />
                     |
                     <img src={logo} alt="Logo" />
                 </div>

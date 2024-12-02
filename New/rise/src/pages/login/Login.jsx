@@ -46,8 +46,9 @@ const Login = () => {
                 checkOng(token);
             })
             .catch((erroOcorrido) => {
-                console.log(erroOcorrido)
-                toast.error("Email ou senha incorretos")
+                console.log('login', erroOcorrido);
+                const statusCode = erroOcorrido.response.status;
+                toast.error("Email ou senha incorretos");
             })
     }
 

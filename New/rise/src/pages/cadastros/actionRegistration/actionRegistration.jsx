@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select } from 'antd';
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select, ConfigProvider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import 'antd/dist/reset.css';
@@ -143,6 +143,7 @@ const ActionRegistration = () => {
                 },
             }).catch((e) => {
                 console.log(e);
+                toast.warning('Não foi possível atualizar os filtros de necessidade desta ação.')
             })
 
         if (status === 200) {
@@ -434,11 +435,12 @@ const ActionRegistration = () => {
                             Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                         },
                     }).catch((e) => {
-                        console.log(e)
+                        console.log(e);
+                        toast.error('Ocorreu um erro ao cadastrar a ação. Tente novamente mais tarde.')
                     })
 
                 if (status === 201) {
-                    toast.success('Ação Cadastrada e Endereço encontrado!');
+                    toast.success('Ação Cadastrada!');
                     setIdAction(data.id);
                     curActionId = data.id;
                     setStatusAction(data.status);
@@ -446,7 +448,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Erro ao Cadastrar Ação")
+                toast.error("Ocorreu um erro ao cadastrar a ação. Tente novamente mais tarde.")
             }
 
             getMarkers(curActionId);
@@ -661,7 +663,7 @@ const ActionRegistration = () => {
                     setIsRegistered(true);
                     form.resetFields();
                 } else {
-                    toast.error('Erro inesperado ao cadastrar doação')
+                    toast.error('Ocorreu um erro ao cadastrar a doação. Tente novamente mais tarde')
                 }
 
             }
@@ -735,7 +737,7 @@ const ActionRegistration = () => {
             closeModal();
         })
         .catch((err) => {
-            toast.error(err.response.data.message);
+            toast.error('Ocorreu um erro ao atualizar o status da ação. Tente novamente mais tarde.');
         });
     }
 
@@ -912,7 +914,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível carregar as localizações cadastradas")
+                toast.error("Não foi possível carregar as localizações")
                 console.log("error: " + e.message)
             }
         }
@@ -939,7 +941,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível localizar as ações")
+                toast.error("Não foi possível localizar as ações existentes")
                 console.log("error: " + e.message)
             }
         }
@@ -1057,6 +1059,13 @@ const ActionRegistration = () => {
     }
 
     return (
+        <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: 'Montserrat',
+            },
+        }}
+        >
         <>
             <div className={styles.page}>
                 <div className={styles.content}>
@@ -1502,8 +1511,8 @@ const ActionRegistration = () => {
                     <p><strong>Descrição:</strong> {selectedSearchAction?.description}</p>
                 </>
             </Modal>
-
         </>
+        </ConfigProvider>
     );
 };
 
