@@ -9,8 +9,15 @@
   padding: 0;
   overflow: hidden;
   color: #fff;
-  font-family: "Montserrat";
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease-in;
 }
+
+.location-card:hover {
+  transform: scale(1.05);
+}
+
 
 .map-preview {
   flex: 1;

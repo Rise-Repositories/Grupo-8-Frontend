@@ -13,7 +13,6 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState(null);
   const navigate = useNavigate();
-  // Obtenção do token do usuário do sessionStorage
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const UserProfile = () => {
 
         const { data } = response;
         console.log(data);
-        // Processamento dos dados de mapeamento e ações
         const userName = response.data.name;
         setUserName(userName);
         setUserMappings(data.mapping);
@@ -67,19 +65,17 @@ const UserProfile = () => {
   }
 
   const handleViewAction = (mappingId) => {
-    console.log("entrou")
     navigate(`/action-history/${mappingId}`);
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    // Adiciona horas para compensar o fuso horário se necessário
     date.setHours(date.getHours() + (date.getTimezoneOffset() / 60));
     return date.toLocaleDateString("pt-BR");
   };
 
   return (
-    <div className={styles["container"]}>
+    <div className={`col-12 col-md-12 ${styles["container"]}`}>
       <header className={styles["profile-header"]}>
         <button className={styles["back-button"]} onClick={() => window.history.back()}>
           <FontAwesomeIcon icon={faCircleChevronLeft} style={{ color: "#1a3e95" }} />
@@ -87,17 +83,27 @@ const UserProfile = () => {
         <h1 className={styles["header-1"]}>Histórico</h1>
       </header>
 
-      <div className={styles["profile-links"]}>
-        <p className={styles["text"]}>Olá {userName}</p>
+      <div className={`col-12 col-md-3 ${styles["profile-links"]}`}>
+        <p className={styles["text"]}>Olá, {userName}!</p>
         <a className={styles["link"]} onClick={() => navigate("/updateData")} style={{ cursor: 'pointer' }}> Editar Perfil</a>
         <a className={styles["link"]} onClick={() => navigate("/updatePassword")} style={{ cursor: 'pointer' }}> Alterar Senha</a>
       </div> <br /><br /><br />
 
       <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />
 
-      {userMappings.map((i) =>
-        <CardLocate address={i.address.street} date={formatDate(i.date)} onClick={() => handleViewAction(i.id)}/>
-      )}
+      <div className={`row g-3 ${styles["cards-container"]}`}>
+        {userMappings.map((i, index) => (
+          <div key={index} className="col-12 col-md-4">
+            <CardLocate
+              address={i.address.street}
+              date={formatDate(i.date)}
+              onClick={() => handleViewAction(i.id)}
+            />
+          </div>
+        ))}
+      </div>
+
+
     </div>
   );
 };
