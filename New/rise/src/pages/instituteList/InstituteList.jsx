@@ -14,7 +14,7 @@ import Stack from "../../utils/stack"
 import { AuthContext } from "../login/AuthContext";
 import { OngContext } from "../../components/context/ongContext/OngContext";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from 'react-toastify';
 
 const InstituteList = () => {
 
@@ -50,6 +50,7 @@ const InstituteList = () => {
             })
             .catch((error) => {
                 console.error('Erro ao buscar dados:', error);
+                toast.error('Ocorreu um erro ao buscar a lista de ONGs. Tente novamente mais tarde.');
             });
     }, []);
 
@@ -74,6 +75,7 @@ const InstituteList = () => {
             })
             .catch((error) => {
                 console.error('Erro ao atualizar status:', error);
+                toast.error('Ocorreu um erro ao atualizar o status da ONG. Tente novamente mais tarde.');
             });
     };
 

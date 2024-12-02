@@ -106,8 +106,9 @@ const DashboardMapping = () => {
                 beforeDate: dataFiltro ? dataFiltro.split('T')[0] : defaultDate.toISOString().split('T')[0],
             },
         }).then((res) => {
-            console.log('Dados da API:', res.data);
-            organizeMappings(res.data);
+            if (res.data) {
+                organizeMappings(res.data);
+            }
         });
     }, [Authorization]);
 
@@ -160,7 +161,7 @@ const DashboardMapping = () => {
                                 </div>
                                 <div className={`${styles["top-filters"]}`}>
                                     <span>Locais sem atendimento desde:</span>
-                                    <CalendarFilter dataFiltro={formatarData(dataFiltro)} setDataFiltro={setDataFiltro} />
+                                    <CalendarFilter dataFiltro={dataFiltro} setDataFiltro={setDataFiltro} />
                                     <div className={`${styles["button-container"]}`}>
                                         <BlueButton txt={"Importar dados"} onclick={showModal} />
                                         <BlueButton txt={"Exportar dados"} onclick={handleExport} />

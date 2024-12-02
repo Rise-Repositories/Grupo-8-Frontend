@@ -74,7 +74,7 @@ const Heatmap = ({semAtendimentoDesde, actionTagIds}) => {
             setPontosMapaCalor(res.data);
 
         }).catch((err) => {
-            toast.error('Erro ao carregar dados do mapa de calor');
+            toast.error('Erro ao carregar dados do mapa de calor. Tente novamente mais tarde.');
         });
     }, [semAtendimentoDesde, actionTagIds]);
 
