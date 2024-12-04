@@ -97,9 +97,9 @@ const Sidebar = ({ handleOngId, toggleSidebar }) => {
         <>
             <div className={styles.content}>
                 <div className={styles.upPart}>
-                    <h3>
+                    {/* <h3>
                         <AvatarComponent size={100} editable={true}/>
-                    </h3>
+                    </h3> */}
                     <div className={styles.instituteName}>
                         {userName}
                     </div>

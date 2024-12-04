@@ -414,7 +414,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-12 mt-2 mt-md-0 ${styles["date-form"]}`}>
                                     <div className={styles["button-header"]}>
-                                        <h6>Exportar Dados em:</h6>
+                                        {/* <h6>Exportar Dados em:</h6> */}
                                         <ConfigProvider
                                             theme={{
                                                 token: {
@@ -425,10 +425,10 @@ const Dashboard = () => {
                                             }}
                                         >
                                             <Button.Group>
-                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("CSV")}>CSV</Button>
-                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("JSON")}>JSON</Button>
+                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("CSV")}>Exportar Dados em CSV</Button>
+                                                {/* <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("JSON")}>JSON</Button>
                                                 <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("Parquet")}>Parquet</Button>
-                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("XML")}>XML</Button>
+                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("XML")}>XML</Button> */}
                                             </Button.Group>
                                         </ConfigProvider>
                                         {exporting && <Spin style={{ marginLeft: "8px" }} />}

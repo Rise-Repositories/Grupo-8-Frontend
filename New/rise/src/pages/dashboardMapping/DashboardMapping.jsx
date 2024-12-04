@@ -162,10 +162,10 @@ const DashboardMapping = () => {
                                 <div className={`${styles["top-filters"]}`}>
                                     <span>Locais sem atendimento desde:</span>
                                     <CalendarFilter dataFiltro={dataFiltro} setDataFiltro={setDataFiltro} />
-                                    <div className={`${styles["button-container"]}`}>
+                                    {/* <div className={`${styles["button-container"]}`}>
                                         <BlueButton txt={"Importar dados"} onclick={showModal} />
                                         <BlueButton txt={"Exportar dados"} onclick={handleExport} />
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div className={`${styles["select-top-filters"]}`}>
                                     <span>Filtrar por necessidade:</span>

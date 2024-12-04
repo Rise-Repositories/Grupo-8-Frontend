@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validateCEP } from "../../../utils/globals";
 import api from "../../../api";
-import AvatarComponent from "../../../components/dataDisplay/avatar/AvatarComponent";
+// import AvatarComponent from "../../../components/dataDisplay/avatar/AvatarComponent";
 import BlueButton from "../../../components/buttons/blueButton/BlueButton";
 
 function ProfileUpdateData() {
@@ -150,9 +150,9 @@ function ProfileUpdateData() {
                 justifyContent: 'center'
               }}
             >
-              <h3>
+              {/* <h3>
                 <AvatarComponent size={150} editable={true} />
-              </h3>
+              </h3> */}
             </div>
             <div className="row g-3">
               <div className="col-12 col-md-4">

@@ -76,7 +76,7 @@ const NewMarkerModal = ({ handleClose, getMarkers, infos }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                 }
-            }).carch((err) => {
+            }).catch((err) => {
                 toast.error('Erro ao criar o mapeamento. Tente novamente mais tarde.');
             });
 
