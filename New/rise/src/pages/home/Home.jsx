@@ -236,11 +236,10 @@ const Home = () => {
 
             </div>
             {
-                currentPosition && markers ?
                     <MapContainer
                         zoomControl={false}
                         ref={mapRef}
-                        center={currentPosition}
+                        center={currentPosition || [-23.5581592, -46.6614485]}
                         zoom={20}
                         scrollWheelZoom={true}
                         className={styles.map}
@@ -255,7 +254,7 @@ const Home = () => {
                                 <Popup>Você está aqui</Popup>
                             </Marker>
                         )}
-                        {
+                        { markers && 
                             markers.map((m, index) => (
                                 <Marker key={index} icon={icon} position={[m.latitude, m.longitude]}>
                                     <Popup className={styles["popup"]}>
@@ -265,7 +264,6 @@ const Home = () => {
                             ))
                         }
                     </MapContainer>
-                    : null
             }
             {
                 openNewMapping &&
