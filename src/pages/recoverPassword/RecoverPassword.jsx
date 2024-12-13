@@ -9,8 +9,6 @@ import api from "../../api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-
 
 const RecoverPassword = () => {
     const [email, setEmail] = useState("")

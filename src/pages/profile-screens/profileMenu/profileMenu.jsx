@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './ProfileMenu.module.css';
 import CardLocate from '../../../components/cards/cardLocate/CardLocate';
 import api from '../../../api';
 import { useNavigate } from 'react-router-dom';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { Modal } from "antd";
+import BlueButton from '../../../components/buttons/blueButton/BlueButton';
+import RedButton from '../../../components/buttons/redButton/RedButton';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../../../pages/login/AuthContext';
 
 const UserProfile = () => {
   const [userMappings, setUserMappings] = useState([]);
+  const { logout } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const navigate = useNavigate();
   const userToken = sessionStorage.getItem('USER_TOKEN');
 
@@ -42,6 +49,7 @@ const UserProfile = () => {
         console.log(data);
         const userName = response.data.name;
         setUserName(userName);
+        setUserId(response.data.id);
         setUserMappings(data.mapping);
         setLoading(false);
       } catch (error) {
@@ -74,6 +82,30 @@ const UserProfile = () => {
     return date.toLocaleDateString("pt-BR");
   };
 
+  const closeDelete = () => {
+    setIsDeleteOpen(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const headers = {
+        'Authorization': `Bearer ${userToken}`
+      }
+      const {data, status} = await api.delete(`/user/${userId}`, { headers });
+
+      if (status === 204) {
+        setIsDeleteOpen(false);
+        toast.success('Conta apagada com sucesso.');
+        logout();
+        navigate('/');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao apagar a conta, tente novamente mais tarde.');
+      setIsDeleteOpen(false);
+    }
+  };
+
   return (
     <div className={`col-12 col-md-12 ${styles["container"]}`}>
       <header className={styles["profile-header"]}>
@@ -87,6 +119,7 @@ const UserProfile = () => {
         <p className={styles["text"]}>Olá, {userName}!</p>
         <a className={styles["link"]} onClick={() => navigate("/updateData")} style={{ cursor: 'pointer' }}> Editar Perfil</a>
         <a className={styles["link"]} onClick={() => navigate("/updatePassword")} style={{ cursor: 'pointer' }}> Alterar Senha</a>
+        <a className={styles["link-delete"]} onClick={() => setIsDeleteOpen(true)} style={{ cursor: 'pointer' }}> Apagar Conta</a>
       </div> <br /><br /><br />
 
       <h2 className={styles["header-2"]}>Localizações Cadastradas:</h2> <br /><br />
@@ -103,7 +136,18 @@ const UserProfile = () => {
         ))}
       </div>
 
-
+      <Modal
+          open={isDeleteOpen}
+          onCancel={() => closeDelete()}
+          footer={null}
+          centered>
+          <p className={styles["profile-delete"]}>
+            Esta operação não pode ser desfeita.
+            Deseja realmente apagar sua conta?
+            <span className={styles["profile-delete-button"]}><BlueButton txt={"Cancelar"} onclick={closeDelete} /></span>
+            <span className={styles["profile-delete-button"]}><RedButton txt={"Apagar"} onclick={handleDelete} /></span>
+          </p>
+      </Modal>
     </div>
   );
 };

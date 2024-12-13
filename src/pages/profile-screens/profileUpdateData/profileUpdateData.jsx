@@ -6,7 +6,6 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import { toast } from "react-toastify";
 import { validateText, validateCPF, validateEmail, validateCEP } from "../../../utils/globals";
 import api from "../../../api";
-// import AvatarComponent from "../../../components/dataDisplay/avatar/AvatarComponent";
 import BlueButton from "../../../components/buttons/blueButton/BlueButton";
 
 function ProfileUpdateData() {

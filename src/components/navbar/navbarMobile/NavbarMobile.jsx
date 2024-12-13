@@ -1,4 +1,4 @@
-import { FaSignOutAlt, FaHeart, FaChartBar, FaBars } from 'react-icons/fa';
+import { FaSignOutAlt, FaHeart, FaChartBar, FaBars, FaUser } from 'react-icons/fa';
 import style from './NavbarMobile.module.css';
 import logo from '../../../utils/imgs/logo.png';    
 import riselogo from '../../../utils/imgs/rise-logo.png';
@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { OngContext } from '../../context/ongContext/OngContext';
 import AvatarComponent from '../../dataDisplay/avatar/AvatarComponent';
+import { AuthContext } from '../../../pages/login/AuthContext';
 
 const NavbarMobile = () => {
+    const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const { ongList } = useContext(OngContext);
 
@@ -28,11 +30,12 @@ const NavbarMobile = () => {
                 <FaBars size={25} color="#2968C8" />
             </button>
             <div className={style.container}>
-                <div className={`${style.row} ${style["justify-end"]}`} onClick={() => handleNavigate('/user')}>
-                    <AvatarComponent size={30} editable={false} />
-                </div>
                 <div className={style.column}>
-                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/')}>
+                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/user')}>
+                        <FaUser size={25} color="#2968C8" />
+                        <p>Perfil</p>
+                    </button>
+                    <button className={style["button-navbar"]} onClick={() =>{ logout(); handleNavigate('/') }}>
                         <FaHeart size={25} color="#2968C8" />
                         <p>Acesso Institucional</p>
                     </button>
@@ -42,7 +45,7 @@ const NavbarMobile = () => {
                             <p>Dashboard</p>
                         </button>
                     )}
-                    <button className={style["button-navbar"]} onClick={() => handleNavigate('/')}>
+                    <button className={style["button-navbar"]} onClick={() =>{ logout(); handleNavigate('/') }}>
                         <FaSignOutAlt size={25} color="#2968C8" />
                         <p>Sair</p>
                     </button>

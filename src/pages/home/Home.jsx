@@ -50,7 +50,7 @@ const Home = () => {
             },
             (error) => console.log(error)
         )
-    },)
+    },[])
 
     const getMarkers = async (lat, lng) => {
         try {

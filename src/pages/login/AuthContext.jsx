@@ -1,9 +1,11 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../../api';
+import { OngContext } from '../../components/context/ongContext/OngContext';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const { setOngList, setCurOngId, setUserRole } = useContext(OngContext);
     const [authToken, setAuthToken] = useState(null);
 
     useEffect(() => {
@@ -29,6 +31,9 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setAuthToken(null);
+        setOngList(null);
+        setCurOngId(0);
+        setUserRole(null);
         sessionStorage.removeItem('USER_TOKEN');
     };
 

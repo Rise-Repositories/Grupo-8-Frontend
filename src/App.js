@@ -11,12 +11,12 @@ import { OngProvider } from './components/context/ongContext/OngContext';
 function App() {
   return (
     <React.StrictMode>
-      <AuthProvider>
-        <OngProvider>
-          <Rotas />
-          <ToastContainer />
-        </OngProvider>
-      </AuthProvider>
+      <OngProvider>
+        <AuthProvider>
+            <Rotas />
+            <ToastContainer />
+        </AuthProvider>
+      </OngProvider>
     </React.StrictMode>
   );
 }
