@@ -3,11 +3,9 @@
 .custom-font {
     font-family: "Montserrat" !important;
 }
+
 .page {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    font-family: "Montserrat" !important;
+    font-family: "Montserrat";
 }
 
 .page-name a {
@@ -16,7 +14,7 @@
 }
 
 .content {
-    height: 100vh;
+    height: 100%;
     background-color: #EFF2F4;
     display: flex;
     justify-content: center;
@@ -24,12 +22,13 @@
 }
 
 .container {
+    margin-top: 10px;
     width: 95%;
     height: 95%;
 
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 32px;
 }
 
 .top-info {
@@ -50,21 +49,44 @@
 
 .default-box {
     background-color: #fff;
-    height: fit-content;
-
-    padding-top: 35px;
-    padding-bottom: 35px;
-    padding-left: 25px;
-    padding-right: 25px;
+    padding: 25px;
     border-radius: 20px;
 
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 20px;
 
-    -webkit-box-shadow: 0px 0px 90px -20px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 0px 90px -20px rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 0px 40px -30px rgba(0, 0, 0, 0.5)
+    box-shadow: 0px 0px 40px -30px rgba(0, 0, 0, 0.5);
+    animation: fadeIn ease forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.default-box:nth-child(1) {
+    animation-duration: 1s; 
+}
+
+.default-box:nth-child(2) {
+    animation-duration: 1.5s; 
+}
+
+.default-box:nth-child(3) {
+    animation-duration: 2s; 
+}
+
+.default-box:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .table {

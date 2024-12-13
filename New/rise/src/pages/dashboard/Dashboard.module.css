@@ -26,6 +26,7 @@
 }
 
 .container {
+    margin-top: 10px;
     width: 95%;
     height: 95%;
 
@@ -52,20 +53,44 @@
 
 .default-box {
     background-color: #fff;
-
-    padding-top: 35px;
-    padding-bottom: 35px;
-    padding-left: 25px;
-    padding-right: 25px;
+    padding: 25px;
     border-radius: 20px;
 
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 20px;
 
-    -webkit-box-shadow: 0px 0px 90px -20px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 0px 90px -20px rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 0px 40px -30px rgba(0, 0, 0, 0.5)
+    box-shadow: 0px 0px 40px -30px rgba(0, 0, 0, 0.5);
+    animation: fadeIn ease forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.default-box:nth-child(1) {
+    animation-duration: 1s; 
+}
+
+.default-box:nth-child(2) {
+    animation-duration: 1.5s; 
+}
+
+.default-box:nth-child(3) {
+    animation-duration: 2s; 
+}
+
+.default-box:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .table {
@@ -78,7 +103,7 @@
 }
 
 .default-list-line {
-    border-bottom: 1px solid #2968C8;
+    border-bottom: 1px solid var(--bs-body-color);;
 }
 
 .td-buttons {
@@ -129,26 +154,78 @@
     gap: 8px;
 }
 
+.kpi-container-2 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
 @media (min-width: 992px) { 
     .kpi-container {
         display: flex;
         flex-direction: column;
         align-items: start;
     }
-}
-
-
-.standardKPI {
-    border-radius: 15px;
-    background-color: #E9F5FE;
-    padding: 20px;
+    .kpi-container-2 {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
 }
 
 .standardKPIDark {
     border-radius: 15px;
-    background-color: #497BC6;
+    background-color: var(--bs-body-color);
+    color: #FFFF; 
     padding: 20px;
-    color: #FFFF;
+    background: linear-gradient(to right, #497BC6 50%, #E9F5FE 50%);
+    background-size: 200% 100%;
+    background-position: 0 0;
+    background-clip: padding-box;
+    
+    transition: 
+        background-position 0.3s ease-in-out, 
+        color 0.3s ease-in-out, 
+        transform 0.3s ease-in-out, 
+        box-shadow 0.3s ease-in-out;
+}
+
+.standardKPIDark:hover {
+    background-position: -100% 0;
+    color: var(--bs-body-color);
+    transform: scale(1.05); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+}
+
+.iconKPI {
+    color: inherit; 
+    transition: color 0.3s ease-in-out;
+}
+
+.standardKPI {
+    border-radius: 15px;
+    background-color: #E9F5FE; 
+    color: var(--bs-body-color);
+    padding: 20px;
+    background: linear-gradient(to left, #497BC6 50%, #E9F5FE 50%);
+    background-size: 200% 100%;
+    background-position: 0 0;
+    background-clip: padding-box;
+
+    transition: 
+        background-position 0.3s ease-in-out, 
+        color 0.3s ease-in-out, 
+        transform 0.3s ease-in-out, 
+        box-shadow 0.3s ease-in-out;
+
+}
+
+.standardKPI:hover {
+    background-position: -100% 0;
+    color: #FFFFFF; 
+    transform: scale(1.05); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
 }
 
 .valueKpiPercent {
@@ -173,6 +250,10 @@
     gap: 40px;
 }
 
+.select-top-filters{
+    margin-top:8px;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -181,3 +262,39 @@
     gap: 50px;
   }
   
+.date-form {
+    border-radius: 15px;
+    background-color: #E9F5FE; 
+    color: var(--bs-body-color);
+    padding: 15px;
+}
+
+.date-filters-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 5px;
+}
+
+.export-form {
+    border-radius: 15px;
+    background-color: #497BC6; 
+    color: #FFFF;
+    padding: 15px;
+}
+
+.users-kpi {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.one.two-margin {
+    margin: 1.2%;
+}

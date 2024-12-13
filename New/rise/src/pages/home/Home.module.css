@@ -1,4 +1,35 @@
-.map{
+@keyframes slideIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+
+.map {
     height: 100vh;
     width: 100vw;
 }
@@ -16,54 +47,61 @@
     max-width: 500px;
 }
 
-.search-input{
+.search-input {
     background: #fff;
 }
 
-.search-button{
+.search-button {
     background: none;
     border: none;
     cursor: pointer;
 }
 
-.search-results{
+.search-results {
     display: flex;
     flex-direction: column;
     gap: 5px;
     background: #fff;
     padding: 10px 0;
-    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #2968C8;
     justify-content: center;
-    align-items: center ;
+    align-items: center;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    animation: slideIn 0.5s ease-out forwards;
 }
 
-.search-result{
+.search-results.hide {
+    animation: slideOut 0.5s ease-in forwards;
+    pointer-events: none;
+}
+
+.search-result {
     width: 100%;
     padding: 5px 10px;
     cursor: pointer;
 }
-.search-result:hover{
-    background: rgb(235, 235, 235); 
+
+.search-result:hover {
+    background: rgb(235, 235, 235);
 }
 
-.search-row{
+.search-row {
     display: flex;
     align-items: center;
 }
 
-.close-button{
+.close-button {
     background: #b91c1c;
     width: calc(100% - 10px);
-    border-radius: 5px; 
-    padding: 2px;   
+    border-radius: 5px;
+    padding: 2px;
     color: white;
     border: none;
     cursor: pointer;
 }
 
-.middle-pin{
+.middle-pin {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -71,6 +109,19 @@
     z-index: 1000;
 }
 
-.popup{
+.popup {
     min-width: 200px;
 }
+
+.search-box {
+    background-color: #2968C8;
+    border-color: #2968C8 !important;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease-in;
+}
+
+.search-box:hover {
+    transform: scale(1.2);
+}
+

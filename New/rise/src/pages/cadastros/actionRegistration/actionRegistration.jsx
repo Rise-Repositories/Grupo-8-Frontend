@@ -6,7 +6,7 @@ import LabelInput from "../../../components/inputs/labelInput/LabelInput";
 import BlueButton from '../../../components/buttons/blueButton/BlueButton';
 import WhiteButton from '../../../components/buttons/whiteButton/WhiteButton';
 import StandardInput from '../../../components/inputs/standardInput/StandardInput';
-import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber } from 'antd';
+import { Table, Modal, Input, Space, Button, Form, Checkbox, InputNumber, Select, ConfigProvider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import 'antd/dist/reset.css';
@@ -51,6 +51,7 @@ const ActionRegistration = () => {
     const [isRegistered, setIsRegistered] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [locationData, setLocationData] = useState([]);
+    const [filteredLocationData, setFilteredLocationData] = useState([]);
     const [idAction, setIdAction] = useState(state ? state.actionId : null);
     const [statusAction, setStatusAction] = useState(state ? state.status : null);
     const { curOngId } = useContext(OngContext);
@@ -80,6 +81,14 @@ const ActionRegistration = () => {
     const [isSearchActionModalVisible, setIsSearchActionModalVisible] = useState(false);
     const [selectedSearchMarker, setSelectedSearchMarker] = useState(null);
     const [selectedSearchAction, setSelectedSearchAction] = useState(null);
+    const [optionsActionTags, setOptionsActionsTags] = useState([
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ]);
+
+    const[actionTagIds, setActionTagIds] = useState(state ? state.tags.map(tag => {return tag.id}) : []);
 
     const handleCloseSearchMarkerModal = () => {
         setSelectedSearchMarker(null);
@@ -113,12 +122,59 @@ const ActionRegistration = () => {
         setSearchText(selectedKeys[0]);
         confirm();
         setSearchedColumn(dataIndex);
-
     };
 
     const handleReset = (clearFilters) => {
         clearFilters();
         setSearchText('');
+    };
+
+    const handleChangeActionTags = (values) => {
+        setActionTagIds(values);
+    }
+
+    const handlePatchActionTags = async (values) => {
+        setActionTagIds(values);
+        const { data, status } = await api.patch(`/actions/${idAction}/tags`,
+            values,
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).catch((e) => {
+                console.log(e);
+                toast.warning('Não foi possível atualizar os filtros de necessidade desta ação.')
+            })
+
+        if (status === 200) {
+            setFilteredLocationData(filterLocationDataArray(locationData, values));
+        }
+    }
+
+    const filterSearchMarker = (marker) => {
+        if (actionTagIds.length === 0) {
+            return true;
+        } else {
+            return marker.tags.filter(mt => actionTagIds.includes(mt.id)).length > 0;
+        }
+    };
+
+    const filterLocationData = (loc) => {
+        if (loc.alreadyDonated || actionTagIds.length === 0) {
+            return true;
+        } else {
+            return loc.tags.filter(mt => actionTagIds.includes(mt.id)).length > 0;
+        }
+    };
+
+    const filterLocationDataArray = (locArray, values) => {
+        return locArray.filter(loc => {
+            if (loc.alreadyDonated || values.length === 0) {
+                return true;
+            } else {
+                return loc.tags.filter(mt => values.includes(mt.id)).length > 0;
+            }
+        });
     };
 
     const handleGetLocation = () => {
@@ -371,19 +427,20 @@ const ActionRegistration = () => {
                     name: action.nome,
                     description: action.descricao,
                     dateTimeStart: action.dataInicio,
-                    dateTimeEnd: action.dataFim
-
+                    dateTimeEnd: action.dataFim,
+                    tags: actionTagIds
                 },
                     {
                         headers: {
                             Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
                         },
                     }).catch((e) => {
-                        console.log(e)
+                        console.log(e);
+                        toast.error('Ocorreu um erro ao cadastrar a ação. Tente novamente mais tarde.')
                     })
 
                 if (status === 201) {
-                    toast.success('Ação Cadastrada e Endereço encontrado!');
+                    toast.success('Ação Cadastrada!');
                     setIdAction(data.id);
                     curActionId = data.id;
                     setStatusAction(data.status);
@@ -391,7 +448,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Erro ao Cadastrar Ação")
+                toast.error("Ocorreu um erro ao cadastrar a ação. Tente novamente mais tarde.")
             }
 
             getMarkers(curActionId);
@@ -591,7 +648,7 @@ const ActionRegistration = () => {
                     })
 
                 if (status === 201 || status === 200) {
-                    setLocationData(locationData.map((ld) => {
+                    let newLocationData = locationData.map((ld) => {
                         if (ld.id === selectedRecord.id) {
                             ld.alreadyDonated = true;
                             ld.icon = new L.Icon({
@@ -600,11 +657,13 @@ const ActionRegistration = () => {
                             });
                         }
                         return ld;
-                    }))
+                    })
+                    setLocationData(newLocationData);
+                    setFilteredLocationData(filterLocationDataArray(newLocationData, actionTagIds));
                     setIsRegistered(true);
                     form.resetFields();
                 } else {
-                    toast.error('Erro inesperado ao cadastrar doação')
+                    toast.error('Ocorreu um erro ao cadastrar a doação. Tente novamente mais tarde')
                 }
 
             }
@@ -678,7 +737,7 @@ const ActionRegistration = () => {
             closeModal();
         })
         .catch((err) => {
-            toast.error(err.response.data.message);
+            toast.error('Ocorreu um erro ao atualizar o status da ação. Tente novamente mais tarde.');
         });
     }
 
@@ -699,7 +758,7 @@ const ActionRegistration = () => {
             </Form.Item>
 
             <Form.Item
-                label="Descrição (O que foi doado, sugestão de doações para próxima ação)"
+                label="Descrição (Descreva o que foi doado, sugestão de doações para próxima ação)"
                 name="description"
                 rules={[{ required: true, message: 'Por favor, insira uma descrição!' }]}
             >
@@ -745,7 +804,7 @@ const ActionRegistration = () => {
                     const setData = new Set([...data]);
                     const arrayData = Array.from(setData);
 
-                    setLocationData(arrayData.map(marker => {
+                    let newLocationData = arrayData.map(marker => {
 
                         const lastAction = Array.isArray(marker.mappingActions) && marker.mappingActions.length > 0
                             ? marker.mappingActions.at(-1)?.action?.datetimeEnd
@@ -782,9 +841,13 @@ const ActionRegistration = () => {
                             descricao: marker.description,
                             marker: marker,
                             icon: icon,
-                            alreadyDonated: alreadyDonated
+                            alreadyDonated: alreadyDonated,
+                            tags: marker.tags
                         };
-                    }));
+                    })
+
+                    setLocationData(newLocationData);
+                    setFilteredLocationData(filterLocationDataArray(newLocationData, actionTagIds));
 
                     setMarkersLoaded(true);
                 }
@@ -851,7 +914,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível carregar as localizações cadastradas")
+                toast.error("Não foi possível carregar as localizações")
                 console.log("error: " + e.message)
             }
         }
@@ -878,7 +941,7 @@ const ActionRegistration = () => {
                 }
             }
             catch (e) {
-                toast.error("Não foi possível localizar as ações")
+                toast.error("Não foi possível localizar as ações existentes")
                 console.log("error: " + e.message)
             }
         }
@@ -904,6 +967,23 @@ const ActionRegistration = () => {
     };
 
     useEffect(() => {
+
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -979,9 +1059,16 @@ const ActionRegistration = () => {
     }
 
     return (
+        <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: 'Montserrat',
+            },
+        }}
+        >
         <>
             <div className={styles.page}>
-                <div className={`col-md-12 ${styles["content"]}`}>
+                <div className={styles.content}>
                     <div className={styles.container}>
                         <div className={styles["top-info"]}>
                             <div className={`mx-auto mx-md-0 ${styles["page-name"]}`}>
@@ -1066,15 +1153,31 @@ const ActionRegistration = () => {
                                     <div className='col-md-11'>
                                         <LabelInput label={"Nome da Ação:"} placeholder={"Digite o nome"} value={action.nome} onChange={(e) => setAction({ ...action, nome: e.target.value })} />
                                     </div>
-                                    <div className='col-md-11'>
+                                    <div className='col-md-12'>
                                         <LabelInput label={"Descrição:"} placeholder={"Digite a descrição"} value={action.descricao} onChange={(e) => setAction({ ...action, descricao: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className={`col-md-12 d-flex flex-column ${styles["input-group"]}`}>
+                                    <label className='col-md-12'>
+                                        Itens que serão doados:
+                                    </label>
+                                    <div className='col-md-12'>
+                                        <Select
+                                            mode="multiple"
+                                            allowClear
+                                            style={{ width: '100%' }}
+                                            defaultValue={[]}
+                                            value={actionTagIds}
+                                            onChange={handleChangeActionTags}
+                                            options={optionsActionTags}
+                                            />
                                     </div>
                                 </div>
                                 <div className={`col-md-12 ${styles["input-group"]}`}>
                                     <div className='col-md-11'>
                                         <LabelInput label={"Data Início:"} placeholder={"Digite a Data Início"} value={action.dataInicio} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataInicio: e.target.value })} />
                                     </div>
-                                    <div className='col-md-11'>
+                                    <div className='col-md-12'>
                                         <LabelInput label={"Data Fim:"} placeholder={"Digite a Data Fim"} value={action.dataFim} type={'datetime-local'} onChange={(e) => setAction({ ...action, dataFim: e.target.value })} />
                                     </div>
                                 </div>
@@ -1099,6 +1202,18 @@ const ActionRegistration = () => {
                                             </svg>
                                         </a>
                                         <label>Ações pendentes e em progresso</label>
+                                    </div>
+                                    <div className={styles["select-container"]}>
+                                        <label>Filtre os endereços pela necessidade:</label>
+                                            <Select
+                                                mode="multiple"
+                                                allowClear
+                                                style={{ width: '100%' }}
+                                                defaultValue={[]}
+                                                value={actionTagIds}
+                                                onChange={handleChangeActionTags}
+                                                options={optionsActionTags}
+                                                />
                                     </div>
                                 </div>
 
@@ -1126,14 +1241,16 @@ const ActionRegistration = () => {
                                         )}
 
                                         {searchMarkers.map((m, index) => {
-                                            return (
-                                                <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}
+                                            if (filterSearchMarker(m.marker)) {
+                                                return (
+                                                    <Marker key={index} icon={m.icon} position={[m.marker.latitude, m.marker.longitude]}
                                                     eventHandlers={{
                                                         click: (e) => {
                                                             showSearchMarkerModal(m.marker)
                                                         },
                                                     }} />
-                                            );
+                                                );
+                                            }
                                         })}
 
                                         {searchActions.map((m, index) => {
@@ -1177,6 +1294,26 @@ const ActionRegistration = () => {
 
                         {showAddresses && (
                             <div className={`col-md-8 ${styles["default-box-addresses"]}`}>
+                                <div className={styles["select-container"]}>
+                                    <label>
+                                        { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
+                                            <>Itens sendo doados:</>
+                                        }
+                                        { (statusAction !== "PENDING" && statusAction !== "IN_PROGRESS") &&
+                                            <>Itens que foram doados:</>
+                                        }
+                                    </label>
+                                    <Select
+                                        mode="multiple"
+                                        allowClear
+                                        style={{ width: '100%' }}
+                                        defaultValue={[]}
+                                        value={actionTagIds}
+                                        disabled={(statusAction !== "PENDING" && statusAction !== "IN_PROGRESS")}
+                                        onChange={handlePatchActionTags}
+                                        options={optionsActionTags}
+                                        />
+                                </div>
                                 <div className={styles["map-addresses"]}>
                                     <MapContainer center={currentPosition} zoom={13} scrollWheelZoom={true} className={styles["interact-map"]}>
                                         <TileLayer
@@ -1189,14 +1326,16 @@ const ActionRegistration = () => {
                                             </Marker>
                                         )}
                                         {locationData.map((loc, index) => {
-                                            return (
-                                                <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
-                                                    eventHandlers={{
-                                                        click: (e) => {
-                                                            showDetalhes(loc)
-                                                        },
-                                                    }} />
-                                            );
+                                            if (filterLocationData(loc)) {
+                                                return (
+                                                    <Marker key={index} icon={loc.icon} position={[loc.marker.latitude, loc.marker.longitude]} 
+                                                        eventHandlers={{
+                                                            click: (e) => {
+                                                                showDetalhes(loc)
+                                                            },
+                                                        }} />
+                                                );
+                                            }
                                         })}
                                     </MapContainer>
                                     { (statusAction === "PENDING" || statusAction === "IN_PROGRESS") &&
@@ -1224,7 +1363,7 @@ const ActionRegistration = () => {
                                                 ),
                                                 rowExpandable: (record) => record.name === "",
                                             }}
-                                            dataSource={locationData}
+                                            dataSource={filteredLocationData}
                                             scroll={{
                                                 x: 150,
                                             }}
@@ -1274,6 +1413,7 @@ const ActionRegistration = () => {
                         <p><strong>Há pessoas com transtorno:</strong> {selectedRecord?.transtorno}</p>
                         <p><strong>Última ação no local:</strong> {selectedRecord?.date}</p>
                         <p><strong>Descrição:</strong> {selectedRecord?.descricao}</p>
+                        <p><strong>Necessidades:</strong> {selectedRecord?.tags.map(tag => tag.name).join(', ')}</p>
                         {selectedRecord?.alreadyDonated &&
                             <p className={styles["already-donated"]}>Doação já realizada</p>
                         }
@@ -1343,6 +1483,7 @@ const ActionRegistration = () => {
                         ? new Date(selectedSearchMarker?.mappingActions.at(-1).action.datetimeEnd).toLocaleDateString('pt-BR') 
                         : 'Sem Ação'}</p>
                     <p><strong>Descrição:</strong> {selectedSearchMarker?.description}</p>
+                    <p><strong>Necessidades:</strong> {selectedSearchMarker?.tags.map(tag => tag.name).join(', ')}</p>
                 </>
             </Modal>
 
@@ -1370,8 +1511,8 @@ const ActionRegistration = () => {
                     <p><strong>Descrição:</strong> {selectedSearchAction?.description}</p>
                 </>
             </Modal>
-
         </>
+        </ConfigProvider>
     );
 };
 

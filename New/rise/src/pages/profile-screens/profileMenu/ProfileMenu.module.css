@@ -1,8 +1,19 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .container {
-  max-width: 400px;
-  margin: 0 auto;
   padding: 20px;
   background-color: #fff;
+  animation: fadeIn 0.5s ease forwards; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
 
 .profile-header {
@@ -17,7 +28,13 @@
   border: none;
   cursor: pointer;
   color: #1a3e95;
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease-in;
 }
+
+.back-button:hover {
+  transform: scale(1.2);
+}
+
 
 .header-1 {
   flex-grow: 1;
@@ -97,4 +114,18 @@
 
 .link {
   cursor: pointer;
+  display: inline-block; 
+  font-size: 16px; 
+  transition: font-size 0.3s ease-in-out; 
 }
+
+.link:hover {
+  font-size: 18px; 
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+

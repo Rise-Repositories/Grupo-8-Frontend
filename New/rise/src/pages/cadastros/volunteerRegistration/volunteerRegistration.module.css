@@ -64,3 +64,24 @@
     justify-content: space-between;
     gap: 20px;
 }
+
+.checkbox-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    white-space: pre;
+  }
+
+  .modalTermosDeUso{
+    display: flex;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    height: 80vh;
+    overflow: scroll;
+  }
+
+  .termosLink{
+    border: 0;
+    color: blue;
+    background-color: #E9F5FE;
+  }

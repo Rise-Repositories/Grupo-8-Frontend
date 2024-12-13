@@ -3,7 +3,8 @@ import styles from "./Dashboard.module.css";
 import api from "../../api";
 import Modal from 'react-modal';
 import { AuthContext } from "../login/AuthContext";
-import { Button, Spin, ConfigProvider } from "antd";
+import { Button, Spin, ConfigProvider, Select } from "antd";
+import { toast } from "react-toastify";
 import NavbarVertical from "../../components/navbar/navbarVertical/NavbarVertical";
 import Sidebar from "../../components/navbar/sidebar/Sidebar";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
@@ -22,7 +23,7 @@ import { Line } from "react-chartjs-2";
 import CalendarFilter from "../../components/calendarFilter/CalendarFilter";
 import { formatDateTime } from "../../utils/globals";
 
-import { CheckCircleOutlined, CloseCircleOutlined, DatabaseOutlined, UserDeleteOutlined } from "@ant-design/icons"
+import { CheckCircleOutlined, CloseCircleOutlined, DatabaseOutlined, UserDeleteOutlined, UserAddOutlined, CalendarOutlined, RiseOutlined } from "@ant-design/icons"
 
 
 
@@ -37,6 +38,7 @@ const Dashboard = () => {
     const [dataFiltro, setDataFiltro] = useState(formatDateTime(dataInicial));
     const [dataFiltro2, setDataFiltro2] = useState(formatDateTime(dataAtual));
 
+    const [actionTagIds, setActionTagIds] = useState([]);
 
     const [accountData, setAccountData] = useState({
         zero: 0,
@@ -55,6 +57,12 @@ const Dashboard = () => {
         qtyNoPeoplePercent: 0
     });
 
+    const [optionsActionTags, setOptionsActionsTags] = useState([
+        { label: 'Comida', value: 1 },
+        { label: 'Itens de Higiene', value: 2 },
+        { label: 'Roupas/Cobertores', value: 3 },
+        { label: 'Outros', value: 4 }
+    ]);
 
     const handleExportCsv = async () => {
 
@@ -65,7 +73,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-csv?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -73,7 +81,7 @@ const Dashboard = () => {
             });
 
             console.log('Resposta do servidor:', response);
-          
+
             const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = blobUrl;
@@ -94,7 +102,7 @@ const Dashboard = () => {
         const dataFim = dataFiltro2.split('T')[0];
 
         try {
-            const url = `/data/export-json?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-json?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'json',
@@ -127,7 +135,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-xml?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-xml?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -158,7 +166,7 @@ const Dashboard = () => {
 
         try {
 
-            const url = `/data/export-parquet?startDate=${dataInicio}&endDate=${dataFim}`;
+            const url = `/data/export-parquet?startDate=${dataInicio}&endDate=${dataFim}&tagIds=${actionTagIds}`;
 
             const response = await api.get(url, {
                 responseType: 'blob',
@@ -181,7 +189,7 @@ const Dashboard = () => {
         }
     };
 
-  
+
 
     const [exporting, setExporting] = useState(false);
 
@@ -215,8 +223,8 @@ const Dashboard = () => {
 
             const [responseAccountData, responseKpis, responseGraphData, userCount] = await Promise.all([
                 api.get('/data/mapping-count', { headers }),
-                api.get(`/data/kpi?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { params, headers }),
-                api.get(`/data/mapping/graph?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}`, { headers }),
+                api.get(`/data/kpi?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}&tagIds=${actionTagIds}`, { params, headers }),
+                api.get(`/data/mapping/graph?startDate=${dataFiltro.split('T')[0]}&endDate=${dataFiltro2.split('T')[0]}&tagIds=${actionTagIds}`, { headers }),
                 api.get('/user/total-count', { headers })
             ]);
 
@@ -245,12 +253,31 @@ const Dashboard = () => {
 
         } catch (error) {
             console.error('Erro ao buscar dados', error);
+            toast.error('Ocorreu um erro ao buscar os dados da dashboard. Tente novamente mais tarde.')
         }
     };
 
     useEffect(() => {
         fetchData(afterDate);
-    }, [dataFiltro, dataFiltro2]);
+    }, [dataFiltro, dataFiltro2, actionTagIds]);
+
+    useEffect(() => {
+        api.get('/tags',
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("USER_TOKEN")}`
+                },
+            }).then(response => {
+                setOptionsActionsTags(response.data.map(tag => {
+                    return {
+                        label: tag.name,
+                        value: tag.id
+                    };
+                }));
+            }).catch(error => {
+                toast.error('Não foi possível buscar os filtros de necessidade.');
+            });
+    }, [])
 
     const handleDateChange = (e) => {
         const date = e.target.value;
@@ -291,65 +318,66 @@ const Dashboard = () => {
         ],
     };
 
-
-    // Função para formatar a data como dd / mm / yyyy (com espaço entre as barras)
-    const formatarData = (data) => {
-        return new Date(data).toLocaleDateString('pt-BR', {
-            year: 'numeric',  // Mudamos para 'numeric' para obter o ano completo
-            month: '2-digit',
-            day: '2-digit'
-        }).replace(/\//g, ' / '); // Adiciona espaços entre as barras
-    };
-
+    const handleChangeActionTags = (values) => {
+        setActionTagIds(values);
+    }
 
     return (
         <>
             <div className={styles.page}>
                 <div className={`${styles["content"]}`}>
-
                     <div className={styles.container}>
-
                         <div className={styles["top-info"]}>
                             <div className={styles["page-name"]}>
                                 <a>Dashboard</a>
                             </div>
-                            {/* <div className={styles["align-input"]}>
-                                <StandardInput placeholder={"Pesquise aqui"} />
-                            </div>
-                            <div className={styles["notifications"]}>
-                                <FontAwesomeIcon icon="fa-regular fa-bell" style={{ color: "#00006b", }} />
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#00006b" d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v25.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v25.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V208c0-61.9 50.1-112 112-112zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z" /></svg>
-                            </div> */}
                         </div>
                         <div className={styles["flexRow"]}>
                             <div className={`col-12 col-md-7 ${styles["default-box"]}`}>
-                                <div className={styles["top-info"]}>
+                                <div className={styles["top-info row"]} >
                                     <div className={styles["page-name"]}>
                                         <div className={styles["header"]}>
                                             <a>Locais atendidos mês a mês</a>
                                         </div>
-                                        <div className={`${styles["aux-top-filters"]}`}>
-                                            <div className={`${styles["top-filters"]}`}>
-                                                De:
-                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
-                                                <CalendarFilter
-                                                    dataFiltro={formatarData(dataFiltro)}
-                                                    setDataFiltro={setDataFiltro}
-                                                />
+                                    </div>
+                                </div>
+                                <div className={`col-12 col-md-12 ${styles["aux-top-filters"]}`}>
+                                    <div className={`col-12 col-md-12 mt-2 mt-md-0 ${styles["date-form"]}`}>
+                                        <div className={`col-md-12 ${styles["date-filters-container"]}`}>
+                                            <CalendarOutlined style={{ fontSize: '26px', color: '#2968C8' }} />
+                                            <div className={styles.row}>
+                                                <div className={styles.row}>
+                                                    De:
+                                                    <CalendarFilter
+                                                        dataFiltro={dataFiltro}
+                                                        setDataFiltro={setDataFiltro}
+                                                    />
+                                                </div>
+                                                <div className={styles.row}>
+                                                    Até:
+                                                    <CalendarFilter
+                                                        dataFiltro={dataFiltro2}
+                                                        setDataFiltro={setDataFiltro2}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className={`${styles["top-filters"]}`}>
-                                                Até:
-                                                {/* Aqui passamos a data formatada para o CalendarFilter */}
-                                                <CalendarFilter
-                                                    dataFiltro={formatarData(dataFiltro2)}
-                                                    setDataFiltro={setDataFiltro2}
-                                                />
-                                            </div>
+                                        </div>
+
+                                        <div className={`${styles["select-top-filters"]}`}>
+                                            Filtrar por necessidade:
+                                            <Select
+                                                mode="multiple"
+                                                allowClear
+                                                style={{ width: '100%' }}
+                                                defaultValue={[]}
+                                                value={actionTagIds}
+                                                onChange={handleChangeActionTags}
+                                                options={optionsActionTags}
+                                            />
                                         </div>
                                     </div>
                                 </div>
                                 <div className={`${styles["chart-box"]}`}>
-
                                     <Line
                                         className={styles.chart}
                                         data={data}
@@ -384,32 +412,36 @@ const Dashboard = () => {
                                         }}
                                     />
                                 </div>
-                                <div className={styles["button-header"]}>
-                                    <h6>Exportar Dados em:</h6>
-                                    <ConfigProvider
-                                        theme={{
-                                            token: {
-                                                colorPrimary: "#2968C8",
-                                                borderRadius: 5,
-                                                fontFamily: "Montserrat" 
-                                            },
-                                        }}
-                                    >
-                                        <Button.Group>
-                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("CSV")}>CSV</Button>
-                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("JSON")}>JSON</Button>
-                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("Parquet")}>Parquet</Button>
-                                            <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("XML")}>XML</Button>
-                                        </Button.Group>
-                                    </ConfigProvider>
-                                    {exporting && <Spin style={{ marginLeft: "8px" }} />}
+                                <div className={`col-12 col-md-12 mt-2 mt-md-0 ${styles["date-form"]}`}>
+                                    <div className={styles["button-header"]}>
+                                        {/* <h6>Exportar Dados em:</h6> */}
+                                        <ConfigProvider
+                                            theme={{
+                                                token: {
+                                                    colorPrimary: "#2968C8",
+                                                    borderRadius: 5,
+                                                    fontFamily: "Montserrat"
+                                                },
+                                            }}
+                                        >
+                                            <Button.Group>
+                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("CSV")}>Exportar Dados em CSV</Button>
+                                                {/* <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("JSON")}>JSON</Button>
+                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("Parquet")}>Parquet</Button>
+                                                <Button style={{ fontFamily: "Montserrat" }} onClick={() => handleExport("XML")}>XML</Button> */}
+                                            </Button.Group>
+                                        </ConfigProvider>
+                                        {exporting && <Spin style={{ marginLeft: "8px" }} />}
+                                    </div>
                                 </div>
 
                             </div>
-                            <div className={`col-12 col-md-4 mt-4 mt-md-0 ${styles["default-box"]}`}>
+                            <div className={`col-12 col-md-4 mt-4 mt-md-0 d-flex flex-column ${styles["default-box"]}`}>
+                                
                                 <div className={styles["page-name"]}>
                                     <a>Engajamento</a>
                                 </div>
+                                <div className={`col-12 col-md-12 mt-2 mt-md-0 ${styles["date-form"]}`}>
                                 <table className={styles.table}>
                                     <thead>
                                         <tr className={styles["default-list-line"]}>
@@ -436,8 +468,15 @@ const Dashboard = () => {
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div className={styles["page-name"]}>
-                                    <a>Usuários cadastrados: {totalUsers}</a>
+                                </div>
+                                <div className={`col-12 col-md-12 mt-4 mt-md-0 flex-grow-1 ${styles["standardKPI"]} ${styles["kpi-container-2"]}`}>
+                                    <div className={styles["iconKPI"]}>
+                                        <UserAddOutlined style={{ fontSize: '46px' }} />
+                                    </div>
+                                    <div className={styles["one.two-margin"]}>
+                                        <div className={styles["users-kpi"]}>{totalUsers}</div>
+                                        <div className="titleKPI">Usuários cadastrados</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -462,7 +501,7 @@ const Dashboard = () => {
                             <div className={styles["flexRow"]}>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <DatabaseOutlined style={{ color: "#2968c8", fontSize: '26px' }} />
+                                        <DatabaseOutlined style={{ fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyTotal}</div>
@@ -471,7 +510,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <CheckCircleOutlined style={{ color: "#e9f5fe", fontSize: '26px' }} />
+                                        <CheckCircleOutlined style={{ fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyServedPercent}%)</span></div>
@@ -480,7 +519,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPI"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <CloseCircleOutlined style={{ color: "#2968c8", fontSize: '26px' }} />
+                                        <CloseCircleOutlined style={{ fontSize: '26px' }} />
                                     </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyNotServed} <span className={styles["valueKpiPercent"]}>({kpis.qtyNotServedPercent}%)</span></div>
@@ -489,8 +528,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className={`col-12 col-md-2 mt-4 mt-md-0 ${styles["standardKPIDark"]} ${styles["kpi-container"]}`}>
                                     <div className={styles["iconKPI"]}>
-                                        <UserDeleteOutlined style={{ color: "#e9f5fe", fontSize: '26px' }} />
-                                        </div>
+                                        <UserDeleteOutlined style={{ fontSize: '26px' }} />
+                                    </div>
                                     <div>
                                         <div className="valueKPI">{kpis.qtyNoPeople} <span className={styles["valueKpiPercent"]}>({kpis.qtyNoPeoplePercent}%)</span></div>
                                         <div className="titleKPI">Não havia pessoas no local</div>

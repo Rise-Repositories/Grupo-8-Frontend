@@ -35,24 +35,26 @@ const RecoverPassword = () => {
     return (
         <>
             <NavBar />
-            <div className={`${styles["header"]}`}>
-                <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
-                </div>
+            <div className={styles["body-content"]}>
+                <div className={`${styles["header"]}`}>
+                    <div className={`${styles["big-image"]} d-none d-md-block`} style={{ backgroundImage: `url(${backgroundImage})` }} alt="Imagem de destaque">
+                    </div>
 
-                <div className={`${styles["right-form"]}`}>
-                    <div className={`${styles["form"]}`}>
-                        <div>
-                            <div className={`${styles["form-presentation"]}`}>
-                                <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
-                                <label>Esqueceu sua senha?</label>
+                    <div className={`${styles["right-form"]} col-12 col-md-6`}>
+                        <div className={`${styles["form"]}`}>
+                            <div>
+                                <div className={`${styles["form-presentation"]}`}>
+                                    <FontAwesomeIcon icon={faArrowRightToBracket} style={{ color: '#000000' }} />
+                                    <label>Esqueceu sua senha?</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className={`${styles["container-inputs-form"]}`}>
-                            <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)}/>
-                        </div>
+                            <div className={`${styles["container-inputs-form"]}`}>
+                                <LabelInput placeholder={"Digite seu e-mail"} label={"E-mail"} onInput={(e) => handleInputChange(e, setEmail)} />
+                            </div>
 
-                        <BlueButton onclick={send} txt={"Enviar"} />
+                            <BlueButton onclick={send} txt={"Enviar"} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./InstituteList.module.css";
 import api from "../../api";
 
-import { Modal, Table, Space, Col, Row } from "antd";
+import { Modal, Table, Space, Col, Row, ConfigProvider } from "antd";
 import StandardInput from "../../components/inputs/standardInput/StandardInput";
 import BlueButton from "../../components/buttons/blueButton/BlueButton";
 import GreenButton from "../../components/buttons/greenButton/GreenButton";
@@ -14,7 +14,7 @@ import Stack from "../../utils/stack"
 import { AuthContext } from "../login/AuthContext";
 import { OngContext } from "../../components/context/ongContext/OngContext";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from 'react-toastify';
 
 const InstituteList = () => {
 
@@ -50,6 +50,7 @@ const InstituteList = () => {
             })
             .catch((error) => {
                 console.error('Erro ao buscar dados:', error);
+                toast.error('Ocorreu um erro ao buscar a lista de ONGs. Tente novamente mais tarde.');
             });
     }, []);
 
@@ -74,6 +75,7 @@ const InstituteList = () => {
             })
             .catch((error) => {
                 console.error('Erro ao atualizar status:', error);
+                toast.error('Ocorreu um erro ao atualizar o status da ONG. Tente novamente mais tarde.');
             });
     };
 
@@ -163,6 +165,13 @@ const InstituteList = () => {
     }));
 
     return (
+        <ConfigProvider
+        theme={{
+            token: {
+                fontFamily: 'Montserrat',
+            },
+        }}
+        >
         <><Col>
             <Col>
                 <Col className={styles.content}>
@@ -217,6 +226,7 @@ const InstituteList = () => {
             </Modal>
             </Col>
         </>
+        </ConfigProvider>
     );
 };
 
